@@ -172,13 +172,25 @@ export default function SensorHistoryPage() {
       });
     }
 
+    // Calculate max value from data to set dynamic Y-axis max
+    const maxDataValue = Math.max(
+      ...series.flatMap(s => s.data.map((d: any) => parseFloat(d) || 0)),
+      0
+    );
+
+    // Dynamic max: at least RED_START + 2 (to keep context), or 10% more than max data
+    // Round to 2 decimals to avoid long floating point numbers
+    const calculatedMax = Math.max(THRESHOLDS.RED_START + 2, maxDataValue * 1.1);
+    const yAxisMax = parseFloat(calculatedMax.toFixed(2));
+
     const markArea = {
       silent: true,
       data: [
         [{ yAxis: 0, itemStyle: { color: "#72FF82" } }, { yAxis: THRESHOLDS.GREEN_LIMIT }],
         [{ yAxis: THRESHOLDS.GREEN_LIMIT, itemStyle: { color: "#FFE666" } }, { yAxis: THRESHOLDS.YELLOW_LIMIT }],
         [{ yAxis: THRESHOLDS.YELLOW_LIMIT, itemStyle: { color: "#FFB347" } }, { yAxis: THRESHOLDS.RED_START }],
-        [{ yAxis: THRESHOLDS.RED_START, itemStyle: { color: "#FF4D4D" } }, { yAxis: 100 }],
+        // Extend red zone to cover the full range if data exceeds the default
+        [{ yAxis: THRESHOLDS.RED_START, itemStyle: { color: "#FF4D4D" } }, { yAxis: Math.max(100, yAxisMax) }],
       ]
     };
 
@@ -218,7 +230,7 @@ export default function SensorHistoryPage() {
         axisLabel: { color: "#ccc" },
         splitLine: { show: false },
         min: 0,
-        max: THRESHOLDS.RED_START + 2, // Ensure red zone is visible
+        max: yAxisMax, // Use dynamic max
       },
       series: series,
       backgroundColor: 'transparent'
