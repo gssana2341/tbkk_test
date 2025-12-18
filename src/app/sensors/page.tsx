@@ -1107,13 +1107,6 @@ export default function SensorDetailPage() {
             machineClass: configData.machineClass,
             note: configData.notes,
           }}
-          keyValues={{
-            // If MAC address is available elsewhere, pass it here. Using serial as placeholder if not provided.
-            macAddress: "11:AB:B1:1A:C1:D1",
-            sensorName: configData.serialNumber || "",
-            machineName: configData.sensorName || "",
-            machineClass: configData.machineClass || "",
-          }}
           status={{
             battery: `${Number(sensorLastData?.data?.battery ?? sensor?.batteryLevel ?? 0) || 0}%`,
             signalStrength: `${getSignalStrength(sensorLastData?.data?.rssi || 0)} (${getSignalStrengthLabel(sensorLastData?.data?.rssi || 0)})`,

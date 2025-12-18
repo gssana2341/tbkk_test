@@ -26,7 +26,6 @@ import { getAllUsers, deleteUser, updateUserRole } from "@/api/users/users";
 import { getUser } from "@/lib/auth";
 
 type UserStatus = "Online" | "Offline" | "Pending" | "Suspended" | string;
-type UserRole = "Admin" | "Editor" | "Viewer" | string;
 
 export default function UserManagementPage() {
     const [users, setUsers] = useState<UserAdminResponse[]>([]);

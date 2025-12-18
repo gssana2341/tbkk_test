@@ -149,7 +149,7 @@ export async function getAllUsers(): Promise<Array<import("@/lib/types").UserAdm
   try {
     const axiosInstance = getAxiosInstance();
     // Backend doesn't return status/last_login yet, so we fetch as any[] and map
-    const response = await axiosInstance.get<any[]>("/users");
+    const response = await axiosInstance.get<Array<Record<string, unknown>>>("/users");
 
     if (response.data.length > 0) {
       console.log("Sample user data (First User):", {
@@ -162,7 +162,7 @@ export async function getAllUsers(): Promise<Array<import("@/lib/types").UserAdm
     return response.data.map((user) => {
       // Normalize status mapping based on user requirements
       // Backend status is still missing, defaulting to "Online" to show Green as requested
-      let displayStatus = user.status || "Online";
+      let displayStatus = (user.status as string) || "Online";
       const s = displayStatus.toLowerCase();
 
       if (s === "active") displayStatus = "Online";

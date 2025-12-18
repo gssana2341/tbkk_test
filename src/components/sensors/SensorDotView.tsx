@@ -106,7 +106,7 @@ export default function SensorDotView({
             const temperature = sensor.last_data?.temperature || 0;
 
             // Fixed background color for bottom section as requested
-            const bgColor = "bg-[#E6E9EC]";
+            // const bgColor = "bg-[#E6E9EC]"; // Removed unused variable 'bgColor'
             const textColor = "text-gray-900";
 
             // Determine device role (Master/Satellite)

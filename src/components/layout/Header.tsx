@@ -176,7 +176,7 @@ export default function Header() {
     };
 
     fetchUserProfile();
-  }, [user]);
+  }, [user, logout]);
 
   // Fetch notifications on mount
   useEffect(() => {

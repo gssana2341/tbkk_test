@@ -199,6 +199,48 @@ const formSchema = z.object({
   sensors: z.array(singleSensorSchema),
 });
 
+// Helper to parse the custom date format: "18-Dec-2025,09:30:00"
+const parseCustomDate = (dateStr: string): Date => {
+  if (!dateStr) return new Date();
+  try {
+    // Format: "18-Dec-2025,09:30:00"
+    const [datePart, timePart] = dateStr.split(",");
+    if (!datePart || !timePart) return new Date(dateStr); // Fallback to standard if possible
+
+    const [day, monthStr, year] = datePart.split("-");
+    const [hours, minutes, seconds] = timePart.split(":");
+
+    const months: Record<string, number> = {
+      Jan: 0,
+      Feb: 1,
+      Mar: 2,
+      Apr: 3,
+      May: 4,
+      Jun: 5,
+      Jul: 6,
+      Aug: 7,
+      Sep: 8,
+      Oct: 9,
+      Nov: 10,
+      Dec: 11,
+    };
+
+    const month = months[monthStr] ?? 0;
+
+    return new Date(
+      parseInt(year),
+      month,
+      parseInt(day),
+      parseInt(hours),
+      parseInt(minutes),
+      parseInt(seconds)
+    );
+  } catch (e) {
+    console.warn("Failed to parse custom date:", dateStr, e);
+    return new Date();
+  }
+};
+
 export default function RegisterSensorForm() {
   const [activeTab, setActiveTab] = useState("master");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -316,9 +358,9 @@ export default function RegisterSensorForm() {
             serialNumber: data.mac_address || data.name || "",
             // Use 'area' field first, fallback to installed_point if needed
             area: data.area || data.installed_point || "",
-            // Parse motor start time
+            // Parse motor start time using custom parser
             motorStartTime: data.motor_start_time
-              ? new Date(data.motor_start_time)
+              ? parseCustomDate(data.motor_start_time)
               : new Date(),
             machine: data.machine || data.machine_no || "",
             machineClassEnabled: true, // Force enabled to show fields
@@ -403,7 +445,7 @@ export default function RegisterSensorForm() {
                         serialNumber: sat.mac_address || sat.name || "",
                         area: sat.area || sat.installed_point || "",
                         motorStartTime: sat.motor_start_time
-                          ? new Date(sat.motor_start_time as string)
+                          ? parseCustomDate(sat.motor_start_time as string)
                           : new Date(),
                         machine: sat.machine || sat.machine_no || "",
                         machineClassEnabled: true,
@@ -749,7 +791,7 @@ export default function RegisterSensorForm() {
           // ignore
         }
         throw new Error(
-          (errorData as any).message || `HTTP error! status: ${response.status} - ${errorText.substring(0, 100)}`
+
         );
       }
 

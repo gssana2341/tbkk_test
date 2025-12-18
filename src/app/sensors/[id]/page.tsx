@@ -568,7 +568,6 @@ export default function SensorDetailPage() {
   const [selectedAxis, setSelectedAxis] = useState("H-axis");
   const [selectedUnit, setSelectedUnit] = useState("Velocity (mm/s)");
   const [selectedDatetime, setSelectedDatetime] = useState<string | null>(null);
-  const [selectedDateFilter, setSelectedDateFilter] = useState<string | null>(null);
   const [datetimes, setDatetimes] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sensorImage, setSensorImage] = useState<string | null>(null);
@@ -1518,7 +1517,7 @@ export default function SensorDetailPage() {
     });
 
     return result;
-  }, [sensorLastData?.data, configData]);
+  }, [sensorLastData?.fmax, sensorLastData?.g_scale, sensorLastData?.lor, sensorLastData?.data, configData]);
 
   // Get current selected data
   const prepareVibrationData = useCallback((): {

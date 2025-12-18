@@ -1009,7 +1009,7 @@ export function reconstructTimeDomainFromAPI(
   }
 
   const time_step = 1 / Fmax_new;    // 1/1024 s
-  const time_stop = LOR_new / Fmax_new; // 2 s (info only)
+  // const time_stop = LOR_new / Fmax_new; // 2 s (info only) - Removed unused variable
 
   // -----------------------------
   // Time Domain Reconstruction

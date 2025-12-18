@@ -98,7 +98,7 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
     return <div>Loading...</div>;
   }
 
-  const { total, status, lastUpdate } = data;
+  const { status, lastUpdate } = data;
   const lastUpdatedText = new Date(lastUpdate).toLocaleString();
 
   const connectedTotal =

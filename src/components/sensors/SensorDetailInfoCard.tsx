@@ -30,7 +30,6 @@ interface KeyValues {
 interface SensorDetailInfoCardProps {
   photoUrl?: string | null;
   sensorInfo?: Partial<SensorInfo>;
-  keyValues?: Partial<KeyValues>;
   status?: Partial<StatusInfo>;
   datetimes?: string[];
   onEdit?: () => void;
@@ -46,12 +45,7 @@ const defaultSensorInfo: SensorInfo = {
   note: "",
 };
 
-const defaultKeyValues: KeyValues = {
-  macAddress: "11:AB:B1:1A:C1:D1",
-  sensorName: "D01",
-  machineName: "D01 Casting M/C",
-  machineClass: "Motor pump HYD",
-};
+// Removed defaultKeyValues as it is no longer used
 
 const defaultStatus: StatusInfo = {
   battery: "67.0%",
@@ -75,14 +69,13 @@ const defaultDates: string[] = [
 export default function SensorDetailInfoCard({
   photoUrl,
   sensorInfo,
-  keyValues,
   status,
   datetimes,
   onEdit,
   onSelectDatetime,
 }: SensorDetailInfoCardProps) {
   const s = { ...defaultSensorInfo, ...sensorInfo };
-  const k = { ...defaultKeyValues, ...keyValues };
+  // const k = { ...defaultKeyValues, ...keyValues }; // Removed unused variable 'k'
   const st = { ...defaultStatus, ...status };
   const dates = datetimes && datetimes.length > 0 ? datetimes : defaultDates;
 

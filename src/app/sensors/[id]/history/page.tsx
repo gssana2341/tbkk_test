@@ -37,8 +37,8 @@ export default function SensorHistoryPage() {
   const params = useParams() as { id: string };
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [sensorName, setSensorName] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   // Filters
   const [selectedAxis, setSelectedAxis] = useState<"all" | "h" | "v" | "a">("all");
@@ -92,7 +92,7 @@ export default function SensorHistoryPage() {
         console.log("Extracted History Data:", historyData);
         console.log("History Data Length:", historyData.length);
 
-        const mappedHistory: HistoryItem[] = historyData.map((item: any) => ({
+        const mappedHistory: HistoryItem[] = historyData.map((item: HistoryItem) => ({
           datetime: item.datetime,
           g_rms_h: item.g_rms_h || 0,
           g_rms_v: item.g_rms_v || 0,
