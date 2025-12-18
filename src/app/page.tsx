@@ -124,12 +124,12 @@ export default function SensorsPage() {
       const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
 
       // 3. Map color class to status
-      if (colorClass.includes("bg-[#ff0000]")) {
+      if (colorClass.includes("bg-[#ff2b05]")) {
         statusCounts.critical++;
-      } else if (colorClass.includes("bg-[#ff6600]")) {
+      } else if (colorClass.includes("bg-[#ff9900]")) {
         statusCounts.concern++;
         // statusCounts.warning++; // Optional: if you want concern to also count as warning
-      } else if (colorClass.includes("bg-[#fae739]")) {
+      } else if (colorClass.includes("bg-[#ffff00]")) {
         statusCounts.warning++;
       } else {
         statusCounts.normal++;
@@ -263,11 +263,11 @@ export default function SensorsPage() {
 
           const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
 
-          if (colorClass.includes("bg-[#ff0000]"))
+          if (colorClass.includes("bg-[#ff2b05]"))
             calculatedStatus = "critical";
-          else if (colorClass.includes("bg-[#ff6600]"))
+          else if (colorClass.includes("bg-[#ff9900]"))
             calculatedStatus = "concern";
-          else if (colorClass.includes("bg-[#fae739]"))
+          else if (colorClass.includes("bg-[#ffff00]"))
             calculatedStatus = "warning";
           else calculatedStatus = "normal";
         }
