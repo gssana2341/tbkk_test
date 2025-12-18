@@ -566,7 +566,7 @@ export default function SensorDetailPage() {
   );
   const [loading, setLoading] = useState(true);
   const [selectedAxis, setSelectedAxis] = useState("H-axis");
-  const [selectedUnit, setSelectedUnit] = useState("Velocity (mm/s)");
+  const [selectedUnit, setSelectedUnit] = useState("Acceleration (G)");
   const [selectedDatetime, setSelectedDatetime] = useState<string | null>(null);
   const [datetimes, setDatetimes] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
