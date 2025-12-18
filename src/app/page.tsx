@@ -69,70 +69,36 @@ export default function SensorsPage() {
 
   const updateSensorStatusData = useCallback((sensorList: Sensor[]) => {
     // Count sensors by status - each sensor counted in ONE status only
-    // Priority: Lost > Critical > Warning > Standby > Normal
     const statusCounts = {
       normal: 0,
       warning: 0,
-      concern: 0, // Same as warning (kept for compatibility)
+      concern: 0,
       critical: 0,
       standby: 0,
       lost: 0,
     };
 
     sensorList.forEach((sensor) => {
-      // Determine single status per sensor based on priority
-      // Logic matches SensorCard.tsx
-
-      // 1. Check connectivity/operational status first
-      if (
-        sensor.connectivity === "offline" &&
-        sensor.operationalStatus !== "standby"
-      ) {
-        statusCounts.lost++;
-        return;
-      }
-
-      if (sensor.operationalStatus === "standby") {
-        statusCounts.standby++;
-        return;
-      }
-
-      // 2. Calculate Max RMS and determine status color
-      const veloRmsH = sensor.last_data?.velo_rms_h
-        ? Number(sensor.last_data.velo_rms_h)
-        : 0;
-      const veloRmsV = sensor.last_data?.velo_rms_v
-        ? Number(sensor.last_data.velo_rms_v)
-        : 0;
-      const veloRmsA = sensor.last_data?.velo_rms_a
-        ? Number(sensor.last_data.velo_rms_a)
-        : 0;
-
-      const maxRms = Math.max(veloRmsH, veloRmsV, veloRmsA);
-
-      const sensorConfig: SensorConfig = {
-        thresholdMin: sensor.threshold_min ? Number(sensor.threshold_min) : 0.1,
-        thresholdMedium: sensor.threshold_medium
-          ? Number(sensor.threshold_medium)
-          : 0.125,
-        thresholdMax: sensor.threshold_max
-          ? Number(sensor.threshold_max)
-          : 0.15,
-        machineClass: sensor.machine_class || undefined,
-      };
-
-      const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
-
-      // 3. Map color class to status
-      if (colorClass.includes("bg-[#ff2b05]")) {
-        statusCounts.critical++;
-      } else if (colorClass.includes("bg-[#ff9900]")) {
-        statusCounts.concern++;
-        // statusCounts.warning++; // Optional: if you want concern to also count as warning
-      } else if (colorClass.includes("bg-[#ffff00]")) {
-        statusCounts.warning++;
-      } else {
-        statusCounts.normal++;
+      // Use the pre-calculated status from the API/Lib logic
+      switch (sensor.status) {
+        case "critical":
+          statusCounts.critical++;
+          break;
+        case "concern":
+          statusCounts.concern++;
+          break;
+        case "warning":
+          statusCounts.warning++;
+          break;
+        case "standby":
+          statusCounts.standby++;
+          break;
+        case "lost":
+          statusCounts.lost++;
+          break;
+        default:
+          statusCounts.normal++;
+          break;
       }
     });
 
@@ -226,51 +192,8 @@ export default function SensorsPage() {
     // Filter by status
     if (selectedStatuses.length > 0) {
       result = result.filter((sensor) => {
-        // Calculate status dynamically to match SensorCard and Summary
-        let calculatedStatus = "normal";
-
-        if (
-          sensor.connectivity === "offline" &&
-          sensor.operationalStatus !== "standby"
-        ) {
-          calculatedStatus = "lost";
-        } else if (sensor.operationalStatus === "standby") {
-          calculatedStatus = "standby";
-        } else {
-          const veloRmsH = sensor.last_data?.velo_rms_h
-            ? Number(sensor.last_data.velo_rms_h)
-            : 0;
-          const veloRmsV = sensor.last_data?.velo_rms_v
-            ? Number(sensor.last_data.velo_rms_v)
-            : 0;
-          const veloRmsA = sensor.last_data?.velo_rms_a
-            ? Number(sensor.last_data.velo_rms_a)
-            : 0;
-          const maxRms = Math.max(veloRmsH, veloRmsV, veloRmsA);
-
-          const sensorConfig: SensorConfig = {
-            thresholdMin: sensor.threshold_min
-              ? Number(sensor.threshold_min)
-              : 0.1,
-            thresholdMedium: sensor.threshold_medium
-              ? Number(sensor.threshold_medium)
-              : 0.125,
-            thresholdMax: sensor.threshold_max
-              ? Number(sensor.threshold_max)
-              : 0.15,
-            machineClass: sensor.machine_class || undefined,
-          };
-
-          const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
-
-          if (colorClass.includes("bg-[#ff2b05]"))
-            calculatedStatus = "critical";
-          else if (colorClass.includes("bg-[#ff9900]"))
-            calculatedStatus = "concern";
-          else if (colorClass.includes("bg-[#ffff00]"))
-            calculatedStatus = "warning";
-          else calculatedStatus = "normal";
-        }
+        // Use pre-calculated status
+        const calculatedStatus = sensor.status === "ok" ? "normal" : sensor.status;
 
         // Check if calculated status is in selected statuses
         if (

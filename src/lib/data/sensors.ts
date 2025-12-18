@@ -4,6 +4,7 @@ import type {
   SensorReading,
   SensorSummary,
   SensorApiData,
+  SensorStatus,
 } from "@/lib/types";
 // Add the import for getRegisteredDevices at the top of the file
 import { getRegisteredDevices } from "./register";
@@ -225,40 +226,32 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         dominantFreq: "0.000", // Can be calculated from freq_a if needed
       };
 
-      // Determine status based on available data and alarm threshold
-      let status: "ok" | "warning" | "critical" = "ok";
-      if (apiSensor.last_data) {
-        const alarmThreshold = apiSensor.alarm_ths || 5.0; // Default to 5.0 if not provided
+      // Determine status based on visual color groups (matches SensorCard.tsx)
+      let status: SensorStatus = "ok";
 
-        // Check temperature against alarm threshold
-        if (apiSensor.last_data.temperature > alarmThreshold) {
-          status = "critical";
-        } else if (apiSensor.last_data.temperature > alarmThreshold * 0.7) {
-          // 70% of threshold
-          status = "warning";
-        }
+      // 1. Check connectivity/operational status first (Lost group)
+      const connectivity = apiSensor.last_data ? "online" : "offline";
+      const operationalStatus = apiSensor.last_data ? "running" : "standby";
 
-        if (apiSensor.last_data.battery < 20) {
-          status = "critical";
-        } else if (apiSensor.last_data.battery < 50) {
-          status = status === "ok" ? "warning" : status;
-        }
-
-        // Check vibration levels
+      if (connectivity === "offline" && operationalStatus !== "standby") {
+        status = "lost";
+      } else {
+        // Calculate status from Vibration RMS
         const maxRms = Math.max(veloRmsH, veloRmsV, veloRmsA);
-        // Use defaults consistent with src/app/page.tsx if thresholds missing
         const tMin = apiSensor.threshold_min ?? 0.1;
-        // const tMed = apiSensor.threshold_medium ?? 0.125; // unused for simple status
+        const tMed = apiSensor.threshold_medium ?? 0.125;
         const tMax = apiSensor.threshold_max ?? 0.15;
 
-        // Priority to critical
         if (maxRms >= tMax) {
           status = "critical";
+        } else if (maxRms >= tMed) {
+          status = "concern";
         } else if (maxRms >= tMin) {
-          // If not already critical, set to warning
-          if (status !== "critical") {
-            status = "warning";
-          }
+          status = "warning";
+        } else if (operationalStatus === "standby") {
+          status = "standby";
+        } else {
+          status = "ok";
         }
       }
 
@@ -271,7 +264,7 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         sensor_type: apiSensor.sensor_type || "Master",
         location: apiSensor.installed_point || "API Location",
         installationDate: new Date(apiSensor.created_at).getTime(),
-        lastUpdated: new Date(apiSensor.last_data?.datetime || now).getTime(),
+        lastUpdated: new Date(apiSensor.last_data?.datetime || apiSensor.updated_at || now).getTime(),
         readings,
         status,
         maintenanceHistory: [],
@@ -352,25 +345,26 @@ export async function getSensors(
 
   // Helper function to get severity weight
   const getSeverityWeight = (sensor: Sensor): number => {
-    // Priority 1: Critical (Red)
-    if (sensor.status === "critical") return 50;
-    // Priority 2: Warning (Yellow)
-    if (sensor.status === "warning") return 40;
-    // Priority 3: Lost (Offline & Not Standby) (Dark Gray)
-    if (
-      sensor.connectivity === "offline" &&
-      sensor.operationalStatus !== "standby"
-    )
-      return 30;
-    // Priority 4: Normal (Green)
-    if (sensor.status === "ok" && sensor.connectivity === "online") return 20;
-    // Priority 5: Standby (Light Gray)
-    if (sensor.operationalStatus === "standby") return 10;
-
-    return 0; // Default/Unknown
+    // Priority per user request: Red > Orange > Yellow > Green > Gray > Black
+    switch (sensor.status) {
+      case "critical":
+        return 60; // Red
+      case "concern":
+        return 50; // Orange
+      case "warning":
+        return 40; // Yellow
+      case "ok":
+        return 30; // Green
+      case "standby":
+        return 20; // Gray
+      case "lost":
+        return 10; // Black
+      default:
+        return 0;
+    }
   };
 
-  // Sort real sensors by severity then by name
+  // Sort real sensors by severity then by last updated (newest first)
   let allSensors = realSensors.sort((a, b) => {
     const weightA = getSeverityWeight(a);
     const weightB = getSeverityWeight(b);
@@ -379,7 +373,8 @@ export async function getSensors(
       return weightB - weightA; // Descending order of weight
     }
 
-    return a.sensor_name?.localeCompare(b.sensor_name || "") || 0;
+    // Secondary sort: Last updated (newest first)
+    return b.lastUpdated - a.lastUpdated;
   });
 
   // Apply filters
