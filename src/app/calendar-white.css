@@ -1,0 +1,10 @@
+/* Make calendar icon in input[type=date] white for dark theme */
+input[type="date"].calendar-white::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(2);
+}
+input[type="date"].calendar-white::-moz-calendar-picker-indicator {
+  filter: invert(1) brightness(2);
+}
+input[type="date"].calendar-white::-ms-calendar-picker-indicator {
+  filter: invert(1) brightness(2);
+}
