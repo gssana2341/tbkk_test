@@ -516,18 +516,22 @@ function prepareChartData(
 
 
 // Display as: 20 Sep 2025, 19:00:00 (day first)
+// Display as: 20 Sep 2025, 19:00:00 (day first)
 const formatDateTimeDayFirst = (dateString: string) => {
-  const date = new Date(dateString);
-  const day = String(date.getUTCDate()).padStart(2, "0");
-  const month = date.toLocaleString("en-US", {
-    month: "short",
-    timeZone: "UTC",
+  if (!dateString) return "-";
+  // Fix: Treat server time as Local by removing Z if present
+  const rawString = dateString.endsWith("Z") ? dateString.slice(0, -1) : dateString;
+  const date = new Date(rawString);
+
+  return date.toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit", // Use numeric or short as preferred, user asked for numeric before? keeping short for now matching comment
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
   });
-  const year = date.getUTCFullYear();
-  const hh = String(date.getUTCHours()).padStart(2, "0");
-  const mm = String(date.getUTCMinutes()).padStart(2, "0");
-  const ss = String(date.getUTCSeconds()).padStart(2, "0");
-  return `${day} ${month} ${year}, ${hh}:${mm}:${ss}`;
 };
 
 interface SensorPageConfig {
@@ -646,12 +650,18 @@ export default function SensorDetailPage() {
     [configData]
   );
 
-  // Helper to check if the background color is a warning color (yellow)
-  // Checks for both known yellow hex codes to be safe
-  const isWarningColor = (colorClass: string) => {
-    return colorClass.includes("bg-[#ffff00]") ||
-      colorClass.includes("bg-[#fae739]") ||
-      colorClass.toLowerCase().includes("warning");
+  // Helper to determine text color based on background
+  // User Rule:
+  // - Red (#ff2b05), Green (#00e200), Orange (#ff9900) -> White Text
+  // - Yellow (#ffff00 / #fae739) -> Black Text
+  // - Others (Default) -> Black Text
+  const shouldTextBeWhite = (colorClass: string) => {
+    const lower = colorClass.toLowerCase();
+    return (
+      lower.includes("bg-[#ff2b05]") || // Critical (Red)
+      lower.includes("bg-[#00e200]") || // Normal (Green)
+      lower.includes("bg-[#ff9900]")    // Concern (Orange)
+    );
   };
 
   // Function to fetch sensor details from GET /sensors/:id
@@ -2280,9 +2290,9 @@ export default function SensorDetailPage() {
               >
                 <CardContent className="p-4">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${isWarningColor(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                      ? "!text-black"
-                      : "!text-white"
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                      ? "!text-white"
+                      : "!text-black"
                       }`}
                   >
                     Horizontal (H)
@@ -2291,18 +2301,18 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Acceleration (G)
                       </span>
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                            ? "!text-black text-sm md:text-base"
-                            : "!text-white text-sm md:text-base"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                            ? "!text-white text-sm md:text-base"
+                            : "!text-black text-sm md:text-base"
                         }
                       >
                         {xStats.accelTopPeak}G
@@ -2311,18 +2321,18 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Acceleration (mm/s²)
                       </span>
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                            ? "!text-black text-sm md:text-base"
-                            : "!text-white text-sm md:text-base"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                            ? "!text-white text-sm md:text-base"
+                            : "!text-black text-sm md:text-base"
                         }
                       >
                         {xStats.accelMmPerS2}
@@ -2331,17 +2341,17 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${isWarningColor(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                          ? "!text-black text-sm md:text-base"
-                          : "!text-white text-sm md:text-base"
+                        className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                          ? "!text-white text-sm md:text-base"
+                          : "!text-black text-sm md:text-base"
                           }`}
                       >
                         {xStats.velocityTopPeak} mm/s
@@ -2361,9 +2371,9 @@ export default function SensorDetailPage() {
                 {/* {getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak))} */}
                 <CardContent className="p-4">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${isWarningColor(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                      ? "!text-black"
-                      : "!text-white"
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                      ? "!text-white"
+                      : "!text-black"
                       }`}
                   >
                     Vertical (V)
@@ -2372,18 +2382,18 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Acceleration (G)
                       </span>
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                            ? "!text-black text-sm md:text-base"
-                            : "!text-white text-sm md:text-base"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                            ? "!text-white text-sm md:text-base"
+                            : "!text-black text-sm md:text-base"
                         }
                       >
                         {yStats.accelTopPeak}G
@@ -2392,18 +2402,18 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Acceleration (mm/s²)
                       </span>
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                            ? "!text-black text-sm md:text-base"
-                            : "!text-white text-sm md:text-base"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                            ? "!text-white text-sm md:text-base"
+                            : "!text-black text-sm md:text-base"
                         }
                       >
                         {yStats.accelMmPerS2}
@@ -2412,17 +2422,17 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${isWarningColor(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                          ? "!text-black text-sm md:text-base"
-                          : "!text-white text-sm md:text-base"
+                        className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                          ? "!text-white text-sm md:text-base"
+                          : "!text-black text-sm md:text-base"
                           }`}
                       >
                         {yStats.velocityTopPeak} mm/s
@@ -2440,9 +2450,9 @@ export default function SensorDetailPage() {
               >
                 <CardContent className="p-4">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${isWarningColor(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                      ? "!text-black"
-                      : "!text-white"
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                      ? "!text-white"
+                      : "!text-black"
                       }`}
                   >
                     Axial (A)
@@ -2451,18 +2461,18 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Acceleration (G)
                       </span>
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                            ? "!text-black text-sm md:text-base"
-                            : "!text-white text-sm md:text-base"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                            ? "!text-white text-sm md:text-base"
+                            : "!text-black text-sm md:text-base"
                         }
                       >
                         {zStats.accelTopPeak}G
@@ -2471,18 +2481,18 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Acceleration (mm/s²)
                       </span>
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                            ? "!text-black text-sm md:text-base"
-                            : "!text-white text-sm md:text-base"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                            ? "!text-white text-sm md:text-base"
+                            : "!text-black text-sm md:text-base"
                         }
                       >
                         {zStats.accelMmPerS2}
@@ -2491,17 +2501,17 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          isWarningColor(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                            ? "!text-black"
-                            : "!text-white"
+                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                            ? "!text-white"
+                            : "!text-black"
                         }
                       >
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${isWarningColor(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                          ? "!text-black text-sm md:text-base"
-                          : "!text-white text-sm md:text-base"
+                        className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                          ? "!text-white text-sm md:text-base"
+                          : "!text-black text-sm md:text-base"
                           }`}
                       >
                         {zStats.velocityTopPeak} mm/s

@@ -108,9 +108,26 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     return isNaN(d.getTime()) ? null : d;
   };
 
-  const lastUpdate = resolveLastUpdate(sensor);
+  // Fix: Treat server time as Local by removing Z if present
+  // The API sends "2025-12-18T13:16:09Z" when it means 13:16 Local Time.
+  // Standard parsing shifts this to 20:16 (+7h), so we must strip Z to force local interpretation.
+  const rawLastUpdate = resolveLastUpdate(sensor);
+  const lastUpdate = rawLastUpdate
+    ? new Date(rawLastUpdate.toISOString().replace("Z", ""))
+    : null;
+
+
+
   const lastUpdateText = lastUpdate
-    ? `${lastUpdate.toLocaleDateString()} ${lastUpdate.toLocaleTimeString()} `
+    ? lastUpdate.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
     : "-";
 
   // Determine card background color based on sensor status
