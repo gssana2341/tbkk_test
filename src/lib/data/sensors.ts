@@ -27,20 +27,24 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
     return realSensorsCache;
   }
 
+  const token = getToken();
   try {
-    console.log("Fetching real sensors from:", `${"/api"}/sensors/with-last-data`);
+    const url = `${"/api"}/sensors/with-last-data`;
+    console.log("Fetching real sensors from:", url);
     const response = await fetch(
-      `${"/api"}/sensors/with-last-data`,
+      url,
       {
         cache: "no-store", // Disable caching for real-time data
         headers: {
+          "Authorization": token ? `Bearer ${token}` : "",
+          "Content-Type": "application/json",
           "Cache-Control": "no-cache",
           "ngrok-skip-browser-warning": "true",
         },
       }
     );
     if (!response.ok) {
-      console.error(`API Error: ${response.status} ${response.statusText}`);
+      console.error(`API Error: ${response.status} ${response.statusText} at ${url}`);
       // Return empty array instead of throwing to prevent app crash
       return [];
     }
