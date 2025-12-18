@@ -129,7 +129,7 @@ export default function UserSettings() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -193,7 +193,7 @@ export default function UserSettings() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -241,7 +241,7 @@ export default function UserSettings() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -308,16 +308,21 @@ export default function UserSettings() {
 
     try {
       setSaving(true);
-      const response = await uploadAvatar(file);
-      setAvatarUrl(response.avatar_url);
+      // Create a local URL for the selected image (Caching locally)
+      const localUrl = URL.createObjectURL(file);
+      setAvatarUrl(localUrl);
+
       toast({
-        title: "Avatar Uploaded",
-        description: "Your avatar has been uploaded successfully.",
+        title: "Avatar Updated (Cached)",
+        description: "Your avatar has been updated locally.",
       });
-    } catch {
+
+      // Note: We are not calling uploadAvatar(file) as requested to save to DB
+    } catch (err) {
+      console.error("Error updating avatar:", err);
       toast({
-        title: "Upload Failed",
-        description: "Failed to upload avatar. Please try again.",
+        title: "Update Failed",
+        description: "Failed to update avatar locally.",
         variant: "destructive",
       });
     } finally {
