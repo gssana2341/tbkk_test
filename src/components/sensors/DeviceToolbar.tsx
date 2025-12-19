@@ -43,7 +43,7 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
       >
         <h2 className="text-lg font-semibold text-gray-900 whitespace-nowrap min-w-0">
           <span className="font-semibold text-lg mr-2 text-white truncate block max-w-[120px] sm:max-w-[180px]">
-            Dot View
+            {currentView === "dot" ? "Dot View" : "Card View"}
           </span>
         </h2>
         {/* Master and Satellite symbols */}
@@ -66,7 +66,7 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
                   "polygon(50% 0%, 100% 100%, 0% 100%)",
               }}
             >
-              S
+              <span className="pt-1">S</span>
             </span>
             <span className="ml-2 text-white text-base truncate block max-w-[90px]">
               : Satellite

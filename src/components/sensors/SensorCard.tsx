@@ -199,7 +199,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                   : undefined
               }
             >
-              <span className="text-white text-lg font-bold">
+              <span className={`text-white text-lg font-bold ${deviceRole.toLowerCase() !== "master" ? "pt-1" : ""}`}>
                 {deviceRole.toLowerCase() === "master" ? "M" : "S"}
               </span>
             </div>
