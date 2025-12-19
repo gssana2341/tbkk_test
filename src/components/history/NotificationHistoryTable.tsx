@@ -158,14 +158,14 @@ export function NotificationHistoryTable({
           <span className="ml-2 text-sm text-gray-300">Date:</span>
           <input
             type="date"
-            className="border border-gray-600 rounded-md px-2 py-2 text-sm bg-[#11171F] text-white"
+            className="border border-gray-600 rounded-md px-2 py-2 text-sm bg-[#11171F] text-white [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
             value={dateStart}
             onChange={(e) => setDateStart(e.target.value)}
           />
           <span className="mx-1">-</span>
           <input
             type="date"
-            className="border border-gray-600 rounded-md px-2 py-2 text-sm bg-[#11171F] text-white"
+            className="border border-gray-600 rounded-md px-2 py-2 text-sm bg-[#11171F] text-white [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
             value={dateEnd}
             onChange={(e) => setDateEnd(e.target.value)}
           />
