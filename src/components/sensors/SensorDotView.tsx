@@ -55,10 +55,10 @@ export default function SensorDotView({
 
   // Map dotSize to text size classes
   const textSizeClasses: Record<number, string> = {
-    1: "text-[10px]",
-    2: "text-xs",
-    3: "text-sm",
-    4: "text-base",
+    1: "text-sm",      // Was text-xs
+    2: "text-base",    // Was text-sm
+    3: "text-lg",      // Was text-base
+    4: "text-xl",      // Was text-lg
   };
 
   const sizeClass = dotSizeClasses[dotSize] || "w-12 h-12";
@@ -221,7 +221,7 @@ export default function SensorDotView({
                             <span
                               className={`font-bold ${textSizeClass} text-gray-900 leading-none`}
                             >
-                              {Math.round(temperature)}
+                              {Math.round(temperature)}°
                             </span>
                           </div>
                         </div>
@@ -330,7 +330,7 @@ export default function SensorDotView({
                         <span
                           className={`font-bold ${textSizeClass} ${textColor} leading-none`}
                         >
-                          {Math.round(temperature)}
+                          {Math.round(temperature)}°
                         </span>
                       </div>
                     </div>

@@ -134,55 +134,61 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Colors match SensorStatusSummary status boxes with gradient effect
   // Determine card background color based on sensor status
   // Colors match SensorStatusSummary status boxes with gradient effect
-  const getCardBackgroundStyle = (): { background: string; color?: string } => {
+  // Determine card style based on sensor status
+  const getCardStyle = (): React.CSSProperties => {
+    let borderColor = "#00E200"; // Default Normal (Green)
+
     // Priority 1: Lost (offline and not standby)
     if (
       sensor.connectivity === "offline" &&
       sensor.operationalStatus !== "standby"
     ) {
-      return { background: "#626262" }; // Lost - Dark Gray
+      borderColor = "#626262"; // Lost - Dark Gray
+    } else {
+      // Calculate Max RMS to determine status color
+      const maxRms = Math.max(veloRmsH ?? 0, veloRmsV ?? 0, veloRmsA ?? 0);
+      const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
+
+      // Priority 2: Critical (Red)
+      if (colorClass.includes("bg-[#ff2b05]")) {
+        borderColor = "#ff2b05";
+      }
+      // Priority 3: Concern (Orange)
+      else if (colorClass.includes("bg-[#ff9900]")) {
+        borderColor = "#FF9900";
+      }
+      // Priority 4: Warning (Yellow)
+      else if (colorClass.includes("bg-[#ffff00]")) {
+        borderColor = "#FFFF00";
+      }
+      // Priority 5: Standby
+      else if (sensor.operationalStatus === "standby") {
+        borderColor = "#D9D9D9";
+      }
     }
 
-    // Calculate Max RMS to determine status color
-    const maxRms = Math.max(veloRmsH ?? 0, veloRmsV ?? 0, veloRmsA ?? 0);
-    const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
-
-    // Priority 2: Critical (Red)
-    if (colorClass.includes("bg-[#ff2b05]")) {
-      return { background: "#ff2b05", color: "#ffffff" }; // Critical
-    }
-
-    // Priority 3: Concern (Orange)
-    if (colorClass.includes("bg-[#ff9900]")) {
-      return { background: "#FF9900" }; // Concern - Orange
-    }
-
-    // Priority 4: Warning (Yellow)
-    if (colorClass.includes("bg-[#ffff00]")) {
-      return { background: "#FFFF00" }; // Warning - Yellow
-    }
-
-    // Priority 5: Standby
-    if (sensor.operationalStatus === "standby") {
-      return { background: "#D9D9D9" }; // Standby - Light Gray
-    }
-
-    // Priority 6: Normal (Green)
-    return { background: "#00E200" }; // Normal - Green
+    return {
+      backgroundColor: "#111827", // Hex for bg-gray-900 (Dark)
+      borderTop: `12px solid ${borderColor}`, // Thick top colored border
+      borderRight: "1px solid #374151", // Thin gray border for shape
+      borderBottom: "1px solid #374151",
+      borderLeft: "1px solid #374151",
+      color: "#ffffff", // White text for everything
+    };
   };
 
   return (
     <Card
       onClick={onClick}
-      className="relative w-full cursor-pointer border-2 border-black shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden"
-      style={getCardBackgroundStyle()}
+      className="relative w-full cursor-pointer shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden"
+      style={getCardStyle()}
     >
       <CardContent className="p-1 2xl:p-1.5 overflow-hidden">
         {" "}
         {/* Row 1: ID | Pills | Status */}
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
           <div className="min-w-0 flex-1 overflow-hidden">
-            <div className="text-[0.75rem] sm:text-sm lg:text-base 2xl:text-lg font-extrabold tracking-tight leading-tight truncate">
+            <div className="text-[0.75rem] sm:text-sm lg:text-base 2xl:text-lg font-extrabold tracking-tight leading-tight truncate text-white">
               {deviceId}
             </div>
           </div>
@@ -206,8 +212,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
               A
             </span>
           </div>
-          <div className="flex items-center justify-center shrink-0 px-1">
-            <div className="flex flex-col items-center justify-center">
+
+        </div>
+        {/* Divider */}
+        <div className="my-1.5 2xl:my-2 h-px w-full bg-gray-600" />
+        {/* Row 2: Area/Machine | Temperature */}
+        <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
+          <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+            <div className="flex items-center justify-center shrink-0">
               <div
                 className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 shadow-sm flex items-center justify-center shrink-0 ${deviceRole.toLowerCase() === "master" ? "bg-blue-600 rounded-full" : "bg-purple-600"}`}
                 style={
@@ -224,22 +236,17 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                 </span>
               </div>
             </div>
+            <div className="text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base font-semibold truncate text-gray-300">
+              {areaLabel} / {machineLabel}
+            </div>
           </div>
-        </div>
-        {/* Divider */}
-        <div className="my-1.5 2xl:my-2 h-px w-full bg-gray-300" />
-        {/* Row 2: Area/Machine | Temperature */}
-        <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
-          <div className="text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base font-semibold truncate min-w-0 flex-1 overflow-hidden">
-            {areaLabel} / {machineLabel}
-          </div>
-          <div className="text-sm sm:text-base lg:text-lg 2xl:text-xl font-bold shrink-0 whitespace-nowrap">
+          <div className="text-sm sm:text-base lg:text-lg 2xl:text-xl font-bold shrink-0 whitespace-nowrap text-white">
             {(Number(temperature) || 0).toFixed(1)}°C
           </div>
         </div>
         {/* Row 3: Battery | Wifi | Time */}
         <div className="mt-0.5 2xl:mt-1 flex items-center gap-0.5 2xl:gap-1 text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base overflow-hidden">
-          <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap">
+          <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap text-gray-300">
             {/* Modern battery icon with 4 fill bars */}
             <svg
               width="24"
@@ -255,12 +262,12 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                 width="20"
                 height="10"
                 rx="3"
-                fill="#F3F4F6"
-                stroke="#222F3E"
+                fill="#374151"
+                stroke="#9CA3AF"
                 strokeWidth="1.2"
               />
               {/* Battery tip */}
-              <rect x="22" y="5" width="2" height="4" rx="1" fill="#222F3E" />
+              <rect x="22" y="5" width="2" height="4" rx="1" fill="#9CA3AF" />
               {/* 4 bars, fill based on battery level */}
               {Array.from({ length: 4 }).map((_, i) => {
                 const percent = Math.max(
@@ -291,7 +298,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                       width={3.5}
                       height={6}
                       rx={1}
-                      fill="#E5E7EB"
+                      fill="#4B5563"
                     />
                     {/* Bar fill (proportional) */}
                     {fillRatio > 0 && (
@@ -312,7 +319,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
           </span>
           <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap">
             {/* WiFi SVG icon with color by connectivity */}
-            <div className="bg-white border border-white rounded-full p-0.5 shadow-sm mr-1 flex items-center justify-center">
+            <div className="bg-gray-700 border border-gray-600 rounded-full p-0.5 shadow-sm mr-1 flex items-center justify-center">
               <svg
                 width="22"
                 height="22"
@@ -381,7 +388,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
               </svg>
             </div>
           </span>
-          <span className="text-[0.5rem] sm:text-[0.563rem] lg:text-xs 2xl:text-sm text-black shrink truncate min-w-0">
+          <span className="text-[0.5rem] sm:text-[0.563rem] lg:text-xs 2xl:text-sm text-gray-300 shrink truncate min-w-0">
             {lastUpdateText}
           </span>
         </div>
