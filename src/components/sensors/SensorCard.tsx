@@ -187,6 +187,23 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
         {" "}
         {/* Row 1: ID | Pills | Status */}
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
+          <div className="flex items-center justify-center shrink-0 mr-1.5">
+            <div
+              className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 shadow-sm flex items-center justify-center shrink-0 ${deviceRole.toLowerCase() === "master" ? "bg-blue-600 rounded-full" : "bg-purple-600"}`}
+              style={
+                deviceRole.toLowerCase() !== "master"
+                  ? {
+                    clipPath:
+                      "polygon(50% 0%, 100% 100%, 0% 100%)",
+                  }
+                  : undefined
+              }
+            >
+              <span className="text-white text-lg font-bold">
+                {deviceRole.toLowerCase() === "master" ? "M" : "S"}
+              </span>
+            </div>
+          </div>
           <div className="min-w-0 flex-1 overflow-hidden">
             <div className="text-[0.75rem] sm:text-sm lg:text-base 2xl:text-lg font-extrabold tracking-tight leading-tight truncate text-white">
               {deviceId}
@@ -219,23 +236,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
         {/* Row 2: Area/Machine | Temperature */}
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
           <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-            <div className="flex items-center justify-center shrink-0">
-              <div
-                className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 shadow-sm flex items-center justify-center shrink-0 ${deviceRole.toLowerCase() === "master" ? "bg-blue-600 rounded-full" : "bg-purple-600"}`}
-                style={
-                  deviceRole.toLowerCase() !== "master"
-                    ? {
-                      clipPath:
-                        "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-                    }
-                    : undefined
-                }
-              >
-                <span className="text-white text-lg font-bold">
-                  {deviceRole.toLowerCase() === "master" ? "M" : "S"}
-                </span>
-              </div>
-            </div>
+
             <div className="text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base font-semibold truncate text-gray-300">
               {areaLabel} / {machineLabel}
             </div>

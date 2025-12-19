@@ -63,7 +63,7 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
               className="flex items-center justify-center w-8 h-8 bg-purple-500 text-white font-bold text-lg"
               style={{
                 clipPath:
-                  "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
+                  "polygon(50% 0%, 100% 100%, 0% 100%)",
               }}
             >
               S

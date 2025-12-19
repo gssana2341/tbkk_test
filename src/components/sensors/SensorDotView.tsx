@@ -191,7 +191,7 @@ export default function SensorDotView({
                         backgroundColor: statusColorCode,
                         padding: "3px", // Border thickness
                         clipPath:
-                          "polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)",
+                          "polygon(50% 0%, 100% 100%, 0% 100%)",
                         transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
                       }}
                       onClick={() => handleSensorClick(sensor.id)}
@@ -202,7 +202,7 @@ export default function SensorDotView({
                         style={{
                           backgroundColor: "white",
                           clipPath:
-                            "polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%)",
+                            "polygon(50% 0%, 100% 100%, 0% 100%)",
                         }}
                       >
                         {/* Top 60% - Status Color (Inside) */}
