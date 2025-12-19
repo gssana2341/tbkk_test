@@ -285,9 +285,9 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                     : 0;
                 // Bar color by overall percent
                 const fillColor =
-                  percent > 60
+                  percent > 50
                     ? "#22C55E"
-                    : percent > 20
+                    : percent > 25
                       ? "#FACC15"
                       : "#EF4444";
                 return (
