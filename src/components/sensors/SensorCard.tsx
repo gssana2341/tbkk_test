@@ -237,11 +237,11 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
           <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
 
-            <div className="text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base font-semibold truncate text-gray-300">
+            <div className="text-xs sm:text-sm lg:text-base 2xl:text-lg font-semibold truncate text-gray-300">
               {areaLabel} / {machineLabel}
             </div>
           </div>
-          <div className="text-sm sm:text-base lg:text-lg 2xl:text-xl font-bold shrink-0 whitespace-nowrap text-white">
+          <div className="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold shrink-0 whitespace-nowrap text-white">
             {(Number(temperature) || 0).toFixed(1)}°C
           </div>
         </div>
