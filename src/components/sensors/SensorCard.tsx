@@ -320,7 +320,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
           </span>
           <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap">
             {/* WiFi SVG icon with color by connectivity */}
-            <div className="bg-gray-700 border border-gray-600 rounded-full p-0.5 shadow-sm mr-1 flex items-center justify-center">
+            <div className="mr-1 flex items-center justify-center">
               <svg
                 width="22"
                 height="22"
