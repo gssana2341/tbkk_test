@@ -61,10 +61,26 @@ export default function Header() {
   const pageTitle = getPageTitle(pathname);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [lastCleared, setLastCleared] = useState<Date | null>(null);
+
+  // Load last cleared timestamp on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("notificationLastCleared");
+    if (stored) {
+      setLastCleared(new Date(stored));
+    }
+  }, []);
 
 
   // Fetch notifications from API
   const fetchNotifications = useCallback(async () => {
+    // Get latest ignored timestamp from state or local storage logic
+    // We use the state 'lastCleared' which is updated on mount and on clear.
+    // However, inside useCallback, we need to be careful about stale closures if we use state.
+    // Reading from localStorage directly inside the async function is safer for immediate consistency without tight deps.
+    const storedDate = localStorage.getItem("notificationLastCleared");
+    const ignoreBefore = storedDate ? new Date(storedDate) : null;
+
     try {
       const { sensors } = await getSensors({ limit: 10000 });
 
@@ -98,6 +114,14 @@ export default function Header() {
 
         // 2. Only add if status is WARNING or CRITICAL (ignore Normal)
         if (calculatedStatus !== "NORMAL") {
+          // Check if notification is older than lastCleared
+          if (sensor.last_data?.datetime) {
+            const notifDate = new Date(sensor.last_data.datetime);
+            if (ignoreBefore && notifDate <= ignoreBefore) {
+              return; // Skip this notification
+            }
+          }
+
           const datetime = sensor.last_data?.datetime
             ? new Date(sensor.last_data.datetime)
               .toLocaleString("en-GB", {
@@ -201,16 +225,21 @@ export default function Header() {
   }, [fetchNotifications]);
 
   const handleClearAll = () => {
-    setNotifications([]);
+    const now = new Date();
+    localStorage.setItem("notificationLastCleared", now.toISOString());
+    setLastCleared(now);
+    setNotifications([]); // Visually clear immediately
+    // Ideally we re-fetch to ensure consistency, but clearing list is enough for perceived speed
+    // fetchNotifications(); 
   };
 
   return (
     <header className="bg-gray-800 border-b border-gray-700 py-3 px-6 shrink-0">
       <div className="flex items-center justify-between">
         <div className="flex-1 flex items-center gap-2">
-          <span className="text-lg font-medium text-white">TBKK-Surazense</span>
-          <span className="text-gray-400">/</span>
-          <span className="text-gray-300 text-sm">{pageTitle}</span>
+          <span className="text-lg 2xl:text-2xl font-medium text-white">TBKK-Surazense</span>
+          <span className="text-gray-400 2xl:text-xl">/</span>
+          <span className="text-gray-300 text-sm 2xl:text-lg">{pageTitle}</span>
         </div>
 
         <div className="flex items-center space-x-4">

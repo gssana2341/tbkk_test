@@ -21,6 +21,7 @@ import { getMachineClassCode } from "@/lib/iso10816-3";
 import { uploadSensorImage } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SensorFormContent } from "./SensorFormContent";
+import { ImageCropper } from "@/components/ui/ImageCropper";
 
 // Single sensor schema
 const singleSensorSchema = z
@@ -250,6 +251,9 @@ export default function RegisterSensorForm() {
   const [selectedImages, setSelectedImages] = useState<Record<number, File>>(
     {}
   );
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [cropIndex, setCropIndex] = useState<number | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
 
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -513,16 +517,35 @@ export default function RegisterSensorForm() {
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedImages((prev) => ({ ...prev, [index]: file }));
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreviews((prev) => ({
-          ...prev,
-          [index]: e.target?.result as string,
-        }));
+        if (e.target?.result) {
+          setCropImageSrc(e.target.result as string);
+          setCropIndex(index);
+          setShowCropper(true);
+        }
       };
       reader.readAsDataURL(file);
+      // Reset input value so the same file can be selected again
+      e.target.value = "";
     }
+  };
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    if (cropIndex !== null) {
+      const file = new File([croppedBlob], "sensor-image.jpg", {
+        type: "image/jpeg",
+      });
+      setSelectedImages((prev) => ({ ...prev, [cropIndex]: file }));
+      setImagePreviews((prev) => ({
+        ...prev,
+        [cropIndex]: URL.createObjectURL(croppedBlob),
+      }));
+    }
+    // Clean up
+    setShowCropper(false);
+    setCropImageSrc(null);
+    setCropIndex(null);
   };
 
   const handleNext = () => {
@@ -1049,6 +1072,16 @@ export default function RegisterSensorForm() {
           </CardContent>
         </Card>
       </div>
+      <ImageCropper
+        isOpen={showCropper}
+        imageSrc={cropImageSrc}
+        onClose={() => {
+          setShowCropper(false);
+          setCropImageSrc(null);
+          setCropIndex(null);
+        }}
+        onCropComplete={handleCropComplete}
+      />
     </Tabs>
   );
 }

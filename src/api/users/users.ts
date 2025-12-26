@@ -201,6 +201,29 @@ export async function updateUserRole(
   }
 }
 
+// Update user status (Admin only)
+export async function updateUserStatus(
+  userId: string,
+  status: string
+): Promise<{ message: string }> {
+  try {
+    const axiosInstance = getAxiosInstance();
+    // Convert display status to backend status if needed
+    let backendStatus = status.toLowerCase();
+    if (backendStatus === "online") backendStatus = "active";
+    if (backendStatus === "offline") backendStatus = "disabled";
+
+    const response = await axiosInstance.put<{ message: string }>(
+      `/users/${userId}/status`,
+      { status: backendStatus }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating status for user ${userId}:`, error);
+    throw error;
+  }
+}
+
 // Delete user (Admin only, same org check handled by backend)
 export async function deleteUser(userId: string): Promise<{ message: string }> {
   try {

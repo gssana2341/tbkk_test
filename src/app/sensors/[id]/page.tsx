@@ -658,12 +658,20 @@ export default function SensorDetailPage() {
   const shouldTextBeWhite = (colorClass: string) => {
     const lower = colorClass.toLowerCase();
     return (
-      lower.includes("bg-[#ff2b05]") || // Critical (Red)
-      lower.includes("bg-[#00e200]") || // Normal (Green)
-      lower.includes("bg-[#ff9900]")    // Concern (Orange)
+      // lower.includes("bg-[#ff4d4d]") || // Critical - User requested Black
+      // lower.includes("bg-[#72ff82]") || // Normal - User requested Black
+      // lower.includes("bg-[#ff8c1a]")    // Concern - User requested Black
+      lower.includes("bg-[#626262]") // Lost (Dark Gray) - Keep White
     );
   };
 
+  // Helper to call getCardBackgroundColor with 'detail' scheme
+  const getDetailCardColor = (val: number) =>
+    getCardBackgroundColor(val, {
+      thresholdMin: configData.thresholdMin,
+      thresholdMedium: configData.thresholdMedium,
+      thresholdMax: configData.thresholdMax,
+    }, "detail");
   // Function to fetch sensor details from GET /sensors/:id
   const fetchSensorDetails = async (sensorId: string) => {
     try {
@@ -1916,7 +1924,7 @@ export default function SensorDetailPage() {
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-12">
               <div className="shrink-0 flex justify-center">
-                <div className="w-48 h-64 bg-gray-700 rounded-md flex items-center justify-center overflow-hidden relative">
+                <div className="w-72 h-96 bg-gray-700 rounded-md flex items-center justify-center overflow-hidden relative">
                   {sensorImage || configData.image_url ? (
                     <Image
                       src={sensorImage || configData.image_url || ""}
@@ -1931,66 +1939,63 @@ export default function SensorDetailPage() {
                 </div>
               </div>
 
-              <div className="grow flex flex-wrap gap-4 items-start">
-                <div className="flex-[3_1_300px] border border-gray-700 rounded-xl p-4">
-                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] items-center mb-2 lg:h-9">
-                    <h2 className="text-lg font-semibold text-white">
+              <div className="grow flex flex-wrap gap-4 items-stretch">
+                <div className="flex-[3_1_300px] border border-gray-700 rounded-xl p-4 2xl:p-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-6">
+                    <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
                       Sensor Information
                     </h2>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="bg-transparent border-gray-700 hover:bg-gray-800 text-white w-fit"
+                      className="bg-transparent border-gray-700 hover:bg-gray-800 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
                       onClick={() => router.push(`/register?id=${params.id}`)}
                     >
-                      <Settings className="mr-2 h-4 w-4" />
+                      <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
                       Edit
                     </Button>
                   </div>
 
-                  <div className="grid grid-cols-[150px_1fr] gap-x-8 gap-y-3 text-sm">
+                  <div className="grid grid-cols-[150px_1fr] 2xl:grid-cols-[200px_1fr] gap-x-8 gap-y-3 text-base 2xl:text-xl">
                     {(() => {
                       console.log("=== Rendering Sensor Information ===");
                       return null;
                     })()}
 
                     <span className="text-gray-400">Serial Number</span>
-                    <span className="text-white">
+                    <span className="text-lg 2xl:text-2xl text-white">
                       {configData.serialNumber || "S-JBK7"}
                     </span>
 
                     <span className="text-gray-400">Sensor Name</span>
-                    <span className="text-white">
+                    <span className="text-lg 2xl:text-2xl text-white">
                       {configData.sensorName || "Unnamed Sensor"}
                     </span>
 
                     <span className="text-gray-400">Machine Number</span>
                     <span
-                      className={
-                        configData.machineNumber
-                          ? "text-white"
-                          : "text-gray-500"
-                      }
+                      className={`text-lg 2xl:text-2xl ${configData.machineNumber
+                        ? "text-white"
+                        : "text-gray-500"
+                        }`}
                     >
                       {configData.machineNumber || "Not Set"}
                     </span>
 
                     <span className="text-gray-400">Installation Point</span>
                     <span
-                      className={
-                        configData.installationPoint
-                          ? "text-white"
-                          : "text-gray-500"
-                      }
+                      className={`text-lg 2xl:text-2xl ${configData.installationPoint
+                        ? "text-white"
+                        : "text-gray-500"
+                        }`}
                     >
                       {configData.installationPoint || "Not Set"}
                     </span>
 
                     <span className="text-gray-400">Machine Class</span>
                     <span
-                      className={
-                        configData.machineClass ? "text-white" : "text-gray-500"
-                      }
+                      className={`text-lg 2xl:text-2xl ${configData.machineClass ? "text-white" : "text-gray-500"
+                        }`}
                     >
                       {configData.machineClass
                         ? configData.machineClass.charAt(0).toUpperCase() +
@@ -2000,7 +2005,7 @@ export default function SensorDetailPage() {
 
                     <span className="text-gray-400">Note</span>
                     <span
-                      className={`max-w-[200px] truncate ${configData.notes ? "text-white" : "text-gray-500"}`}
+                      className={`max-w-[200px] 2xl:max-w-xs truncate text-lg 2xl:text-2xl ${configData.notes ? "text-white" : "text-gray-500"}`}
                       title={configData.notes || "No notes"}
                     >
                       {configData.notes || "No notes"}
@@ -2008,9 +2013,9 @@ export default function SensorDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex-[3_1_300px] border border-gray-700 rounded-xl p-4">
-                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] items-center mb-2 lg:h-9">
-                    <h2 className="text-lg font-semibold text-white">Status</h2>
+                <div className="flex-[3_1_300px] border border-gray-700 rounded-xl p-4 2xl:p-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-6">
+                    <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">Status</h2>
                     <div className="flex items-center">
                       {(() => {
                         const maxRms = Math.max(
@@ -2083,7 +2088,7 @@ export default function SensorDetailPage() {
 
                         return (
                           <span
-                            className={`px-2 py-1 text-xs rounded-full ${getStatusStyles(statusLevel)}`}
+                            className={`px-3 py-1 2xl:px-5 2xl:py-2 text-sm md:text-base 2xl:text-2xl rounded-full ${getStatusStyles(statusLevel)}`}
                           >
                             {getStatusLabel(statusLevel)}
                           </span>
@@ -2091,30 +2096,30 @@ export default function SensorDetailPage() {
                       })()}
                     </div>
                   </div>
-                  <div className="grid grid-cols-[150px_1fr] gap-x-8 gap-y-3 text-sm">
+                  <div className="grid grid-cols-[150px_1fr] 2xl:grid-cols-[200px_1fr] gap-x-8 gap-y-3 text-base 2xl:text-xl">
                     <span className="text-gray-400">Temperature</span>
-                    <span className="text-white">{safeTemp.toFixed(1)}°C</span>
+                    <span className="text-lg 2xl:text-2xl text-white">{safeTemp.toFixed(1)}°C</span>
 
                     <span className="text-gray-400">Battery</span>
-                    <span className="text-white">
+                    <span className="text-lg 2xl:text-2xl text-white">
                       {safeBattery.toFixed(1)}%
                     </span>
 
                     <span className="text-gray-400">Signal Strength</span>
                     <span className="flex items-center gap-1 text-white">
-                      <span>{getSignalStrength(currentData.rssi || 0)}</span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-lg 2xl:text-2xl">{getSignalStrength(currentData.rssi || 0)}</span>
+                      <span className="text-sm 2xl:text-lg text-gray-500">
                         ({getSignalStrengthLabel(currentData.rssi || 0)})
                       </span>
                     </span>
 
                     <span className="text-gray-400">Last Updated</span>
-                    <span className="text-white">
+                    <span className="text-lg 2xl:text-2xl text-white">
                       {formatThaiDate(String(currentData.datetime))}
                     </span>
 
                     <span className="text-gray-400">Installation Date</span>
-                    <span className="text-white">
+                    <span className="text-lg 2xl:text-2xl text-white">
                       {sensor.installationDate
                         ? formatDate(
                           new Date(sensor.installationDate).toISOString()
@@ -2124,15 +2129,15 @@ export default function SensorDetailPage() {
 
                     {/* Temporary Debug Info */}
                     <span className="text-gray-400">API Config (Debug)</span>
-                    <span className="text-yellow-400 font-mono">
+                    <span className="text-yellow-400 font-mono text-base 2xl:text-xl">
                       Fmax: {configData.fmax}, LOR: {configData.lor}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex-[1_1_200px] border border-gray-700 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2 h-9">
-                    <h2 className="text-lg font-semibold text-white">
+                <div className="flex-[1_1_200px] border border-gray-700 rounded-xl p-4 2xl:p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
                       Select Date & Time
                     </h2>
                   </div>
@@ -2141,7 +2146,7 @@ export default function SensorDetailPage() {
                     style={{ maxHeight: "200px" }}
                   >
                     {sortedDatetimes.length > 0 ? (
-                      <ul className="space-y-1 text-sm">
+                      <ul className="space-y-1 text-base 2xl:text-xl">
                         {sortedDatetimes.map((datetime) => (
                           <li key={datetime}>
                             <button
@@ -2167,7 +2172,7 @@ export default function SensorDetailPage() {
                         ))}
                       </ul>
                     ) : (
-                      <div className="text-gray-400 text-sm px-2 py-1">
+                      <div className="text-gray-400 text-sm 2xl:text-lg px-2 py-1">
                         No history available
                       </div>
                     )}
@@ -2180,7 +2185,7 @@ export default function SensorDetailPage() {
 
         {/* Statistics and Analysis */}
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4 2xl:gap-8">
             <Card
               className="border-gray-800"
               style={{
@@ -2192,7 +2197,7 @@ export default function SensorDetailPage() {
                       : "#14532d", // green-900
               }}
             >
-              <CardContent className="p-4">
+              <CardContent className="p-4 2xl:p-6">
                 {(() => {
                   console.log("=== Temperature Statistics ===");
                   console.log("safeTemp:", safeTemp);
@@ -2209,7 +2214,7 @@ export default function SensorDetailPage() {
                 })()}
                 <div className="flex flex-col items-start justify-start text-left w-full">
                   <h3
-                    className="mb-2 font-extrabold text-base md:text-lg lg:text-xl w-full"
+                    className="mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl w-full"
                     style={{
                       color:
                         safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
@@ -2223,7 +2228,7 @@ export default function SensorDetailPage() {
 
                   <div className="flex justify-between items-baseline w-full mb-2">
                     <div
-                      className="text-xl md:text-2xl lg:text-3xl font-extrabold"
+                      className="text-xl md:text-2xl lg:text-3xl 2xl:text-5xl font-extrabold"
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
@@ -2235,7 +2240,7 @@ export default function SensorDetailPage() {
                       {safeTemp.toFixed(1)}°C
                     </div>
                     <div
-                      className="text-lg md:text-xl lg:text-2xl font-bold mr-4"
+                      className="text-lg md:text-xl lg:text-2xl 2xl:text-4xl font-bold mr-4"
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
@@ -2254,7 +2259,7 @@ export default function SensorDetailPage() {
 
                   <div className="space-y-1 w-full">
                     <div
-                      className="text-sm md:text-base font-medium"
+                      className="text-sm md:text-base 2xl:text-xl font-medium"
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
@@ -2266,7 +2271,7 @@ export default function SensorDetailPage() {
                       Threshold min: {configData?.thresholdMin ?? 2.5} °C
                     </div>
                     <div
-                      className="text-sm md:text-base font-medium"
+                      className="text-sm md:text-base 2xl:text-xl font-medium"
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
@@ -2286,22 +2291,22 @@ export default function SensorDetailPage() {
             {configData.hAxisEnabled && (
               <Card
                 className={`border-gray-800 
-              ${getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak))}`}
+              ${getDetailCardColor(parseFloat(xStats.velocityTopPeak))}`}
               >
-                <CardContent className="p-4">
+                <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
                       ? "!text-white"
                       : "!text-black"
                       }`}
                   >
                     Horizontal (H)
                   </h3>
-                  <div className="space-y-1 text-base">
+                  <div className="space-y-1 text-base 2xl:text-xl">
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                          shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2311,8 +2316,8 @@ export default function SensorDetailPage() {
                       <span
                         className={
                           shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                            ? "!text-white text-sm md:text-base"
-                            : "!text-black text-sm md:text-base"
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
                       >
                         {xStats.accelTopPeak}G
@@ -2331,8 +2336,8 @@ export default function SensorDetailPage() {
                       <span
                         className={
                           shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                            ? "!text-white text-sm md:text-base"
-                            : "!text-black text-sm md:text-base"
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
                       >
                         {xStats.accelMmPerS2}
@@ -2350,8 +2355,8 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                          ? "!text-white text-sm md:text-base"
-                          : "!text-black text-sm md:text-base"
+                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                          : "!text-black text-sm md:text-base 2xl:text-2xl"
                           }`}
                       >
                         {xStats.velocityTopPeak} mm/s
@@ -2366,19 +2371,19 @@ export default function SensorDetailPage() {
             {configData.vAxisEnabled && (
               <Card
                 className={`border-gray-800
-              ${getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak))}`}
+              ${getDetailCardColor(parseFloat(yStats.velocityTopPeak))}`}
               >
-                {/* {getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak))} */}
-                <CardContent className="p-4">
+                {/* {getDetailCardColor(parseFloat(yStats.velocityTopPeak))} */}
+                <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
                       ? "!text-white"
                       : "!text-black"
                       }`}
                   >
                     Vertical (V)
                   </h3>
-                  <div className="space-y-1 text-base">
+                  <div className="space-y-1 text-base 2xl:text-xl">
                     <div className="flex justify-between">
                       <span
                         className={
@@ -2392,8 +2397,8 @@ export default function SensorDetailPage() {
                       <span
                         className={
                           shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                            ? "!text-white text-sm md:text-base"
-                            : "!text-black text-sm md:text-base"
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
                       >
                         {yStats.accelTopPeak}G
@@ -2412,8 +2417,8 @@ export default function SensorDetailPage() {
                       <span
                         className={
                           shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                            ? "!text-white text-sm md:text-base"
-                            : "!text-black text-sm md:text-base"
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
                       >
                         {yStats.accelMmPerS2}
@@ -2431,8 +2436,8 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                          ? "!text-white text-sm md:text-base"
-                          : "!text-black text-sm md:text-base"
+                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                          : "!text-black text-sm md:text-base 2xl:text-2xl"
                           }`}
                       >
                         {yStats.velocityTopPeak} mm/s
@@ -2446,18 +2451,18 @@ export default function SensorDetailPage() {
             {/* Conditionally show A-axis card */}
             {configData.aAxisEnabled && (
               <Card
-                className={`border-gray-800 ${getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak))}`}
+                className={`border-gray-800 ${getDetailCardColor(parseFloat(zStats.velocityTopPeak))}`}
               >
-                <CardContent className="p-4">
+                <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
                       ? "!text-white"
                       : "!text-black"
                       }`}
                   >
                     Axial (A)
                   </h3>
-                  <div className="space-y-1 text-base">
+                  <div className="space-y-1 text-base 2xl:text-xl">
                     <div className="flex justify-between">
                       <span
                         className={
@@ -2471,8 +2476,8 @@ export default function SensorDetailPage() {
                       <span
                         className={
                           shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                            ? "!text-white text-sm md:text-base"
-                            : "!text-black text-sm md:text-base"
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
                       >
                         {zStats.accelTopPeak}G
@@ -2491,8 +2496,8 @@ export default function SensorDetailPage() {
                       <span
                         className={
                           shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                            ? "!text-white text-sm md:text-base"
-                            : "!text-black text-sm md:text-base"
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
                       >
                         {zStats.accelMmPerS2}
@@ -2510,8 +2515,8 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                          ? "!text-white text-sm md:text-base"
-                          : "!text-black text-sm md:text-base"
+                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                          : "!text-black text-sm md:text-base 2xl:text-2xl"
                           }`}
                       >
                         {zStats.velocityTopPeak} mm/s

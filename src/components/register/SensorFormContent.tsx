@@ -112,7 +112,7 @@ export function SensorFormContent({
   return (
     <div className="space-y-6 py-4">
       {/* Sensor Information - Two Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
         {/* Left Column */}
         <div className="space-y-4">
           <FormField
@@ -615,7 +615,7 @@ export function SensorFormContent({
 
       {/* Additional Settings */}
       {/* Row 1: Two columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-2 gap-4">
         <FormField
           control={form.control}
           name={`sensors.${index}.highPass`}
@@ -682,7 +682,7 @@ export function SensorFormContent({
       </div>
 
       {/* Row 2: Three columns */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-3 gap-4">
         <FormField
           control={form.control}
           name={`sensors.${index}.gScale`}

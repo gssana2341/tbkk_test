@@ -22,7 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { UserAdminResponse, User } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
-import { getAllUsers, deleteUser, updateUserRole } from "@/api/users/users";
+import { getAllUsers, deleteUser, updateUserRole, updateUserStatus } from "@/api/users/users";
 import { getUser } from "@/lib/auth";
 
 type UserStatus = "Online" | "Offline" | "Pending" | "Suspended" | string;
@@ -78,6 +78,16 @@ export default function UserManagementPage() {
         }
     };
 
+    const handleStatusChange = async (userId: string, newStatus: string) => {
+        try {
+            await updateUserStatus(userId, newStatus);
+            await fetchUsers(); // Refresh list after update
+        } catch (error) {
+            console.error("Failed to update status:", error);
+            alert("Failed to update status");
+        }
+    };
+
     // Helper function to get status badge styles
     const getStatusBadgeStyles = (status: UserStatus) => {
         const s = status.toLowerCase();
@@ -122,6 +132,10 @@ export default function UserManagementPage() {
         }
 
         return matchesSearch && matchesRole && matchesStatus;
+    }).sort((a, b) => {
+        if (currentUser && a.id === currentUser.id) return -1;
+        if (currentUser && b.id === currentUser.id) return 1;
+        return 0;
     });
 
     // Pagination Logic
@@ -177,21 +191,21 @@ export default function UserManagementPage() {
         <div className="min-h-screen bg-[#0f172a] text-white p-8 space-y-8">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold mb-2">User Management</h1>
-                <p className="text-gray-400">Total users: {filteredUsers.length} people</p>
-                {currentUser && <p className="text-gray-500 text-sm mt-1">Found organization code: {currentUser.org_code}</p>}
+                <h1 className="text-4xl 2xl:text-6xl font-bold mb-2">User Management</h1>
+                <p className="text-gray-400 text-lg 2xl:text-2xl">Total users: {filteredUsers.length} people</p>
+                {currentUser && <p className="text-gray-500 text-sm 2xl:text-lg mt-1">Found organization code: {currentUser.org_code}</p>}
             </div>
 
             {/* Filters */}
             <div className="flex flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-2 bg-[#1e293b] rounded-md px-3 py-1 border border-gray-700 w-full md:w-auto">
-                    <span className="text-gray-400 text-sm whitespace-nowrap">Search :</span>
+                    <span className="text-gray-400 text-base whitespace-nowrap">Search :</span>
                     <div className="relative flex-1 md:w-64">
                         <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             type="text"
                             placeholder="Name / Email"
-                            className="pl-8 bg-transparent border-none text-white focus-visible:ring-0 placeholder:text-gray-600 h-8"
+                            className="pl-8 bg-transparent border-none text-white focus-visible:ring-0 placeholder:text-gray-600 h-10 text-base"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -199,9 +213,9 @@ export default function UserManagementPage() {
                 </div>
 
                 <div className="flex items-center gap-2 bg-[#1e293b] rounded-md px-3 py-1 border border-gray-700">
-                    <span className="text-gray-400 text-sm whitespace-nowrap">Role :</span>
+                    <span className="text-gray-400 text-base whitespace-nowrap">Role :</span>
                     <Select value={roleFilter} onValueChange={setRoleFilter}>
-                        <SelectTrigger className="w-32 bg-transparent border-none h-8 text-white focus:ring-0">
+                        <SelectTrigger className="w-32 bg-transparent border-none h-10 text-white focus:ring-0 text-base">
                             <SelectValue placeholder="All" />
                         </SelectTrigger>
                         <SelectContent className="bg-[#1e293b] border-gray-700 text-white">
@@ -214,9 +228,9 @@ export default function UserManagementPage() {
                 </div>
 
                 <div className="flex items-center gap-2 bg-[#1e293b] rounded-md px-3 py-1 border border-gray-700">
-                    <span className="text-gray-400 text-sm whitespace-nowrap">Status :</span>
+                    <span className="text-gray-400 text-base whitespace-nowrap">Status :</span>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-32 bg-transparent border-none h-8 text-white focus:ring-0">
+                        <SelectTrigger className="w-32 bg-transparent border-none h-10 text-white focus:ring-0 text-base">
                             <SelectValue placeholder="All" />
                         </SelectTrigger>
                         <SelectContent className="bg-[#1e293b] border-gray-700 text-white">
@@ -231,24 +245,24 @@ export default function UserManagementPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-[#1e293b] rounded-lg border border-gray-700 overflow-hidden">
-                <Table>
+            <div className="bg-[#1e293b] rounded-lg border border-gray-700 overflow-hidden overflow-x-auto">
+                <Table className="min-w-[800px] 2xl:min-w-full">
                     <TableHeader className="bg-[#0f172a]">
                         <TableRow className="border-gray-700 hover:bg-[#0f172a]">
-                            <TableHead className="text-white font-semibold">User</TableHead>
-                            <TableHead className="text-white font-semibold">Contact</TableHead>
-                            <TableHead className="text-white font-semibold text-center">Role</TableHead>
-                            <TableHead className="text-white font-semibold">ORC</TableHead>
-                            <TableHead className="text-white font-semibold">Last Login</TableHead>
-                            <TableHead className="text-white font-semibold">Status</TableHead>
-                            <TableHead className="text-white font-semibold text-right">
+                            <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">User</TableHead>
+                            <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">Contact</TableHead>
+                            <TableHead className="text-white font-semibold text-center text-lg 2xl:text-2xl font-bold">Role</TableHead>
+                            <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">ORC</TableHead>
+                            <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">Last Login</TableHead>
+                            <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">Status</TableHead>
+                            <TableHead className="text-white font-semibold text-right text-lg 2xl:text-2xl font-bold">
                             </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {loading ? (
                             <TableRow className="hover:bg-transparent">
-                                <TableCell colSpan={7} className="text-center h-32 text-gray-400">
+                                <TableCell colSpan={7} className="text-center h-32 text-gray-400 text-lg 2xl:text-2xl">
                                     Loading users...
                                 </TableCell>
                             </TableRow>
@@ -259,11 +273,11 @@ export default function UserManagementPage() {
                                     className="border-gray-700 hover:bg-[#2d3748]"
                                 >
                                     <TableCell>
-                                        <div className="font-medium">{user.name}</div>
+                                        <div className="font-medium text-base 2xl:text-xl">{user.name}</div>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex flex-col">
-                                            <span className="text-gray-300 text-sm">{user.email}</span>
+                                            <span className="text-gray-300 text-base 2xl:text-xl">{user.email}</span>
                                             {/* Phone removed per request */}
                                         </div>
                                     </TableCell>
@@ -274,53 +288,95 @@ export default function UserManagementPage() {
                                                 disabled={currentUser?.id === user.id}
                                                 onValueChange={(value) => handleRoleChange(user.id, value)}
                                             >
-                                                <SelectTrigger className="w-28 h-8 bg-[#0f172a] border-gray-600 text-white">
+                                                <SelectTrigger className="w-28 h-8 2xl:w-36 2xl:h-10 bg-[#0f172a] border-gray-600 text-white text-base 2xl:text-xl">
                                                     <SelectValue placeholder={user.role} />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-[#1e293b] border-gray-700 text-white">
-                                                    <SelectItem value="admin">Admin</SelectItem>
-                                                    <SelectItem value="editor">Editor</SelectItem>
-                                                    <SelectItem value="viewer">Viewer</SelectItem>
+                                                    <SelectItem value="admin" disabled className="text-base 2xl:text-xl">Admin</SelectItem>
+                                                    <SelectItem value="editor" className="text-base 2xl:text-xl">Editor</SelectItem>
+                                                    <SelectItem value="viewer" className="text-base 2xl:text-xl">Viewer</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             {currentUser?.id === user.id && (
-                                                <span className="text-[10px] text-gray-500">You cannot change your own role.</span>
+                                                <span className="text-[10px] 2xl:text-sm text-gray-500">You cannot change your own role.</span>
                                             )}
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <span className="text-gray-300 text-sm">{user.org_code}</span>
+                                        <span className="text-gray-300 text-base 2xl:text-xl">{user.org_code}</span>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="text-sm text-gray-300">
+                                        <div className="text-base 2xl:text-xl text-gray-300">
                                             {user.last_login ? formatDate(user.last_login) : "-"}
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-4">
-                                            <Badge
-                                                className={`rounded-full px-3 py-1 flex w-fit items-center gap-2 ${getStatusBadgeStyles(
-                                                    user.status
-                                                )}`}
-                                            >
-                                                <span
-                                                    className={`block w-2.5 h-2.5 rounded-full ${getStatusDotColor(
-                                                        user.status
-                                                    )}`}
-                                                />
-                                                {/* API returns mapped status directly e.g. "Online" */}
-                                                {user.status}
-                                            </Badge>
+                                            {(() => {
+                                                // Automatic Status Logic
+                                                let displayStatus = "Offline";
+                                                let statusColor = "bg-gray-400";
+                                                let statusBg = "bg-[#334155] text-[#94a3b8] border-[#334155]";
+
+                                                // 1. Pending: If no role assigned or explicitly pending
+                                                if (!user.role || user.role.toLowerCase() === "user" || user.status.toLowerCase() === "pending") {
+                                                    displayStatus = "Pending";
+                                                    statusColor = "bg-[#facc15]";
+                                                    statusBg = "bg-[#713f12] text-[#facc15] border-[#713f12]";
+                                                }
+                                                // 2. Suspended: Explicitly suspended in DB
+                                                else if (user.status.toLowerCase() === "suspended") {
+                                                    displayStatus = "Suspended";
+                                                    statusColor = "bg-[#f87171]";
+                                                    statusBg = "bg-[#7f1d1d] text-[#fca5a5] border-[#7f1d1d]";
+                                                }
+                                                // 3. Online: last_login within 30 minutes
+                                                // Note: This relies on user.last_login being accurate.
+                                                // If null, they are Offline.
+                                                else if ((currentUser && user.id === currentUser.id) || user.last_login) {
+                                                    let isOnline = false;
+
+                                                    if (currentUser && user.id === currentUser.id) {
+                                                        isOnline = true;
+                                                    } else if (user.last_login) {
+                                                        const lastLoginDate = new Date(user.last_login);
+                                                        const now = new Date();
+                                                        const diffMinutes = (now.getTime() - lastLoginDate.getTime()) / 1000 / 60;
+                                                        if (diffMinutes < 30) isOnline = true;
+                                                    }
+
+                                                    if (isOnline) {
+                                                        displayStatus = "Online";
+                                                        statusColor = "bg-[#22c55e]";
+                                                        statusBg = "bg-[#14532d] text-[#4ade80] border-[#14532d]";
+                                                    } else {
+                                                        displayStatus = "Offline";
+                                                        statusColor = "bg-[#94a3b8]";
+                                                        statusBg = "bg-[#334155] text-[#94a3b8] border-[#334155]";
+                                                    }
+                                                }
+
+                                                return (
+                                                    <Badge
+                                                        className={`rounded-full px-3 py-1 2xl:px-5 2xl:py-2 flex w-fit items-center gap-2 text-base 2xl:text-xl ${statusBg} hover:${statusBg}`}
+                                                    >
+                                                        <span
+                                                            className={`block w-2.5 h-2.5 2xl:w-4 2xl:h-4 rounded-full ${statusColor}`}
+                                                        />
+                                                        {displayStatus}
+                                                    </Badge>
+                                                );
+                                            })()}
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         {currentUser?.org_code === user.org_code && currentUser?.id !== user.id && (
                                             <Button
                                                 variant="ghost"
-                                                className="h-7 px-4 bg-[#450a0a] hover:bg-[#5f1212] text-[#fca5a5] border border-[#7f1d1d] rounded-full text-xs font-normal transition-colors"
+                                                className="h-7 px-4 2xl:h-9 2xl:px-6 bg-[#450a0a] hover:bg-[#5f1212] text-[#fca5a5] border border-[#7f1d1d] rounded-full text-xs 2xl:text-base font-normal transition-colors"
                                                 onClick={() => handleDeleteUser(user.id)}
                                             >
-                                                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                                                <Trash2 className="mr-1.5 h-3.5 w-3.5 2xl:h-5 2xl:w-5" />
                                                 Delete
                                             </Button>
                                         )}
@@ -333,7 +389,7 @@ export default function UserManagementPage() {
                             <TableRow className="hover:bg-transparent">
                                 <TableCell
                                     colSpan={7}
-                                    className="text-center h-32 text-gray-500"
+                                    className="text-center h-32 text-gray-500 text-lg 2xl:text-2xl"
                                 >
                                     No users found
                                 </TableCell>

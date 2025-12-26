@@ -98,11 +98,12 @@ export function getVibrationLevelFromConfig(
  */
 export function getVibrationColor(
   level: VibrationLevel,
-  scheme: ColorScheme = "light",
+  scheme: ColorScheme | "detail" = "light",
   isOffline: boolean = false
 ): string {
   // If sensor is offline, return gray color
   if (isOffline) {
+    if (scheme === "detail") return "bg-[#c8c8c8]";
     return "bg-gray-400";
   }
 
@@ -110,7 +111,7 @@ export function getVibrationColor(
   // ส้ม = [#ff6600]
   // แดง = [#ff0000]
 
-  const colorMap = {
+  const colorMap: Record<string, Record<VibrationLevel, string>> = {
     dark: {
       normal: "bg-[#00e200] text-black",
       warning: "bg-[#ffff00] text-black",
@@ -129,14 +130,30 @@ export function getVibrationColor(
       concern: "bg-[#ff9900] text-black",
       critical: "bg-[#ff2b05] text-black",
     },
+    detail: {
+      normal: "bg-[#72ff82] text-black",
+      warning: "bg-[#ffd84d] text-black",
+      concern: "bg-[#ff8c1a] text-black",
+      critical: "bg-[#ff4d4d] text-white", // Changed to white as per check in page.tsx? No, user said valid black text. Let's stick to user request for black text if distinct. 
+      // Wait, user said "adjust text to black" in previous turn. 
+      // In this turn, user said "adjust color tone ... don't change card view". 
+      // I will set text-black here for detail scheme to be safe.
+    },
   };
 
-  const color = colorMap[scheme][level] || colorMap[scheme].normal;
+  // Override critical text color for detail scheme if needed, but let's stick to common map for now.
+  // Actually, I'll update the detail map values directly.
+  colorMap.detail = {
+    normal: "bg-[#72ff82] text-black",
+    warning: "bg-[#ffd84d] text-black",
+    concern: "bg-[#ff8c1a] text-black",
+    critical: "bg-[#ff4d4d] text-white", // Default to white for critical usually, but user asked for black text previously? 
+    // "ปรับสีตัวหนังสือเป้นสีดำที" (Adjust text color to be black). 
+    // I will make critical text-black too then.
+  };
+  colorMap.detail.critical = "bg-[#ff4d4d] text-black";
 
-  // Add !important for card scheme to override default card background
-  // if (scheme === "card") {
-  //   return color.replace("bg-", "!bg-");
-  // }
+  const color = colorMap[scheme][level] || colorMap[scheme].normal;
 
   return color;
 }
@@ -152,7 +169,7 @@ export function getVibrationColor(
 export function getVibrationColorFromVelocity(
   velocityValue: number,
   config: SensorConfig,
-  scheme: ColorScheme = "light",
+  scheme: ColorScheme | "detail" = "light",
   isOffline: boolean = false
 ): string {
   const level = getVibrationLevelFromConfig(velocityValue, config);
@@ -291,9 +308,10 @@ export function getSensorAxisVibrationColor(
  */
 export function getCardBackgroundColor(
   velocityValue: number,
-  config: SensorConfig
+  config: SensorConfig,
+  scheme: ColorScheme | "detail" = "card"
 ): string {
-  return getVibrationColorFromVelocity(velocityValue, config, "card", false);
+  return getVibrationColorFromVelocity(velocityValue, config, scheme as ColorScheme, false);
 }
 
 /**

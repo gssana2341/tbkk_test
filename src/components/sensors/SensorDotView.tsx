@@ -146,7 +146,7 @@ export default function SensorDotView({
             const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
 
             // Determine status color code
-            let statusColorCode = "#00E200"; // Default Normal (Green)
+            let statusColorCode = "#72ff82"; // Default Normal (Green)
 
             // Priority 1: Lost (offline and not standby)
             if (
@@ -157,19 +157,19 @@ export default function SensorDotView({
             }
             // Priority 2: Critical (Red)
             else if (colorClass.includes("bg-[#ff2b05]")) {
-              statusColorCode = "#ff2b05"; // Critical
+              statusColorCode = "#ff4d4d"; // Critical
             }
             // Priority 3: Concern (Orange)
             else if (colorClass.includes("bg-[#ff9900]")) {
-              statusColorCode = "#ff9900"; // Concern
+              statusColorCode = "#ff8c1a"; // Concern
             }
             // Priority 4: Warning (Yellow)
             else if (colorClass.includes("bg-[#ffff00]")) {
-              statusColorCode = "#ffff00"; // Warning
+              statusColorCode = "#ffd84d"; // Warning
             }
             // Priority 5: Standby
             else if (sensor.operationalStatus === "standby") {
-              statusColorCode = "#D9D9D9"; // Standby - Light Gray
+              statusColorCode = "#c8c8c8"; // Standby - Light Gray
             }
 
             // Determine background style for top 60% (matches status color)

@@ -74,25 +74,25 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
     // If value is undefined (no data), return Gray
     if (veloRms === undefined) {
-      return { backgroundColor: "#BEBEBE", ...commonStyle };
+      return { backgroundColor: "#c8c8c8", ...commonStyle };
     }
 
     const colorClass = getCardBackgroundColor(veloRms, sensorConfig);
 
     if (colorClass.includes("bg-[#00e200]")) {
-      return { backgroundColor: "#00e200", ...commonStyle }; // Normal
+      return { backgroundColor: "#72ff82", ...commonStyle }; // Normal
     } else if (colorClass.includes("bg-[#ffff00]")) {
-      return { backgroundColor: "#ffff00", ...commonStyle }; // Warning
+      return { backgroundColor: "#ffd84d", ...commonStyle }; // Warning
     } else if (colorClass.includes("bg-[#ff9900]")) {
-      return { backgroundColor: "#ff9900", ...commonStyle }; // Concern
+      return { backgroundColor: "#ff8c1a", ...commonStyle }; // Concern
     } else if (colorClass.includes("bg-[#ff2b05]")) {
-      return { backgroundColor: "#ff2b05", ...commonStyle }; // Critical
+      return { backgroundColor: "#ff4d4d", ...commonStyle }; // Critical
     } else if (colorClass.includes("bg-gray-400")) {
-      return { backgroundColor: "#BEBEBE", ...commonStyle }; // Offline/Standby (Medium Gray)
+      return { backgroundColor: "#c8c8c8", ...commonStyle }; // Offline/Standby (Medium Gray)
     }
 
     // Default to Normal
-    return { backgroundColor: "#00C800", ...commonStyle };
+    return { backgroundColor: "#72ff82", ...commonStyle };
   };
 
   // Safely derive last update timestamp from known possible fields
@@ -136,7 +136,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Colors match SensorStatusSummary status boxes with gradient effect
   // Determine card style based on sensor status
   const getCardStyle = (): React.CSSProperties => {
-    let borderColor = "#00E200"; // Default Normal (Green)
+    let borderColor = "#72ff82"; // Default Normal (Green)
 
     // Priority 1: Lost (offline and not standby)
     if (
@@ -151,19 +151,19 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
       // Priority 2: Critical (Red)
       if (colorClass.includes("bg-[#ff2b05]")) {
-        borderColor = "#ff2b05";
+        borderColor = "#ff4d4d";
       }
       // Priority 3: Concern (Orange)
       else if (colorClass.includes("bg-[#ff9900]")) {
-        borderColor = "#FF9900";
+        borderColor = "#ff8c1a";
       }
       // Priority 4: Warning (Yellow)
       else if (colorClass.includes("bg-[#ffff00]")) {
-        borderColor = "#FFFF00";
+        borderColor = "#ffd84d";
       }
       // Priority 5: Standby
       else if (sensor.operationalStatus === "standby") {
-        borderColor = "#D9D9D9";
+        borderColor = "#c8c8c8";
       }
     }
 

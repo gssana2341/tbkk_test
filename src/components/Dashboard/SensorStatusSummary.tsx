@@ -39,28 +39,28 @@ const statusConfig: Record<
 > = {
   normal: {
     textColor: "text-black",
-    bgColor: "bg-[#00e200]",
-    selectedBgColor: "bg-[#00e200]",
+    bgColor: "bg-[#72ff82]",
+    selectedBgColor: "bg-[#72ff82]",
   },
   warning: {
     textColor: "text-black",
-    bgColor: "bg-[#ffff00]",
-    selectedBgColor: "bg-[#ffff00]",
+    bgColor: "bg-[#ffd84d]",
+    selectedBgColor: "bg-[#ffd84d]",
   },
   concern: {
     textColor: "text-black",
-    bgColor: "bg-[#ff9900]",
-    selectedBgColor: "bg-[#ff9900]",
+    bgColor: "bg-[#ff8c1a]",
+    selectedBgColor: "bg-[#ff8c1a]",
   },
   critical: {
     textColor: "text-black",
-    bgColor: "bg-[#ff2b05]",
-    selectedBgColor: "bg-[#ff2b05]",
+    bgColor: "bg-[#ff4d4d]",
+    selectedBgColor: "bg-[#ff4d4d]",
   },
   standby: {
     textColor: "text-black",
-    bgColor: "bg-[#D9D9D9]",
-    selectedBgColor: "bg-[#D9D9D9]",
+    bgColor: "bg-[#c8c8c8]",
+    selectedBgColor: "bg-[#c8c8c8]",
   },
   lost: {
     textColor: "text-black",
