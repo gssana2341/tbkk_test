@@ -185,45 +185,32 @@ export default function SensorDotView({
                 <Tooltip key={sensor.id}>
                   <TooltipTrigger asChild>
                     <div
-                      className={`${sizeClass} flex flex-col cursor-pointer hover:opacity-80 relative items-center justify-center`}
+                      className={`${sizeClass} rounded-full flex flex-col cursor-pointer hover:opacity-80 relative items-center justify-center overflow-hidden`}
                       style={{
-                        // Container for Border Effect
-                        backgroundColor: statusColorCode,
-                        padding: "3px", // Border thickness
-                        clipPath:
-                          "polygon(50% 0%, 100% 100%, 0% 100%)",
+                        backgroundColor: "white",
+                        border: `3px solid ${statusColorCode}`, // Status Border
                         transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
                       }}
                       onClick={() => handleSensorClick(sensor.id)}
                     >
-                      {/* Inner Content */}
+                      {/* Top 60% - Status Color (Inside) */}
                       <div
-                        className="w-full h-full relative"
-                        style={{
-                          backgroundColor: "white",
-                          clipPath:
-                            "polygon(50% 0%, 100% 100%, 0% 100%)",
-                        }}
-                      >
-                        {/* Top 60% - Status Color (Inside) */}
-                        <div
-                          className="absolute top-0 left-0 right-0 h-[50%]"
-                          style={topSectionStyle}
-                        ></div>
-                        {/* Bottom 40% - White Background */}
-                        <div
-                          className={`absolute bottom-0 left-0 right-0 h-[50%] bg-white`}
-                        ></div>
+                        className="absolute top-0 left-0 right-0 h-[50%]"
+                        style={topSectionStyle}
+                      ></div>
+                      {/* Bottom 40% - White Background */}
+                      <div
+                        className={`absolute bottom-0 left-0 right-0 h-[50%] bg-white`}
+                      ></div>
 
-                        {/* Content */}
-                        <div className="absolute bottom-0 left-0 right-0 h-[50%] z-10 flex items-center justify-center">
-                          <div className="flex flex-col items-center justify-center">
-                            <span
-                              className={`font-bold ${textSizeClass} text-gray-900 leading-none`}
-                            >
-                              {Math.round(temperature)}°
-                            </span>
-                          </div>
+                      {/* Content */}
+                      <div className="absolute bottom-0 left-0 right-0 h-[50%] z-10 flex items-center justify-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <span
+                            className={`font-bold ${textSizeClass} text-gray-900 leading-none`}
+                          >
+                            {Math.round(temperature)}°
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -306,10 +293,11 @@ export default function SensorDotView({
               <Tooltip key={sensor.id}>
                 <TooltipTrigger asChild>
                   <div
-                    className={`${sizeClass} rounded-full flex flex-col cursor-pointer hover:opacity-80 relative overflow-hidden`}
+                    className={`${sizeClass} flex flex-col cursor-pointer hover:opacity-80 relative overflow-hidden`}
                     style={{
                       transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
                       border: `3px solid ${statusColorCode}`, // Status Border
+                      borderRadius: "50% 50% 15% 15%",
                     }}
                     onClick={() => handleSensorClick(sensor.id)}
                   >
@@ -321,7 +309,7 @@ export default function SensorDotView({
 
                     {/* Bottom 40% - Temperature based color */}
                     <div
-                      className={`absolute bottom-0 left-0 right-0 h-[50%] rounded-b-full bg-white`}
+                      className={`absolute bottom-0 left-0 right-0 h-[50%] bg-white`}
                     ></div>
 
                     {/* Content - Centered within bottom 40% only */}

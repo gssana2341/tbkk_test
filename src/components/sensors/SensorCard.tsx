@@ -189,17 +189,16 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
           <div className="flex items-center justify-center shrink-0 mr-1.5">
             <div
-              className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 shadow-sm flex items-center justify-center shrink-0 ${deviceRole.toLowerCase() === "master" ? "bg-blue-600 rounded-full" : "bg-purple-600"}`}
+              className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 shadow-sm flex items-center justify-center shrink-0 ${deviceRole.toLowerCase() === "master" ? "bg-blue-600" : "bg-purple-600 rounded-full"}`}
               style={
-                deviceRole.toLowerCase() !== "master"
+                deviceRole.toLowerCase() === "master"
                   ? {
-                    clipPath:
-                      "polygon(50% 0%, 100% 100%, 0% 100%)",
+                    borderRadius: "50% 50% 15% 15%",
                   }
                   : undefined
               }
             >
-              <span className={`text-white text-lg font-bold ${deviceRole.toLowerCase() !== "master" ? "pt-1" : ""}`}>
+              <span className={`text-white text-lg font-bold ${deviceRole.toLowerCase() !== "master" ? "" : ""}`}>
                 {deviceRole.toLowerCase() === "master" ? "M" : "S"}
               </span>
             </div>
