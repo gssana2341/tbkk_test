@@ -239,6 +239,7 @@ export function SensorFormContent({
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  disabled
                 >
                   <FormControl>
                     <SelectTrigger className="bg-[#11171F] border-[#4B5563] text-white">

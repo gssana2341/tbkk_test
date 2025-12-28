@@ -980,92 +980,97 @@ export default function RegisterSensorForm() {
                   />
                 </TabsContent>
 
-                <div className="relative flex justify-center gap-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      // If Edit Mode, maybe go back? Or just act as Reset?
-                      // Using handleBack logic for now, but enabling it.
-                      // Actually, if Edit Mode, "Cancel" might mean "Go Back to Details".
-                      if (editId) {
-                        window.history.back();
-                      } else {
-                        handleBack();
-                      }
-                    }}
-                    disabled={
-                      (!editId && activeTab === "master") || isSubmitting
-                    }
-                    className="bg-[#FFFEFF] text-black hover:bg-gray-100 w-32"
-                  >
-                    Cancel
-                  </Button>
+                <div className="grid grid-cols-3 items-center pt-4 w-full">
+                  <div className="justify-self-start">
+                    {!editId && (
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          form.reset({
+                            sensors: [
+                              {
+                                ...defaultSensorValues,
+                                sensorType: "Master",
+                                notes: "Master Sensor",
+                              },
+                              {
+                                ...defaultSensorValues,
+                                sensorType: "Satellite",
+                                notes: "Satellite 1",
+                              },
+                              {
+                                ...defaultSensorValues,
+                                sensorType: "Satellite",
+                                notes: "Satellite 2",
+                              },
+                              {
+                                ...defaultSensorValues,
+                                sensorType: "Satellite",
+                                notes: "Satellite 3",
+                              },
+                            ],
+                          });
+                          setActiveTab("master");
+                          setImagePreviews({});
+                          setSelectedImages({});
+                          toast({
+                            title: "Form Reset",
+                            description:
+                              "All fields have been reset to default values.",
+                          });
+                        }}
+                        className="bg-[#E35D5D] text-white hover:bg-red-600 w-24"
+                      >
+                        Reset
+                      </Button>
+                    )}
+                  </div>
 
-                  {activeTab === "sat3" || !!editId ? (
+                  <div className="justify-self-center flex gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (editId) {
+                          window.history.back();
+                        } else {
+                          if (activeTab === "master") {
+                            router.push("/");
+                          } else {
+                            handleBack();
+                          }
+                        }
+                      }}
+                      disabled={isSubmitting}
+                      className="bg-[#FFFEFF] text-black hover:bg-gray-100 w-24"
+                    >
+                      {editId || activeTab === "master" ? "Cancel" : "Back"}
+                    </Button>
+
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="bg-[#2186F3] text-white hover:bg-blue-600 w-32"
+                      className="bg-[#2186F3] text-white hover:bg-blue-600 w-24"
                     >
                       {isSubmitting && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       )}
                       {isEditMode || !!editId ? "Update" : "Save"}
                     </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={handleNext}
-                      disabled={isSubmitting}
-                      className="bg-[#2186F3] text-white hover:bg-blue-600 w-32"
-                    >
-                      Next
-                    </Button>
-                  )}
+                  </div>
 
-                  {!editId && (
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        form.reset({
-                          sensors: [
-                            {
-                              ...defaultSensorValues,
-                              sensorType: "Master",
-                              notes: "Master Sensor",
-                            },
-                            {
-                              ...defaultSensorValues,
-                              sensorType: "Satellite",
-                              notes: "Satellite 1",
-                            },
-                            {
-                              ...defaultSensorValues,
-                              sensorType: "Satellite",
-                              notes: "Satellite 2",
-                            },
-                            {
-                              ...defaultSensorValues,
-                              sensorType: "Satellite",
-                              notes: "Satellite 3",
-                            },
-                          ],
-                        });
-                        setActiveTab("master");
-                        setImagePreviews({});
-                        setSelectedImages({});
-                        toast({
-                          title: "Form Reset",
-                          description:
-                            "All fields have been reset to default values.",
-                        });
-                      }}
-                      className="absolute right-0 bg-[#E35D5D] text-white hover:bg-red-600"
-                    >
-                      Reset
-                    </Button>
-                  )}
+                  <div className="justify-self-end">
+                    {!editId && activeTab !== "sat3" && (
+                      <Button
+                        type="button"
+                        onClick={handleNext}
+                        disabled={isSubmitting}
+                        className="bg-[#2186F3] text-white hover:bg-blue-600 w-24"
+                      >
+                        Next
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </form>
             </Form>
