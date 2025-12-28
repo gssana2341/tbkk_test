@@ -2757,6 +2757,14 @@ export default function SensorDetailPage() {
                               tooltip: {
                                 trigger: "axis",
                                 axisPointer: { type: "line" },
+                                formatter: (params: any) => {
+                                  if (params && params.length > 0) {
+                                    const time = params[0].axisValue;
+                                    const value = params[0].value;
+                                    return `F(ts) ${time} s<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(4)}`;
+                                  }
+                                  return "";
+                                },
                               },
                               xAxis: {
                                 type: "category",
@@ -2860,6 +2868,14 @@ export default function SensorDetailPage() {
                               tooltip: {
                                 trigger: "axis",
                                 axisPointer: { type: "line" },
+                                formatter: (params: any) => {
+                                  if (params && params.length > 0) {
+                                    const freq = params[0].axisValue;
+                                    const value = params[0].value;
+                                    return `F(Hz) ${freq} Hz<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(4)}`;
+                                  }
+                                  return "";
+                                },
                               },
                               xAxis: {
                                 type: "category",
