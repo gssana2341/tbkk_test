@@ -29,6 +29,7 @@ import {
 import type { NotificationSettings } from "@/lib/types";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const placeholders = [
   "event",
@@ -49,6 +50,27 @@ export default function NotificationSettings() {
     null
   );
   const [error, setError] = useState<string>("");
+
+  // Confirmation dialog state
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  }>({
+    title: "",
+    description: "",
+    onConfirm: () => { },
+  });
+
+  const triggerConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setConfirmConfig({ title, description, onConfirm });
+    setConfirmOpen(true);
+  };
 
   // Load settings on mount
   useEffect(() => {
@@ -98,82 +120,102 @@ export default function NotificationSettings() {
   const handleSaveEmail = async () => {
     if (!settings) return;
 
-    try {
-      setSaving("email");
-      setSaveStatus(null);
-      setError("");
+    triggerConfirm(
+      "Save Email Settings",
+      "Are you sure you want to save the email notification settings?",
+      async () => {
+        try {
+          setSaving("email");
+          setSaveStatus(null);
+          setError("");
 
-      const updated = await updateEmailNotificationSettings(settings.email);
-      setSettings({
-        ...settings,
-        email: updated,
-      });
-      setSaveStatus("success");
+          const updated = await updateEmailNotificationSettings(settings.email);
+          setSettings({
+            ...settings,
+            email: updated,
+          });
+          setSaveStatus("success");
 
-      setTimeout(() => {
-        setSaveStatus(null);
-      }, 3000);
-    } catch (err) {
-      console.error("Error saving email settings:", err);
-      setSaveStatus("error");
-      setError("Failed to save email settings. Please try again.");
-    } finally {
-      setSaving(null);
-    }
+          setTimeout(() => {
+            setSaveStatus(null);
+          }, 3000);
+        } catch (err) {
+          console.error("Error saving email settings:", err);
+          setSaveStatus("error");
+          setError("Failed to save email settings. Please try again.");
+        } finally {
+          setSaving(null);
+        }
+      }
+    );
   };
 
   const handleSaveSms = async () => {
     if (!settings) return;
 
-    try {
-      setSaving("sms");
-      setSaveStatus(null);
-      setError("");
+    triggerConfirm(
+      "Save SMS Settings",
+      "Are you sure you want to save the SMS notification settings?",
+      async () => {
+        try {
+          setSaving("sms");
+          setSaveStatus(null);
+          setError("");
 
-      const updated = await updateSmsNotificationSettings(settings.sms);
-      setSettings({
-        ...settings,
-        sms: updated,
-      });
-      setSaveStatus("success");
+          const updated = await updateSmsNotificationSettings(settings.sms);
+          setSettings({
+            ...settings,
+            sms: updated,
+          });
+          setSaveStatus("success");
 
-      setTimeout(() => {
-        setSaveStatus(null);
-      }, 3000);
-    } catch (err) {
-      console.error("Error saving SMS settings:", err);
-      setSaveStatus("error");
-      setError("Failed to save SMS settings. Please try again.");
-    } finally {
-      setSaving(null);
-    }
+          setTimeout(() => {
+            setSaveStatus(null);
+          }, 3000);
+        } catch (err) {
+          console.error("Error saving SMS settings:", err);
+          setSaveStatus("error");
+          setError("Failed to save SMS settings. Please try again.");
+        } finally {
+          setSaving(null);
+        }
+      }
+    );
   };
 
   const handleSaveWebhook = async () => {
     if (!settings) return;
 
-    try {
-      setSaving("webhook");
-      setSaveStatus(null);
-      setError("");
+    triggerConfirm(
+      "Save Webhook Settings",
+      "Are you sure you want to save the webhook notification settings?",
+      async () => {
+        try {
+          setSaving("webhook");
+          setSaveStatus(null);
+          setError("");
 
-      const updated = await updateWebhookNotificationSettings(settings.webhook);
-      setSettings({
-        ...settings,
-        webhook: updated,
-      });
-      setSaveStatus("success");
+          const updated = await updateWebhookNotificationSettings(
+            settings.webhook
+          );
+          setSettings({
+            ...settings,
+            webhook: updated,
+          });
+          setSaveStatus("success");
 
-      setTimeout(() => {
-        setSaveStatus(null);
-      }, 3000);
-    } catch (err) {
-      console.error("Error saving webhook settings:", err);
-      setSaveStatus("error");
-      setError("Failed to save webhook settings. Please try again.");
-    } finally {
-      setSaving(null);
-    }
+          setTimeout(() => {
+            setSaveStatus(null);
+          }, 3000);
+        } catch (err) {
+          console.error("Error saving webhook settings:", err);
+          setSaveStatus("error");
+          setError("Failed to save webhook settings. Please try again.");
+        } finally {
+          setSaving(null);
+        }
+      }
+    );
   };
 
   const updateEmailSetting = <K extends keyof NotificationSettings["email"]>(
@@ -663,6 +705,14 @@ export default function NotificationSettings() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        description={confirmConfig.description}
+      />
     </div>
   );
 }

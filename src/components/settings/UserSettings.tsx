@@ -32,6 +32,7 @@ import {
   uploadAvatar,
 } from "@/api/users/users";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 export default function UserSettings() {
   const { user } = useAuth();
@@ -60,6 +61,27 @@ export default function UserSettings() {
   // Security settings state
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [sessionTimeout, setSessionTimeout] = useState<string>("30");
+
+  // Confirmation dialog state
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  }>({
+    title: "",
+    description: "",
+    onConfirm: () => { },
+  });
+
+  const triggerConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setConfirmConfig({ title, description, onConfirm });
+    setConfirmOpen(true);
+  };
 
   // Load user profile on mount
   useEffect(() => {
@@ -100,50 +122,56 @@ export default function UserSettings() {
   };
 
   const handleSaveProfile = async () => {
-    try {
-      setSaving(true);
-      setSaveStatus(null);
-      setError("");
+    triggerConfirm(
+      "Update Profile",
+      "Are you sure you want to update your profile information?",
+      async () => {
+        try {
+          setSaving(true);
+          setSaveStatus(null);
+          setError("");
 
-      await updateUserProfile({
-        name,
-        avatar_url: avatarUrl,
-        job_title: jobTitle,
-        department,
-        phone_number: phoneNumber,
-        bio,
-      });
+          await updateUserProfile({
+            name,
+            avatar_url: avatarUrl,
+            job_title: jobTitle,
+            department,
+            phone_number: phoneNumber,
+            bio,
+          });
 
-      setSaveStatus("success");
-      toast({
-        title: "Profile Updated",
-        description: "Your profile has been updated successfully.",
-      });
+          setSaveStatus("success");
+          toast({
+            title: "Profile Updated",
+            description: "Your profile has been updated successfully.",
+          });
 
-      setTimeout(() => {
-        setSaveStatus(null);
-      }, 3000);
-    } catch (err) {
-      console.error("Error saving profile:", err);
-      setSaveStatus("error");
-      const errorMessage =
-        err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response
-            ?.data?.message
-          : err && typeof err === "object" && "message" in err
-            ? (err as { message?: string }).message
-            : undefined;
-      const finalErrorMessage =
-        errorMessage || "Failed to update profile. Please try again.";
-      setError(finalErrorMessage);
-      toast({
-        title: "Update Failed",
-        description: finalErrorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
-    }
+          setTimeout(() => {
+            setSaveStatus(null);
+          }, 3000);
+        } catch (err) {
+          console.error("Error saving profile:", err);
+          setSaveStatus("error");
+          const errorMessage =
+            err && typeof err === "object" && "response" in err
+              ? (err as { response?: { data?: { message?: string } } }).response
+                ?.data?.message
+              : err && typeof err === "object" && "message" in err
+                ? (err as { message?: string }).message
+                : undefined;
+          const finalErrorMessage =
+            errorMessage || "Failed to update profile. Please try again.";
+          setError(finalErrorMessage);
+          toast({
+            title: "Update Failed",
+            description: finalErrorMessage,
+            variant: "destructive",
+          });
+        } finally {
+          setSaving(false);
+        }
+      }
+    );
   };
 
   const handleChangePassword = async () => {
@@ -167,117 +195,136 @@ export default function UserSettings() {
       return;
     }
 
-    try {
-      setSaving(true);
-      setSaveStatus(null);
-      setError("");
+    triggerConfirm(
+      "Change Password",
+      "Are you sure you want to change your password? You will need to use your new password for future logins.",
+      async () => {
+        try {
+          setSaving(true);
+          setSaveStatus(null);
+          setError("");
 
-      await changePassword({
-        current_password: currentPassword,
-        new_password: newPassword,
-        confirm_password: confirmPassword,
-      });
+          await changePassword({
+            current_password: currentPassword,
+            new_password: newPassword,
+            confirm_password: confirmPassword,
+          });
 
-      // Clear password fields
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+          // Clear password fields
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
 
-      toast({
-        title: "Password Changed",
-        description: "Your password has been changed successfully.",
-      });
-    } catch (err) {
-      console.error("Error changing password:", err);
-      setSaveStatus("error");
-      const errorMessage =
-        err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response
-            ?.data?.message
-          : err && typeof err === "object" && "message" in err
-            ? (err as { message?: string }).message
-            : undefined;
-      const finalErrorMessage =
-        errorMessage || "Failed to change password. Please try again.";
-      setError(finalErrorMessage);
-      toast({
-        title: "Change Password Failed",
-        description: finalErrorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
-    }
+          toast({
+            title: "Password Changed",
+            description: "Your password has been changed successfully.",
+          });
+        } catch (err) {
+          console.error("Error changing password:", err);
+          setSaveStatus("error");
+          const errorMessage =
+            err && typeof err === "object" && "response" in err
+              ? (err as { response?: { data?: { message?: string } } }).response
+                ?.data?.message
+              : err && typeof err === "object" && "message" in err
+                ? (err as { message?: string }).message
+                : undefined;
+          const finalErrorMessage =
+            errorMessage || "Failed to change password. Please try again.";
+          setError(finalErrorMessage);
+          toast({
+            title: "Change Password Failed",
+            description: finalErrorMessage,
+            variant: "destructive",
+          });
+        } finally {
+          setSaving(false);
+        }
+      }
+    );
   };
 
   const handleToggleTwoFactor = async (enabled: boolean) => {
-    try {
-      setSaving(true);
-      setError("");
+    const actionLabel = enabled ? "Enable" : "Disable";
+    triggerConfirm(
+      `${actionLabel} 2FA`,
+      `Are you sure you want to ${actionLabel.toLowerCase()} Two-Factor Authentication?`,
+      async () => {
+        try {
+          setSaving(true);
+          setError("");
 
-      if (enabled) {
-        await enableTwoFactor();
-        setTwoFactorEnabled(true);
-        await updateSecuritySettings({ two_factor_enabled: true });
-        toast({
-          title: "2FA Enabled",
-          description:
-            "Two-factor authentication has been enabled. Please save your backup codes.",
-        });
-        // You can show QR code and backup codes in a dialog here
-      } else {
-        // For disabling, we might need password confirmation
-        // For now, just update the settings
-        await updateSecuritySettings({ two_factor_enabled: false });
-        setTwoFactorEnabled(false);
-        toast({
-          title: "2FA Disabled",
-          description: "Two-factor authentication has been disabled.",
-        });
+          if (enabled) {
+            await enableTwoFactor();
+            setTwoFactorEnabled(true);
+            await updateSecuritySettings({ two_factor_enabled: true });
+            toast({
+              title: "2FA Enabled",
+              description:
+                "Two-factor authentication has been enabled. Please save your backup codes.",
+            });
+            // You can show QR code and backup codes in a dialog here
+          } else {
+            // For disabling, we might need password confirmation
+            // For now, just update the settings
+            await updateSecuritySettings({ two_factor_enabled: false });
+            setTwoFactorEnabled(false);
+            toast({
+              title: "2FA Disabled",
+              description: "Two-factor authentication has been disabled.",
+            });
+          }
+        } catch (err) {
+          console.error("Error toggling 2FA:", err);
+          setTwoFactorEnabled(!enabled); // Revert on error
+          const errorMessage =
+            err && typeof err === "object" && "response" in err
+              ? (err as { response?: { data?: { message?: string } } }).response
+                ?.data?.message
+              : err && typeof err === "object" && "message" in err
+                ? (err as { message?: string }).message
+                : undefined;
+          const finalErrorMessage =
+            errorMessage || "Failed to update 2FA settings. Please try again.";
+          setError(finalErrorMessage);
+          toast({
+            title: "Update Failed",
+            description: finalErrorMessage,
+            variant: "destructive",
+          });
+        } finally {
+          setSaving(false);
+        }
       }
-    } catch (err) {
-      console.error("Error toggling 2FA:", err);
-      setTwoFactorEnabled(!enabled); // Revert on error
-      const errorMessage =
-        err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response
-            ?.data?.message
-          : err && typeof err === "object" && "message" in err
-            ? (err as { message?: string }).message
-            : undefined;
-      const finalErrorMessage =
-        errorMessage || "Failed to update 2FA settings. Please try again.";
-      setError(finalErrorMessage);
-      toast({
-        title: "Update Failed",
-        description: finalErrorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
-    }
+    );
   };
 
   const handleSessionTimeoutChange = async (value: string) => {
     const previousValue = sessionTimeout;
-    setSessionTimeout(value);
-    try {
-      const timeoutMinutes = value === "never" ? null : parseInt(value);
-      await updateSecuritySettings({
-        session_timeout_minutes: timeoutMinutes,
-      });
-      toast({
-        title: "Settings Updated",
-        description: "Session timeout has been updated successfully.",
-      });
-    } catch {
-      setSessionTimeout(previousValue); // Revert on error
-      toast({
-        title: "Update Failed",
-        description: "Failed to update session timeout. Please try again.",
-        variant: "destructive",
-      });
-    }
+    triggerConfirm(
+      "Change Session Timeout",
+      `Are you sure you want to change the session timeout to ${value === "never" ? "never" : value + " minutes"}?`,
+      async () => {
+        setSessionTimeout(value);
+        try {
+          const timeoutMinutes = value === "never" ? null : parseInt(value);
+          await updateSecuritySettings({
+            session_timeout_minutes: timeoutMinutes,
+          });
+          toast({
+            title: "Settings Updated",
+            description: "Session timeout has been updated successfully.",
+          });
+        } catch {
+          setSessionTimeout(previousValue); // Revert on error
+          toast({
+            title: "Update Failed",
+            description: "Failed to update session timeout. Please try again.",
+            variant: "destructive",
+          });
+        }
+      }
+    );
   };
 
   const handleAvatarUpload = async (
@@ -594,6 +641,14 @@ export default function UserSettings() {
           )}
         </Button>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        description={confirmConfig.description}
+      />
     </div>
   );
 }

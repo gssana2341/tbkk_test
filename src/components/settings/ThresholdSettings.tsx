@@ -33,6 +33,7 @@ import type { Machine } from "@/lib/types";
 import { Loader2, CheckCircle2, AlertCircle, Trash2, Plus } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 export default function ThresholdSettings() {
   const [settings, setSettings] = useState<ThresholdSettings | null>(null);
@@ -42,11 +43,27 @@ export default function ThresholdSettings() {
   const [saveStatus, setSaveStatus] = useState<"success" | "error" | null>(
     null
   );
-  const [error, setError] = useState<string>("");
-  const [selectedMachine, setSelectedMachine] = useState<string>("");
   const [tempOverrideWarning, setTempOverrideWarning] = useState<string>("");
   const [tempOverrideCritical, setTempOverrideCritical] = useState<string>("");
+  const [selectedMachine, setSelectedMachine] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const { toast } = useToast();
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  } | null>(null);
+
+  const triggerConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setConfirmConfig({ title, description, onConfirm });
+    setConfirmOpen(true);
+  };
 
   // Load settings and machines on mount
   useEffect(() => {
@@ -76,8 +93,8 @@ export default function ThresholdSettings() {
         },
         machine_overrides: Array.isArray(loadedSettings.machine_overrides)
           ? loadedSettings.machine_overrides.filter(
-              (override) => override != null
-            )
+            (override) => override != null
+          )
           : [],
       });
     } catch {
@@ -165,7 +182,7 @@ export default function ThresholdSettings() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -236,7 +253,7 @@ export default function ThresholdSettings() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -608,7 +625,16 @@ export default function ThresholdSettings() {
                 >
                   Reset
                 </Button>
-                <Button onClick={handleSaveTemperature} disabled={saving}>
+                <Button
+                  onClick={() =>
+                    triggerConfirm(
+                      "Save Temperature Thresholds",
+                      "Are you sure you want to save the new temperature thresholds for all sensors?",
+                      handleSaveTemperature
+                    )
+                  }
+                  disabled={saving}
+                >
                   {saving ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -683,7 +709,13 @@ export default function ThresholdSettings() {
                     <div className="flex items-end">
                       <Button
                         variant="outline"
-                        onClick={handleAddMachineOverride}
+                        onClick={() =>
+                          triggerConfirm(
+                            "Add Machine Override",
+                            "Are you sure you want to add a threshold override for this machine?",
+                            handleAddMachineOverride
+                          )
+                        }
                         disabled={saving || !selectedMachine}
                         className="w-full bg-[#11171F] border-[#4B5563] text-white hover:bg-[#1F2937] hover:text-white"
                       >
@@ -722,11 +754,19 @@ export default function ThresholdSettings() {
                                 </div>
                                 <Button
                                   variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    override?.id &&
-                                    handleDeleteMachineOverride(override.id)
-                                  }
+                                  onClick={() => {
+                                    if (override?.id) {
+                                      triggerConfirm(
+                                        "Delete Machine Override",
+                                        "Are you sure you want to delete this machine threshold override?",
+                                        () => {
+                                          if (override.id) {
+                                            handleDeleteMachineOverride(override.id);
+                                          }
+                                        }
+                                      );
+                                    }
+                                  }}
                                   disabled={saving || !override?.id}
                                 >
                                   <Trash2 className="h-4 w-4 text-red-500" />
@@ -890,6 +930,18 @@ export default function ThresholdSettings() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={() => {
+          if (confirmConfig?.onConfirm) {
+            confirmConfig.onConfirm();
+          }
+          setConfirmOpen(false);
+        }}
+        title={confirmConfig?.title}
+        description={confirmConfig?.description}
+      />
+    </div >
   );
 }

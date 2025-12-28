@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AlertsSettings() {
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -21,6 +23,20 @@ export default function AlertsSettings() {
   const [pushNotifications, setPushNotifications] = useState(true);
   const [temperatureThreshold, setTemperatureThreshold] = useState([30, 35]);
   const [vibrationThreshold, setVibrationThreshold] = useState([0.8, 1.2]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleSave = () => {
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmSave = () => {
+    // In a real app, this would call an API
+    toast({
+      title: "Thresholds Saved",
+      description: "Alert thresholds have been updated successfully.",
+    });
+  };
 
   return (
     <div className="space-y-6 mt-6">
@@ -39,7 +55,11 @@ export default function AlertsSettings() {
               </div>
               <Switch
                 checked={emailNotifications}
-                onCheckedChange={setEmailNotifications}
+                onCheckedChange={(checked) => {
+                  // In a real app, we might want confirmation here too
+                  // but for now let's just update the state
+                  setEmailNotifications(checked);
+                }}
               />
             </div>
 
@@ -177,10 +197,18 @@ export default function AlertsSettings() {
           </div>
 
           <div className="flex justify-end">
-            <Button>Save Thresholds</Button>
+            <Button onClick={handleSave}>Save Thresholds</Button>
           </div>
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={handleConfirmSave}
+        title="Save Thresholds"
+        description="Are you sure you want to save these alert thresholds? These changes will affect when you receive notifications."
+      />
     </div>
   );
 }

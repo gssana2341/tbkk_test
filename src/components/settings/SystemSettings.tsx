@@ -22,6 +22,7 @@ import { Progress } from "@/components/ui/progress";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import {
   getSystemInfo,
   getSystemResources,
@@ -54,6 +55,27 @@ export default function SystemSettings() {
     "hourly" | "daily" | "weekly" | "monthly"
   >("daily");
   const [backupRetention, setBackupRetention] = useState<string>("7");
+
+  // Confirmation dialog state
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  }>({
+    title: "",
+    description: "",
+    onConfirm: () => { },
+  });
+
+  const triggerConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setConfirmConfig({ title, description, onConfirm });
+    setConfirmOpen(true);
+  };
 
   // Load data on mount
   useEffect(() => {
@@ -122,141 +144,184 @@ export default function SystemSettings() {
   };
 
   const handleSaveSettings = async () => {
-    try {
-      setSaving(true);
-      setSaveStatus(null);
-      setError("");
+    triggerConfirm(
+      "Save Data Management Settings",
+      "Are you sure you want to save these data retention and backup settings? This will update the system's management policies.",
+      async () => {
+        try {
+          setSaving(true);
+          setSaveStatus(null);
+          setError("");
 
-      await updateDataManagementSettings({
-        sensor_data_retention_days:
-          sensorDataRetention === "forever"
-            ? null
-            : parseInt(sensorDataRetention),
-        alert_history_retention_days:
-          alertHistoryRetention === "forever"
-            ? null
-            : parseInt(alertHistoryRetention),
-        automated_backups_enabled: automatedBackupsEnabled,
-        backup_frequency: backupFrequency,
-        backup_retention_count: parseInt(backupRetention),
-      });
+          await updateDataManagementSettings({
+            sensor_data_retention_days:
+              sensorDataRetention === "forever"
+                ? null
+                : parseInt(sensorDataRetention),
+            alert_history_retention_days:
+              alertHistoryRetention === "forever"
+                ? null
+                : parseInt(alertHistoryRetention),
+            automated_backups_enabled: automatedBackupsEnabled,
+            backup_frequency: backupFrequency,
+            backup_retention_count: parseInt(backupRetention),
+          });
 
-      setSaveStatus("success");
-      toast({
-        title: "Settings Saved",
-        description: "System settings have been saved successfully.",
-      });
+          setSaveStatus("success");
+          toast({
+            title: "Settings Saved",
+            description: "System settings have been saved successfully.",
+          });
 
-      setTimeout(() => {
-        setSaveStatus(null);
-      }, 3000);
-    } catch (err) {
-      console.error("Error saving settings:", err);
-      setSaveStatus("error");
-      const errorMessage =
-        err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
-          : err && typeof err === "object" && "message" in err
-            ? (err as { message?: string }).message
-            : undefined;
-      const finalErrorMessage =
-        errorMessage || "Failed to save settings. Please try again.";
-      setError(finalErrorMessage);
-      toast({
-        title: "Save Failed",
-        description: finalErrorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
-    }
+          setTimeout(() => {
+            setSaveStatus(null);
+          }, 3000);
+        } catch (err) {
+          console.error("Error saving settings:", err);
+          setSaveStatus("error");
+          const errorMessage =
+            err && typeof err === "object" && "response" in err
+              ? (err as { response?: { data?: { message?: string } } }).response
+                ?.data?.message
+              : err && typeof err === "object" && "message" in err
+                ? (err as { message?: string }).message
+                : undefined;
+          const finalErrorMessage =
+            errorMessage || "Failed to save settings. Please try again.";
+          setError(finalErrorMessage);
+          toast({
+            title: "Save Failed",
+            description: finalErrorMessage,
+            variant: "destructive",
+          });
+        } finally {
+          setSaving(false);
+        }
+      }
+    );
   };
 
   const handleRunBackup = async () => {
-    try {
-      setSaving(true);
-      setError("");
+    triggerConfirm(
+      "Run Backup Now",
+      "Are you sure you want to start a full system backup now? This may take several minutes depending on your data size.",
+      async () => {
+        try {
+          setSaving(true);
+          setError("");
 
-      await runBackupNow({ backup_type: "full" });
+          await runBackupNow({ backup_type: "full" });
 
-      toast({
-        title: "Backup Started",
-        description: "Backup has been started successfully.",
-      });
+          toast({
+            title: "Backup Started",
+            description: "Backup has been started successfully.",
+          });
 
-      // Reload settings to get updated backup status
-      await loadDataManagementSettings();
-    } catch (err) {
-      console.error("Error running backup:", err);
-      const errorMessage =
-        err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
-          : err && typeof err === "object" && "message" in err
-            ? (err as { message?: string }).message
-            : undefined;
-      const finalErrorMessage =
-        errorMessage || "Failed to start backup. Please try again.";
-      setError(finalErrorMessage);
-      toast({
-        title: "Backup Failed",
-        description: finalErrorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
-    }
+          // Reload settings to get updated backup status
+          await loadDataManagementSettings();
+        } catch (err) {
+          console.error("Error running backup:", err);
+          const errorMessage =
+            err && typeof err === "object" && "response" in err
+              ? (err as { response?: { data?: { message?: string } } }).response
+                ?.data?.message
+              : err && typeof err === "object" && "message" in err
+                ? (err as { message?: string }).message
+                : undefined;
+          const finalErrorMessage =
+            errorMessage || "Failed to start backup. Please try again.";
+          setError(finalErrorMessage);
+          toast({
+            title: "Backup Failed",
+            description: finalErrorMessage,
+            variant: "destructive",
+          });
+        } finally {
+          setSaving(false);
+        }
+      }
+    );
   };
 
   const handleToggleAutomatedBackups = async (enabled: boolean) => {
-    setAutomatedBackupsEnabled(enabled);
-    try {
-      await updateDataManagementSettings({
-        automated_backups_enabled: enabled,
-      });
-    } catch (err) {
-      console.error("Error updating automated backups:", err);
-      setAutomatedBackupsEnabled(!enabled); // Revert on error
-      toast({
-        title: "Update Failed",
-        description:
-          "Failed to update automated backups setting. Please try again.",
-        variant: "destructive",
-      });
-    }
+    const actionLabel = enabled ? "Enable" : "Disable";
+    triggerConfirm(
+      `${actionLabel} Automated Backups`,
+      `Are you sure you want to ${actionLabel.toLowerCase()} automated system backups?`,
+      async () => {
+        setAutomatedBackupsEnabled(enabled);
+        try {
+          await updateDataManagementSettings({
+            automated_backups_enabled: enabled,
+          });
+          toast({
+            title: "Settings Updated",
+            description: `Automated backups have been ${enabled ? "enabled" : "disabled"}.`,
+          });
+        } catch (err) {
+          console.error("Error updating automated backups:", err);
+          setAutomatedBackupsEnabled(!enabled); // Revert on error
+          toast({
+            title: "Update Failed",
+            description:
+              "Failed to update automated backups setting. Please try again.",
+            variant: "destructive",
+          });
+        }
+      }
+    );
   };
 
   const handleBackupFrequencyChange = async (value: string) => {
-    setBackupFrequency(value as "hourly" | "daily" | "weekly" | "monthly");
-    try {
-      await updateDataManagementSettings({
-        backup_frequency: value as "hourly" | "daily" | "weekly" | "monthly",
-      });
-    } catch (err) {
-      console.error("Error updating backup frequency:", err);
-      toast({
-        title: "Update Failed",
-        description: "Failed to update backup frequency. Please try again.",
-        variant: "destructive",
-      });
-    }
+    triggerConfirm(
+      "Change Backup Frequency",
+      `Are you sure you want to change the backup frequency to ${value}?`,
+      async () => {
+        setBackupFrequency(value as "hourly" | "daily" | "weekly" | "monthly");
+        try {
+          await updateDataManagementSettings({
+            backup_frequency: value as "hourly" | "daily" | "weekly" | "monthly",
+          });
+          toast({
+            title: "Settings Updated",
+            description: `Backup frequency has been updated to ${value}.`,
+          });
+        } catch (err) {
+          console.error("Error updating backup frequency:", err);
+          toast({
+            title: "Update Failed",
+            description: "Failed to update backup frequency. Please try again.",
+            variant: "destructive",
+          });
+        }
+      }
+    );
   };
 
   const handleBackupRetentionChange = async (value: string) => {
-    setBackupRetention(value);
-    try {
-      await updateDataManagementSettings({
-        backup_retention_count: parseInt(value),
-      });
-    } catch (err) {
-      console.error("Error updating backup retention:", err);
-      toast({
-        title: "Update Failed",
-        description: "Failed to update backup retention. Please try again.",
-        variant: "destructive",
-      });
-    }
+    triggerConfirm(
+      "Change Backup Retention",
+      `Are you sure you want to change the backup retention to ${value} backups?`,
+      async () => {
+        setBackupRetention(value);
+        try {
+          await updateDataManagementSettings({
+            backup_retention_count: parseInt(value),
+          });
+          toast({
+            title: "Settings Updated",
+            description: `Backup retention has been updated to ${value} backups.`,
+          });
+        } catch (err) {
+          console.error("Error updating backup retention:", err);
+          toast({
+            title: "Update Failed",
+            description: "Failed to update backup retention. Please try again.",
+            variant: "destructive",
+          });
+        }
+      }
+    );
   };
 
   if (loading) {
@@ -562,6 +627,14 @@ export default function SystemSettings() {
           )}
         </Button>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        description={confirmConfig.description}
+      />
     </div>
   );
 }

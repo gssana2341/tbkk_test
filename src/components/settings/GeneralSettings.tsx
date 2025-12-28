@@ -23,6 +23,7 @@ import { getSettings, updateSettings } from "@/api/settings/settings";
 import type { Settings } from "@/lib/types";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 export default function GeneralSettings() {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -32,6 +33,9 @@ export default function GeneralSettings() {
     null
   );
   const [error, setError] = useState<string>("");
+
+  // Confirmation dialog state
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Load settings on mount
   useEffect(() => {
@@ -68,6 +72,12 @@ export default function GeneralSettings() {
   };
 
   const handleSave = async () => {
+    if (!settings) return;
+
+    setConfirmOpen(true);
+  };
+
+  const handleRealSave = async () => {
     if (!settings) return;
 
     try {
@@ -368,6 +378,14 @@ export default function GeneralSettings() {
           )}
         </Button>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={handleRealSave}
+        title="Save Settings"
+        description="Are you sure you want to save these system and display settings? These changes will take effect immediately."
+      />
     </div>
   );
 }
