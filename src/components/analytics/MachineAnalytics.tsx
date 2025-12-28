@@ -141,7 +141,7 @@ export default function MachineAnalytics() {
                   label={(props: { name?: string; percent?: number }) => {
                     const name = props.name || "";
                     const percent = props.percent ?? 0;
-                    return `${name}: ${(percent * 100).toFixed(0)}%`;
+                    return `${name}: ${(percent * 100).toFixed(2)}%`;
                   }}
                 >
                   {alertsByMachine.map((entry, index) => (

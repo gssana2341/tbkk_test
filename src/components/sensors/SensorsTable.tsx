@@ -223,7 +223,7 @@ export default function SensorsTable() {
                     <StatusBadge status={sensor.status} />
                   </TableCell>
                   <TableCell>
-                    {latestReading.temperature.toFixed(1)}°C
+                    {latestReading.temperature.toFixed(0)}°C
                   </TableCell>
                   <TableCell>
                     {sensor.h_stats ? (

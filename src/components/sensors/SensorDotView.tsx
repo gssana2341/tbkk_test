@@ -233,7 +233,7 @@ export default function SensorDotView({
                           "Unknown Machine"}
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span>Temp: {temperature.toFixed(1)}°C</span>
+                        <span>Temp: {temperature.toFixed(0)}°C</span>
                         <span>
                           Battery:{" "}
                           {sensor.batteryLevel?.toFixed(0) ||
@@ -341,7 +341,7 @@ export default function SensorDotView({
                         "Unknown Machine"}
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span>Temp: {temperature.toFixed(1)}°C</span>
+                      <span>Temp: {temperature.toFixed(0)}°C</span>
                       <span>
                         Battery:{" "}
                         {sensor.batteryLevel?.toFixed(0) ||

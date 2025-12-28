@@ -10,7 +10,7 @@ export default function AnalyticsOverview() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold">24.8°C</div>
+          <div className="text-3xl font-bold">25°C</div>
           <p className="text-xs text-green-500 dark:text-green-400 mt-1">
             +2.3% from previous period
           </p>

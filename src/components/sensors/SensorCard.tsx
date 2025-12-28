@@ -241,7 +241,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
             </div>
           </div>
           <div className="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold shrink-0 whitespace-nowrap text-white">
-            {(Number(temperature) || 0).toFixed(1)}°C
+            {(Number(temperature) || 0).toFixed(0)}°C
           </div>
         </div>
         {/* Row 3: Battery | Wifi | Time */}

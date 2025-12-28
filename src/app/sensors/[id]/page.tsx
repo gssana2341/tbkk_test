@@ -390,9 +390,9 @@ function prepareChartData(
 
   // peak * 2
   const peakToPeak = peak * 2;
-  const rmsValue = rms.toFixed(3);
-  const peakValue = peak.toFixed(3);
-  const peakToPeakValue = peakToPeak.toFixed(3);
+  const rmsValue = rms.toFixed(2);
+  const peakValue = peak.toFixed(2);
+  const peakToPeakValue = peakToPeak.toFixed(2);
 
   // เธชเธฃเนเธฒเธเธเนเธญเธกเธนเธฅเธชเธณเธซเธฃเธฑเธเธเธฃเธฒเธเนเธ”เน€เธกเธเน€เธงเธฅเธฒ
   const timeChartData = {

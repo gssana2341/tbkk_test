@@ -131,7 +131,7 @@ export default function SensorListView({
                       </div>
                       <div className="w-20 flex justify-center">
                         <span className={`font-semibold text-xs text-gray-300`}>
-                          {currentTemp > 0 ? currentTemp.toFixed(1) : "0"}°C
+                          {currentTemp > 0 ? currentTemp.toFixed(0) : "0"}°C
                         </span>
                       </div>
                     </div>

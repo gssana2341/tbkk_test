@@ -378,7 +378,7 @@ export function NotificationHistoryTable({
                             )}`}
                           />
                           <span className="font-medium text-gray-300">
-                            {entry[axis] ?? "-"}
+                            {entry[axis] != null ? entry[axis].toFixed(2) : "-"}
                           </span>
                         </div>
                       </td>

@@ -79,7 +79,7 @@ export default function NotificationHistoryPage() {
             vVrms: sensor.last_data?.velo_rms_v ?? null,
             aVrms: sensor.last_data?.velo_rms_a ?? null,
             temperature: sensor.last_data?.temperature
-              ? `${sensor.last_data.temperature.toFixed(1)}°C`
+              ? `${sensor.last_data.temperature.toFixed(0)}°C`
               : null,
             battery: sensor.last_data?.battery
               ? `${Math.round(sensor.last_data.battery)}%`
