@@ -70,6 +70,8 @@ export default function NotificationHistoryPage() {
           notificationEntries.push({
             id: sensor.id,
             sensorName: sensor.serialNumber || sensor.name,
+            area: sensor.installation_point || "-",
+            machine: sensor.machine_number || "-",
             status: finalStatus,
             datetime,
             timestamp: sensor.last_data?.datetime ? new Date(sensor.last_data.datetime).getTime() : 0,
