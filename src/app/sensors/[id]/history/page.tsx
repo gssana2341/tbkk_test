@@ -120,7 +120,9 @@ export default function SensorHistoryPage() {
     if (!history.length) return null;
 
     const labels = history.map((h) => {
-      const d = new Date(h.datetime);
+      // Fix: Treat server time as Local by removing Z if present
+      const rawString = h.datetime.endsWith("Z") ? h.datetime.slice(0, -1) : h.datetime;
+      const d = new Date(rawString);
       return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
     });
 
@@ -364,7 +366,8 @@ export default function SensorHistoryPage() {
                         if (selectedUnit === "Acceleration(mm/s²)") return axis === 'h' ? item.a_rms_h : axis === 'v' ? item.a_rms_v : item.a_rms_a;
                         return axis === 'h' ? item.velo_rms_h : axis === 'v' ? item.velo_rms_v : item.velo_rms_a;
                       };
-                      const d = new Date(item.datetime);
+                      const rawString = item.datetime.endsWith("Z") ? item.datetime.slice(0, -1) : item.datetime;
+                      const d = new Date(rawString);
                       const dateStr = d.toLocaleDateString("en-GB", { day: '2-digit', month: '2-digit', year: 'numeric' });
                       const timeStr = `${d.getHours()}.${String(d.getMinutes()).padStart(2, '0')}`;
 

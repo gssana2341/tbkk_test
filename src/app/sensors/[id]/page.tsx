@@ -575,6 +575,38 @@ export default function SensorDetailPage() {
   const [datetimes, setDatetimes] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sensorImage, setSensorImage] = useState<string | null>(null);
+  const [history, setHistory] = useState<any[]>([]);
+
+  // Fetch sensor history
+  const fetchSensorHistory = async (sensorId: string) => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${sensorId}/history?limit=10`;
+      const response = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        let historyData = [];
+
+        if (Array.isArray(data)) {
+          historyData = data;
+        } else if (data && Array.isArray(data.history)) {
+          historyData = data.history;
+        } else if (data && data.data) {
+          if (Array.isArray(data.data)) {
+            historyData = data.data;
+          } else if (Array.isArray(data.data.history)) {
+            historyData = data.data.history;
+          }
+        }
+        setHistory(historyData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch sensor history:", error);
+    }
+  };
 
   // Fetch sensor image directly from API
   useEffect(() => {
@@ -1220,8 +1252,8 @@ export default function SensorDetailPage() {
       Promise.all([
         fetchSensor(),
         fetchSensorDatetimes(params.id),
-        fetchSensorDetails(params.id), // Add this new call
-        // fetchSensorConfig is already called inside fetchSensor
+        fetchSensorDetails(params.id),
+        fetchSensorHistory(params.id),
       ]).catch((error) => {
         console.error("Error fetching sensor data:", error);
       });
@@ -2693,40 +2725,46 @@ export default function SensorDetailPage() {
                               </tr>
                             </thead>
                             <tbody>
-                              {hasData && sortedDatetimes.length > 0 ? (
-                                sortedDatetimes
+                              {hasData && history.length > 0 ? (
+                                history
                                   .slice(0, 10)
-                                  .map((datetime, i) => (
-                                    <tr
-                                      key={i}
-                                      className="border-b border-gray-200"
-                                    >
-                                      <td className="px-3 py-3 text-lg font-medium text-white">
-                                        {new Date(datetime).toLocaleString(
-                                          "en-GB",
-                                          {
-                                            day: "2-digit",
-                                            month: "short",
-                                            year: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                          }
-                                        )}
-                                      </td>
-                                      <td className="px-3 py-3 text-lg font-medium text-right text-gray-900">
-                                        <span className="text-white">
-                                          1 mm/s
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  ))
+                                  .map((item, i) => {
+                                    const axisKey = selectedAxis === "H-axis" ? "h" : selectedAxis === "V-axis" ? "v" : "a";
+                                    let rmsValue = "-";
+                                    let unitShort = "";
+
+                                    if (selectedUnit === "Acceleration (G)") {
+                                      rmsValue = (item[`g_rms_${axisKey}`] || 0).toFixed(3);
+                                      unitShort = "G";
+                                    } else if (selectedUnit === "Acceleration (mm/s²)") {
+                                      rmsValue = (item[`a_rms_${axisKey}`] || 0).toFixed(2);
+                                      unitShort = "mm/s²";
+                                    } else {
+                                      rmsValue = (item[`velo_rms_${axisKey}`] || 0).toFixed(3);
+                                      unitShort = "mm/s";
+                                    }
+
+                                    return (
+                                      <tr
+                                        key={i}
+                                        className="border-b border-gray-700 hover:bg-gray-800 transition-colors"
+                                      >
+                                        <td className="px-3 py-3 text-lg font-medium text-white">
+                                          {formatDateTimeDayFirst(item.datetime)}
+                                        </td>
+                                        <td className="px-3 py-3 text-lg font-medium text-right text-white">
+                                          {rmsValue} {unitShort}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })
                               ) : (
                                 <tr>
                                   <td
                                     colSpan={2}
                                     className="px-3 py-8 text-center text-gray-500 text-base"
                                   >
-                                    No data available
+                                    No history data available
                                   </td>
                                 </tr>
                               )}
