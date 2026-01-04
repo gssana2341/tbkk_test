@@ -95,10 +95,10 @@ export async function getThresholdSettings(): Promise<ThresholdSettings> {
       },
       machine_overrides: Array.isArray(settings?.machine_overrides)
         ? settings.machine_overrides.filter(
-          (
-            override: MachineThresholdOverride | null | undefined
-          ): override is MachineThresholdOverride => override != null
-        )
+            (
+              override: MachineThresholdOverride | null | undefined
+            ): override is MachineThresholdOverride => override != null
+          )
         : [],
     };
 
@@ -396,10 +396,10 @@ export function getThresholdSettingsFromLocalStorage(): ThresholdSettings {
         ...parsed,
         machine_overrides: Array.isArray(parsed.machine_overrides)
           ? parsed.machine_overrides.filter(
-            (
-              override: MachineThresholdOverride | null | undefined
-            ): override is MachineThresholdOverride => override != null
-          )
+              (
+                override: MachineThresholdOverride | null | undefined
+              ): override is MachineThresholdOverride => override != null
+            )
           : [],
       };
     }

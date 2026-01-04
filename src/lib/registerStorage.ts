@@ -47,9 +47,7 @@ export function storeMotorType(motorType: string): void {
     const motorTypes = getStoredMotorTypes();
     const normalized = motorType.trim().toUpperCase();
 
-    const exists = motorTypes.some(
-      (m) => m.toUpperCase() === normalized
-    );
+    const exists = motorTypes.some((m) => m.toUpperCase() === normalized);
 
     if (!exists) {
       motorTypes.unshift(normalized);
@@ -87,9 +85,7 @@ export function storeArea(area: string): void {
     const normalizedArea = area.trim().toUpperCase();
 
     // Check if area already exists (case-insensitive)
-    const exists = areas.some(
-      (a) => a.toUpperCase() === normalizedArea
-    );
+    const exists = areas.some((a) => a.toUpperCase() === normalizedArea);
 
     if (!exists) {
       areas.unshift(normalizedArea); // Add to beginning
@@ -113,9 +109,7 @@ export function storeMachineName(machineName: string): void {
     const normalizedName = machineName.trim().toUpperCase();
 
     // Check if machine name already exists (case-insensitive)
-    const exists = machineNames.some(
-      (m) => m.toUpperCase() === normalizedName
-    );
+    const exists = machineNames.some((m) => m.toUpperCase() === normalizedName);
 
     if (!exists) {
       machineNames.unshift(normalizedName); // Add to beginning

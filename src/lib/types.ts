@@ -1,4 +1,10 @@
-export type SensorStatus = "ok" | "warning" | "critical" | "concern" | "standby" | "lost";
+export type SensorStatus =
+  | "ok"
+  | "warning"
+  | "critical"
+  | "concern"
+  | "standby"
+  | "lost";
 
 export interface SensorReading {
   timestamp: number;

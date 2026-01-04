@@ -61,7 +61,9 @@ export const register = async (
         const errorData = await response.json();
         throw new Error(errorData.message || "Registration failed");
       }
-      throw new Error(`Registration failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Registration failed: ${response.status} ${response.statusText}`
+      );
     }
 
     const result = await response.json();
@@ -90,7 +92,9 @@ export const login = async (data: LoginRequest): Promise<AuthResponse> => {
         const errorData = await response.json();
         throw new Error(errorData.message || "Login failed");
       }
-      throw new Error(`Login failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Login failed: ${response.status} ${response.statusText}`
+      );
     }
 
     const result = await response.json();

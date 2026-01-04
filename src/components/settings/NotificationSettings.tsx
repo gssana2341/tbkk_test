@@ -60,7 +60,7 @@ export default function NotificationSettings() {
   }>({
     title: "",
     description: "",
-    onConfirm: () => { },
+    onConfirm: () => {},
   });
 
   const triggerConfirm = (

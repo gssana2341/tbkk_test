@@ -38,6 +38,17 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
   const { loading } = useAuth();
   const { collapsed } = useFolderTree();
 
+  // Handler to receive filter changes from FolderTree
+  // MUST be defined before early returns to satisfy Rules of Hooks
+  const handleFilterChange = React.useCallback(
+    (ids: string[], sensors: Sensor[]) => {
+      setSelectedIds(ids);
+      setSelectedSensors(sensors);
+      // You can add more logic here to control card view visibility, etc.
+    },
+    []
+  );
+
   // Check if current path is an auth page
   const isAuthPage =
     pathname === "/login" ||
@@ -66,19 +77,14 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
   }
 
   // For all other pages, use protection and show layout with Sidebar, FolderTree, Header
-  // Handler to receive filter changes from FolderTree
-  const handleFilterChange = (ids: string[], sensors: Sensor[]) => {
-    setSelectedIds(ids);
-    setSelectedSensors(sensors);
-    // You can add more logic here to control card view visibility, etc.
-  };
 
   return (
     <FolderTreeFilterContext.Provider value={{ selectedIds, selectedSensors }}>
       <ProtectedRoute>
         <div
-          className={`flex bg-[#030616] ${isRegisterPage ? "min-h-screen" : "h-screen overflow-hidden"
-            }`}
+          className={`flex bg-[#030616] ${
+            isRegisterPage ? "min-h-screen" : "h-screen overflow-hidden"
+          }`}
         >
           {/* Left Sidebar - Navigation Menu (not covered by header) */}
           <div className="shrink-0">
@@ -87,31 +93,35 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
 
           {/* Right side with Header on top */}
           <div
-            className={`flex-1 flex flex-col ${isRegisterPage ? "" : "overflow-hidden"
-              }`}
+            className={`flex-1 flex flex-col ${
+              isRegisterPage ? "" : "overflow-hidden"
+            }`}
           >
             {/* Header at the top */}
             <Header />
 
             {/* Content area below header */}
             <div
-              className={`flex flex-1 ${isRegisterPage ? "" : "overflow-hidden"
-                }`}
+              className={`flex flex-1 ${
+                isRegisterPage ? "" : "overflow-hidden"
+              }`}
             >
               {/* Left Panel - Organization Tree - Width adjusts based on collapsed state */}
               <div
-                className={`shrink-0 bg-[#030616] border-r-[1.35px] border-[#374151] flex flex-col transition-all duration-300 ${isRegisterPage
-                  ? "sticky top-0 h-screen overflow-y-auto"
-                  : "overflow-hidden"
-                  } ${collapsed ? "w-16" : "w-64"}`}
+                className={`shrink-0 bg-[#030616] border-r-[1.35px] border-[#374151] flex flex-col transition-all duration-300 ${
+                  isRegisterPage
+                    ? "sticky top-0 h-screen overflow-y-auto"
+                    : "overflow-hidden"
+                } ${collapsed ? "w-[52px]" : "w-64"}`}
               >
                 <FolderTree onFilterChange={handleFilterChange} />
               </div>
 
               {/* Right Panel - Main Content Area */}
               <div
-                className={`flex-1 bg-[#030616] p-4 ${isRegisterPage ? "" : "overflow-auto"
-                  }`}
+                className={`flex-1 bg-[#030616] p-4 ${
+                  isRegisterPage ? "" : "overflow-auto"
+                }`}
               >
                 {children}
               </div>

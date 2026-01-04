@@ -71,7 +71,7 @@ export default function UserSettings() {
   }>({
     title: "",
     description: "",
-    onConfirm: () => { },
+    onConfirm: () => {},
   });
 
   const triggerConfirm = (
@@ -155,7 +155,7 @@ export default function UserSettings() {
           const errorMessage =
             err && typeof err === "object" && "response" in err
               ? (err as { response?: { data?: { message?: string } } }).response
-                ?.data?.message
+                  ?.data?.message
               : err && typeof err === "object" && "message" in err
                 ? (err as { message?: string }).message
                 : undefined;
@@ -225,7 +225,7 @@ export default function UserSettings() {
           const errorMessage =
             err && typeof err === "object" && "response" in err
               ? (err as { response?: { data?: { message?: string } } }).response
-                ?.data?.message
+                  ?.data?.message
               : err && typeof err === "object" && "message" in err
                 ? (err as { message?: string }).message
                 : undefined;
@@ -280,7 +280,7 @@ export default function UserSettings() {
           const errorMessage =
             err && typeof err === "object" && "response" in err
               ? (err as { response?: { data?: { message?: string } } }).response
-                ?.data?.message
+                  ?.data?.message
               : err && typeof err === "object" && "message" in err
                 ? (err as { message?: string }).message
                 : undefined;

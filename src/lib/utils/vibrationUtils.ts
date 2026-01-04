@@ -134,9 +134,9 @@ export function getVibrationColor(
       normal: "bg-[#72ff82] text-black",
       warning: "bg-[#ffd84d] text-black",
       concern: "bg-[#ff8c1a] text-black",
-      critical: "bg-[#ff4d4d] text-white", // Changed to white as per check in page.tsx? No, user said valid black text. Let's stick to user request for black text if distinct. 
-      // Wait, user said "adjust text to black" in previous turn. 
-      // In this turn, user said "adjust color tone ... don't change card view". 
+      critical: "bg-[#ff4d4d] text-white", // Changed to white as per check in page.tsx? No, user said valid black text. Let's stick to user request for black text if distinct.
+      // Wait, user said "adjust text to black" in previous turn.
+      // In this turn, user said "adjust color tone ... don't change card view".
       // I will set text-black here for detail scheme to be safe.
     },
   };
@@ -147,8 +147,8 @@ export function getVibrationColor(
     normal: "bg-[#72ff82] text-black",
     warning: "bg-[#ffd84d] text-black",
     concern: "bg-[#ff8c1a] text-black",
-    critical: "bg-[#ff4d4d] text-white", // Default to white for critical usually, but user asked for black text previously? 
-    // "ปรับสีตัวหนังสือเป้นสีดำที" (Adjust text color to be black). 
+    critical: "bg-[#ff4d4d] text-white", // Default to white for critical usually, but user asked for black text previously?
+    // "ปรับสีตัวหนังสือเป้นสีดำที" (Adjust text color to be black).
     // I will make critical text-black too then.
   };
   colorMap.detail.critical = "bg-[#ff4d4d] text-black";
@@ -311,7 +311,12 @@ export function getCardBackgroundColor(
   config: SensorConfig,
   scheme: ColorScheme | "detail" = "card"
 ): string {
-  return getVibrationColorFromVelocity(velocityValue, config, scheme as ColorScheme, false);
+  return getVibrationColorFromVelocity(
+    velocityValue,
+    config,
+    scheme as ColorScheme,
+    false
+  );
 }
 
 /**

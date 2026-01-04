@@ -55,10 +55,10 @@ export default function SensorDotView({
 
   // Map dotSize to text size classes
   const textSizeClasses: Record<number, string> = {
-    1: "text-sm",      // Was text-xs
-    2: "text-base",    // Was text-sm
-    3: "text-lg",      // Was text-base
-    4: "text-xl",      // Was text-lg
+    1: "text-sm", // Was text-xs
+    2: "text-base", // Was text-sm
+    3: "text-lg", // Was text-base
+    4: "text-xl", // Was text-lg
   };
 
   const sizeClass = dotSizeClasses[dotSize] || "w-12 h-12";
@@ -245,10 +245,11 @@ export default function SensorDotView({
                       <div className="flex items-center space-x-1">
                         <span>Status:</span>
                         <div
-                          className={`w-2 h-2 rounded-full ${sensor.connectivity === "online"
-                            ? "bg-green-500"
-                            : "bg-gray-500"
-                            }`}
+                          className={`w-2 h-2 rounded-full ${
+                            sensor.connectivity === "online"
+                              ? "bg-green-500"
+                              : "bg-gray-500"
+                          }`}
                         />
                         <span className="text-xs">
                           {sensor.connectivity || "offline"}
@@ -258,28 +259,31 @@ export default function SensorDotView({
                         <span>Vibration:</span>
                         <div className="flex space-x-0.5">
                           <div
-                            className={`w-1 h-1 rounded-full ${parseFloat(
-                              sensor.h_stats?.velocityTopPeak || "0"
-                            ) > 0
-                              ? "bg-green-500"
-                              : "bg-gray-500"
-                              }`}
+                            className={`w-1 h-1 rounded-full ${
+                              parseFloat(
+                                sensor.h_stats?.velocityTopPeak || "0"
+                              ) > 0
+                                ? "bg-green-500"
+                                : "bg-gray-500"
+                            }`}
                           />
                           <div
-                            className={`w-1 h-1 rounded-full ${parseFloat(
-                              sensor.v_stats?.velocityTopPeak || "0"
-                            ) > 0
-                              ? "bg-green-500"
-                              : "bg-gray-500"
-                              }`}
+                            className={`w-1 h-1 rounded-full ${
+                              parseFloat(
+                                sensor.v_stats?.velocityTopPeak || "0"
+                              ) > 0
+                                ? "bg-green-500"
+                                : "bg-gray-500"
+                            }`}
                           />
                           <div
-                            className={`w-1 h-1 rounded-full ${parseFloat(
-                              sensor.a_stats?.velocityTopPeak || "0"
-                            ) > 0
-                              ? "bg-green-500"
-                              : "bg-gray-500"
-                              }`}
+                            className={`w-1 h-1 rounded-full ${
+                              parseFloat(
+                                sensor.a_stats?.velocityTopPeak || "0"
+                              ) > 0
+                                ? "bg-green-500"
+                                : "bg-gray-500"
+                            }`}
                           />
                         </div>
                       </div>
@@ -353,10 +357,11 @@ export default function SensorDotView({
                     <div className="flex items-center space-x-1">
                       <span>Status:</span>
                       <div
-                        className={`w-2 h-2 rounded-full ${sensor.connectivity === "online"
-                          ? "bg-green-500"
-                          : "bg-gray-500"
-                          }`}
+                        className={`w-2 h-2 rounded-full ${
+                          sensor.connectivity === "online"
+                            ? "bg-green-500"
+                            : "bg-gray-500"
+                        }`}
                       />
                       <span className="text-xs">
                         {sensor.connectivity || "offline"}
@@ -366,25 +371,28 @@ export default function SensorDotView({
                       <span>Vibration:</span>
                       <div className="flex space-x-0.5">
                         <div
-                          className={`w-1 h-1 rounded-full ${parseFloat(sensor.h_stats?.velocityTopPeak || "0") >
+                          className={`w-1 h-1 rounded-full ${
+                            parseFloat(sensor.h_stats?.velocityTopPeak || "0") >
                             0
-                            ? "bg-green-500"
-                            : "bg-gray-500"
-                            }`}
+                              ? "bg-green-500"
+                              : "bg-gray-500"
+                          }`}
                         />
                         <div
-                          className={`w-1 h-1 rounded-full ${parseFloat(sensor.v_stats?.velocityTopPeak || "0") >
+                          className={`w-1 h-1 rounded-full ${
+                            parseFloat(sensor.v_stats?.velocityTopPeak || "0") >
                             0
-                            ? "bg-green-500"
-                            : "bg-gray-500"
-                            }`}
+                              ? "bg-green-500"
+                              : "bg-gray-500"
+                          }`}
                         />
                         <div
-                          className={`w-1 h-1 rounded-full ${parseFloat(sensor.a_stats?.velocityTopPeak || "0") >
+                          className={`w-1 h-1 rounded-full ${
+                            parseFloat(sensor.a_stats?.velocityTopPeak || "0") >
                             0
-                            ? "bg-green-500"
-                            : "bg-gray-500"
-                            }`}
+                              ? "bg-green-500"
+                              : "bg-gray-500"
+                          }`}
                         />
                       </div>
                     </div>

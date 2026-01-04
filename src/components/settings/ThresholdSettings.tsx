@@ -93,8 +93,8 @@ export default function ThresholdSettings() {
         },
         machine_overrides: Array.isArray(loadedSettings.machine_overrides)
           ? loadedSettings.machine_overrides.filter(
-            (override) => override != null
-          )
+              (override) => override != null
+            )
           : [],
       });
     } catch {
@@ -182,7 +182,7 @@ export default function ThresholdSettings() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-            ?.data?.message
+              ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -253,7 +253,7 @@ export default function ThresholdSettings() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-            ?.data?.message
+              ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -761,7 +761,9 @@ export default function ThresholdSettings() {
                                         "Are you sure you want to delete this machine threshold override?",
                                         () => {
                                           if (override.id) {
-                                            handleDeleteMachineOverride(override.id);
+                                            handleDeleteMachineOverride(
+                                              override.id
+                                            );
                                           }
                                         }
                                       );
@@ -942,6 +944,6 @@ export default function ThresholdSettings() {
         title={confirmConfig?.title}
         description={confirmConfig?.description}
       />
-    </div >
+    </div>
   );
 }

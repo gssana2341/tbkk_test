@@ -49,7 +49,8 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
         {/* Master and Satellite symbols */}
         <span title="Master" className="flex items-center gap-2 min-w-0">
           <span className="flex items-center min-w-0">
-            <span className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold text-lg"
+            <span
+              className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold text-lg"
               style={{
                 borderRadius: "50% 50% 15% 15%",
               }}
@@ -63,9 +64,7 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
         </span>
         <span title="Satellite" className="flex items-center gap-2 min-w-0">
           <span className="flex items-center min-w-0">
-            <span
-              className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-500 text-white font-bold text-lg"
-            >
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-500 text-white font-bold text-lg">
               <span>S</span>
             </span>
             <span className="ml-2 text-white text-base truncate block max-w-[90px]">

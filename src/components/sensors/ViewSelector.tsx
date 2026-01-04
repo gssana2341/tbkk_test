@@ -54,10 +54,11 @@ export default function ViewSelector({
                 <Button
                   variant={isActive ? "default" : "ghost"}
                   size="sm"
-                  className={`h-8 w-8 p-0 ${isActive
+                  className={`h-8 w-8 p-0 ${
+                    isActive
                       ? "bg-blue-600 text-white hover:bg-blue-700"
                       : "text-gray-400 hover:text-white hover:bg-[#374151]/50"
-                    }`}
+                  }`}
                   onClick={() => onViewChange(view.mode)}
                 >
                   <Icon className="h-4 w-4" />

@@ -56,15 +56,15 @@ export default function NotificationHistoryPage() {
           // Format datetime from last_data
           const datetime = sensor.last_data?.datetime
             ? new Date(sensor.last_data.datetime)
-              .toLocaleString("en-GB", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
-              .replace(",", " |")
+                .toLocaleString("en-GB", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })
+                .replace(",", " |")
             : "-";
 
           notificationEntries.push({
@@ -74,7 +74,9 @@ export default function NotificationHistoryPage() {
             machine: sensor.machine_number || "-",
             status: finalStatus,
             datetime,
-            timestamp: sensor.last_data?.datetime ? new Date(sensor.last_data.datetime).getTime() : 0,
+            timestamp: sensor.last_data?.datetime
+              ? new Date(sensor.last_data.datetime).getTime()
+              : 0,
             hVrms: sensor.last_data?.velo_rms_h ?? null,
             vVrms: sensor.last_data?.velo_rms_v ?? null,
             aVrms: sensor.last_data?.velo_rms_a ?? null,
@@ -85,9 +87,15 @@ export default function NotificationHistoryPage() {
               ? `${Math.round(sensor.last_data.battery)}%`
               : null,
             config: {
-              thresholdMin: Number(config.thresholdMin ?? config.threshold_min ?? 2.0),
-              thresholdMedium: Number(config.thresholdMedium ?? config.threshold_medium ?? 2.5),
-              thresholdMax: Number(config.thresholdMax ?? config.threshold_max ?? 3.0),
+              thresholdMin: Number(
+                config.thresholdMin ?? config.threshold_min ?? 2.0
+              ),
+              thresholdMedium: Number(
+                config.thresholdMedium ?? config.threshold_medium ?? 2.5
+              ),
+              thresholdMax: Number(
+                config.thresholdMax ?? config.threshold_max ?? 3.0
+              ),
             },
           });
         }

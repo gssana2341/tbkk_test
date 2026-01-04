@@ -71,7 +71,6 @@ export default function Header() {
     }
   }, []);
 
-
   // Fetch notifications from API
   const fetchNotifications = useCallback(async () => {
     // Get latest ignored timestamp from state or local storage logic
@@ -101,7 +100,8 @@ export default function Header() {
         const aStatus = getVibrationLevelFromConfig(aVal, config);
 
         // Determine worst status among axes
-        let calculatedStatus: "CRITICAL" | "WARNING" | "CONCERN" | "NORMAL" = "NORMAL";
+        let calculatedStatus: "CRITICAL" | "WARNING" | "CONCERN" | "NORMAL" =
+          "NORMAL";
         const statuses = [hStatus, vStatus, aStatus];
 
         if (statuses.includes("critical")) {
@@ -124,15 +124,15 @@ export default function Header() {
 
           const datetime = sensor.last_data?.datetime
             ? new Date(sensor.last_data.datetime)
-              .toLocaleString("en-GB", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
-              .replace(",", "")
+                .toLocaleString("en-GB", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })
+                .replace(",", "")
             : "-";
 
           let statusClass = "";
@@ -230,14 +230,16 @@ export default function Header() {
     setLastCleared(now);
     setNotifications([]); // Visually clear immediately
     // Ideally we re-fetch to ensure consistency, but clearing list is enough for perceived speed
-    // fetchNotifications(); 
+    // fetchNotifications();
   };
 
   return (
     <header className="bg-[#030616] border-b-[1.35px] border-[#374151] py-3 px-6 shrink-0">
       <div className="flex items-center justify-between">
         <div className="flex-1 flex items-center gap-2">
-          <span className="text-lg 2xl:text-2xl font-medium text-white">TBKK-Surazense</span>
+          <span className="text-lg 2xl:text-2xl font-medium text-white">
+            TBKK-Surazense
+          </span>
           <span className="text-gray-400 2xl:text-xl">/</span>
           <span className="text-gray-300 text-sm 2xl:text-lg">{pageTitle}</span>
         </div>
@@ -362,11 +364,11 @@ export default function Header() {
                   <AvatarFallback className="bg-gray-600 text-gray-300 text-xs font-medium">
                     {user?.name
                       ? user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()
-                        .slice(0, 2)
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2)
                       : "U"}
                   </AvatarFallback>
                 </Avatar>

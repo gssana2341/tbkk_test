@@ -153,7 +153,9 @@ export async function uploadSensorImage(
         `HTTP error! status: ${response.status} - ${JSON.stringify(errorData)}`
       );
     }
-    throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `HTTP error! status: ${response.status} ${response.statusText}`
+    );
   }
 
   const responseData = await response.json();

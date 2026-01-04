@@ -10,7 +10,10 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    const apiUrl = process.env.SERVER_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "https://tbkk.surazense.com";
+    const apiUrl =
+      process.env.SERVER_API_URL ||
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      "https://tbkk.surazense.com";
     return [
       {
         source: "/api/:path*",

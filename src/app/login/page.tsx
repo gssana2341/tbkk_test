@@ -55,7 +55,7 @@ export default function LoginPage() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-            ?.data?.message
+              ?.data?.message
           : undefined;
       setError(errorMessage || "Login failed");
     }

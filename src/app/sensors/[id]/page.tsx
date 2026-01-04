@@ -284,7 +284,10 @@ function prepareChartData(
       let effectiveFPoints = fPoints;
       if (!effectiveFPoints || effectiveFPoints.length !== amplitudes.length) {
         // If no explicit points, assume linear distribution (0, 1, 2...)
-        effectiveFPoints = Array.from({ length: amplitudes.length }, (_, i) => i);
+        effectiveFPoints = Array.from(
+          { length: amplitudes.length },
+          (_, i) => i
+        );
       }
 
       const request: TimeReconstructionRequest = {
@@ -382,9 +385,9 @@ function prepareChartData(
       ? rmsOverride
       : processedData.length > 0
         ? Math.sqrt(
-          processedData.reduce((sum, val) => sum + val * val, 0) /
-          processedData.length
-        )
+            processedData.reduce((sum, val) => sum + val * val, 0) /
+              processedData.length
+          )
         : 0;
   const peak = Math.max(...processedData.map(Math.abs));
 
@@ -470,10 +473,8 @@ function prepareChartData(
   let pointBackgroundColor: string[] = [];
 
   // Use peak finding algorithm on the calculated spectrum
-  const {
-    topPeaks: processedPeaks,
-    pointBackgroundColor: processedColors,
-  } = findTopPeaks(freqMagnitude, freqLabels, configData.lor, 5);
+  const { topPeaks: processedPeaks, pointBackgroundColor: processedColors } =
+    findTopPeaks(freqMagnitude, freqLabels, configData.lor, 5);
   topPeaks = processedPeaks;
   pointBackgroundColor = processedColors;
 
@@ -514,13 +515,14 @@ function prepareChartData(
   };
 }
 
-
 // Display as: 20 Sep 2025, 19:00:00 (day first)
 // Display as: 20 Sep 2025, 19:00:00 (day first)
 const formatDateTimeDayFirst = (dateString: string) => {
   if (!dateString) return "-";
   // Fix: Treat server time as Local by removing Z if present
-  const rawString = dateString.endsWith("Z") ? dateString.slice(0, -1) : dateString;
+  const rawString = dateString.endsWith("Z")
+    ? dateString.slice(0, -1)
+    : dateString;
   const date = new Date(rawString);
 
   return date.toLocaleString("en-GB", {
@@ -530,7 +532,7 @@ const formatDateTimeDayFirst = (dateString: string) => {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    hour12: false
+    hour12: false,
   });
 };
 
@@ -699,11 +701,15 @@ export default function SensorDetailPage() {
 
   // Helper to call getCardBackgroundColor with 'detail' scheme
   const getDetailCardColor = (val: number) =>
-    getCardBackgroundColor(val, {
-      thresholdMin: configData.thresholdMin,
-      thresholdMedium: configData.thresholdMedium,
-      thresholdMax: configData.thresholdMax,
-    }, "detail");
+    getCardBackgroundColor(
+      val,
+      {
+        thresholdMin: configData.thresholdMin,
+        thresholdMedium: configData.thresholdMedium,
+        thresholdMax: configData.thresholdMax,
+      },
+      "detail"
+    );
   // Function to fetch sensor details from GET /sensors/:id
   const fetchSensorDetails = async (sensorId: string) => {
     try {
@@ -764,8 +770,7 @@ export default function SensorDetailPage() {
         headers: {
           "Cache-Control": "no-cache",
         },
-      }
-      );
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -1290,15 +1295,16 @@ export default function SensorDetailPage() {
           time_interval: sensorLastData.time_interval || 3,
           alarm_ths: sensorLastData.alarm_ths || prev.alarm_ths || 5.0,
           thresholdMin:
-            (sensorLastData.threshold_min && sensorLastData.threshold_min > 0)
+            sensorLastData.threshold_min && sensorLastData.threshold_min > 0
               ? sensorLastData.threshold_min.toString()
               : prev.thresholdMin || "",
           thresholdMedium:
-            (sensorLastData.threshold_medium && sensorLastData.threshold_medium > 0)
+            sensorLastData.threshold_medium &&
+            sensorLastData.threshold_medium > 0
               ? sensorLastData.threshold_medium.toString()
               : prev.thresholdMedium || "",
           thresholdMax:
-            (sensorLastData.threshold_max && sensorLastData.threshold_max > 0)
+            sensorLastData.threshold_max && sensorLastData.threshold_max > 0
               ? sensorLastData.threshold_max.toString()
               : prev.thresholdMax || "",
           notes: prev.notes || "", // Keep existing value if available
@@ -1513,8 +1519,18 @@ export default function SensorDetailPage() {
     };
 
     console.log("=== chartConfig DEBUG ===");
-    console.log("configData.lor:", configData.lor, "configData.fmax:", configData.fmax);
-    console.log("sensorLastData.lor:", sensorLastData.lor, "sensorLastData.fmax:", sensorLastData.fmax);
+    console.log(
+      "configData.lor:",
+      configData.lor,
+      "configData.fmax:",
+      configData.fmax
+    );
+    console.log(
+      "sensorLastData.lor:",
+      sensorLastData.lor,
+      "sensorLastData.fmax:",
+      sensorLastData.fmax
+    );
     console.log("Final chartConfig:", chartConfig);
     console.log("=========================");
 
@@ -1575,7 +1591,13 @@ export default function SensorDetailPage() {
     });
 
     return result;
-  }, [sensorLastData?.fmax, sensorLastData?.g_scale, sensorLastData?.lor, sensorLastData?.data, configData]);
+  }, [
+    sensorLastData?.fmax,
+    sensorLastData?.g_scale,
+    sensorLastData?.lor,
+    sensorLastData?.data,
+    configData,
+  ]);
 
   // Get current selected data
   const prepareVibrationData = useCallback((): {
@@ -2006,32 +2028,35 @@ export default function SensorDetailPage() {
 
                     <span className="text-gray-400">Machine Number</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${configData.machineNumber
-                        ? "text-white"
-                        : "text-gray-500"
-                        }`}
+                      className={`text-lg 2xl:text-2xl ${
+                        configData.machineNumber
+                          ? "text-white"
+                          : "text-gray-500"
+                      }`}
                     >
                       {configData.machineNumber || "Not Set"}
                     </span>
 
                     <span className="text-gray-400">Installation Point</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${configData.installationPoint
-                        ? "text-white"
-                        : "text-gray-500"
-                        }`}
+                      className={`text-lg 2xl:text-2xl ${
+                        configData.installationPoint
+                          ? "text-white"
+                          : "text-gray-500"
+                      }`}
                     >
                       {configData.installationPoint || "Not Set"}
                     </span>
 
                     <span className="text-gray-400">Machine Class</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${configData.machineClass ? "text-white" : "text-gray-500"
-                        }`}
+                      className={`text-lg 2xl:text-2xl ${
+                        configData.machineClass ? "text-white" : "text-gray-500"
+                      }`}
                     >
                       {configData.machineClass
                         ? configData.machineClass.charAt(0).toUpperCase() +
-                        configData.machineClass.slice(1)
+                          configData.machineClass.slice(1)
                         : "Not Set"}
                     </span>
 
@@ -2047,7 +2072,9 @@ export default function SensorDetailPage() {
 
                 <div className="flex-[3_1_300px] border-[1.35px] border-[#374151] rounded-xl p-4 2xl:p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-6">
-                    <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">Status</h2>
+                    <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
+                      Status
+                    </h2>
                     <div className="flex items-center">
                       {(() => {
                         const maxRms = Math.max(
@@ -2130,7 +2157,9 @@ export default function SensorDetailPage() {
                   </div>
                   <div className="grid grid-cols-[150px_1fr] 2xl:grid-cols-[200px_1fr] gap-x-8 gap-y-3 text-base 2xl:text-xl">
                     <span className="text-gray-400">Temperature</span>
-                    <span className="text-lg 2xl:text-2xl text-white">{safeTemp.toFixed(1)}°C</span>
+                    <span className="text-lg 2xl:text-2xl text-white">
+                      {safeTemp.toFixed(1)}°C
+                    </span>
 
                     <span className="text-gray-400">Battery</span>
                     <span className="text-lg 2xl:text-2xl text-white">
@@ -2139,7 +2168,9 @@ export default function SensorDetailPage() {
 
                     <span className="text-gray-400">Signal Strength</span>
                     <span className="flex items-center gap-1 text-white">
-                      <span className="text-lg 2xl:text-2xl">{getSignalStrength(currentData.rssi || 0)}</span>
+                      <span className="text-lg 2xl:text-2xl">
+                        {getSignalStrength(currentData.rssi || 0)}
+                      </span>
                       <span className="text-sm 2xl:text-lg text-gray-500">
                         ({getSignalStrengthLabel(currentData.rssi || 0)})
                       </span>
@@ -2154,8 +2185,8 @@ export default function SensorDetailPage() {
                     <span className="text-lg 2xl:text-2xl text-white">
                       {sensor.installationDate
                         ? formatDate(
-                          new Date(sensor.installationDate).toISOString()
-                        )
+                            new Date(sensor.installationDate).toISOString()
+                          )
                         : formatDate("2025-04-26")}
                     </span>
 
@@ -2182,12 +2213,18 @@ export default function SensorDetailPage() {
                         {sortedDatetimes.map((datetime) => (
                           <li key={datetime}>
                             <button
-                              className={`w-full text-left px-2 py-1 rounded hover:bg-[#374151]/50 text-white ${selectedDatetime === datetime ? "bg-blue-600" : ""
-                                }`}
+                              className={`w-full text-left px-2 py-1 rounded hover:bg-[#374151]/50 text-white ${
+                                selectedDatetime === datetime
+                                  ? "bg-blue-600"
+                                  : ""
+                              }`}
                               onClick={async () => {
                                 setSelectedDatetime(datetime);
                                 try {
-                                  const data = await fetchSensorLastData(params.id, datetime);
+                                  const data = await fetchSensorLastData(
+                                    params.id,
+                                    datetime
+                                  );
                                   if (data) {
                                     setSensorLastData(data);
                                   } else {
@@ -2250,7 +2287,7 @@ export default function SensorDetailPage() {
                     style={{
                       color:
                         safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                          safeTemp <= (configData?.alarm_ths || 35)
+                        safeTemp <= (configData?.alarm_ths || 35)
                           ? "#1f2937"
                           : "#ffffff",
                     }}
@@ -2264,7 +2301,7 @@ export default function SensorDetailPage() {
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                            safeTemp <= (configData?.alarm_ths || 35)
+                          safeTemp <= (configData?.alarm_ths || 35)
                             ? "#1f2937"
                             : "#ffffff",
                       }}
@@ -2276,7 +2313,7 @@ export default function SensorDetailPage() {
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                            safeTemp <= (configData?.alarm_ths || 35)
+                          safeTemp <= (configData?.alarm_ths || 35)
                             ? "#1f2937"
                             : "#ffffff",
                       }}
@@ -2295,7 +2332,7 @@ export default function SensorDetailPage() {
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                            safeTemp <= (configData?.alarm_ths || 35)
+                          safeTemp <= (configData?.alarm_ths || 35)
                             ? "#4b5563"
                             : "#d1d5db", // gray-300 for dark bg
                       }}
@@ -2307,7 +2344,7 @@ export default function SensorDetailPage() {
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                            safeTemp <= (configData?.alarm_ths || 35)
+                          safeTemp <= (configData?.alarm_ths || 35)
                             ? "#4b5563"
                             : "#d1d5db",
                       }}
@@ -2327,10 +2364,13 @@ export default function SensorDetailPage() {
               >
                 <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
-                      ? "!text-white"
-                      : "!text-black"
-                      }`}
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${
+                      shouldTextBeWhite(
+                        getDetailCardColor(parseFloat(xStats.velocityTopPeak))
+                      )
+                        ? "!text-white"
+                        : "!text-black"
+                    }`}
                   >
                     Horizontal (H)
                   </h3>
@@ -2338,7 +2378,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getDetailCardColor(
+                              parseFloat(xStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2347,7 +2391,11 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(xStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white text-sm md:text-base 2xl:text-2xl"
                             : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
@@ -2358,7 +2406,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(xStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2367,7 +2419,11 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(xStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white text-sm md:text-base 2xl:text-2xl"
                             : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
@@ -2378,7 +2434,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(xStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2386,10 +2446,15 @@ export default function SensorDetailPage() {
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(xStats.velocityTopPeak)))
-                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
-                          : "!text-black text-sm md:text-base 2xl:text-2xl"
-                          }`}
+                        className={`text-right ${
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(xStats.velocityTopPeak)
+                            )
+                          )
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
+                        }`}
                       >
                         {xStats.velocityTopPeak} mm/s
                       </span>
@@ -2408,10 +2473,13 @@ export default function SensorDetailPage() {
                 {/* {getDetailCardColor(parseFloat(yStats.velocityTopPeak))} */}
                 <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
-                      ? "!text-white"
-                      : "!text-black"
-                      }`}
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${
+                      shouldTextBeWhite(
+                        getDetailCardColor(parseFloat(yStats.velocityTopPeak))
+                      )
+                        ? "!text-white"
+                        : "!text-black"
+                    }`}
                   >
                     Vertical (V)
                   </h3>
@@ -2419,7 +2487,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(yStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2428,7 +2500,11 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(yStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white text-sm md:text-base 2xl:text-2xl"
                             : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
@@ -2439,7 +2515,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(yStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2448,7 +2528,11 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(yStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white text-sm md:text-base 2xl:text-2xl"
                             : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
@@ -2459,7 +2543,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(yStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2467,10 +2555,15 @@ export default function SensorDetailPage() {
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(yStats.velocityTopPeak)))
-                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
-                          : "!text-black text-sm md:text-base 2xl:text-2xl"
-                          }`}
+                        className={`text-right ${
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(yStats.velocityTopPeak)
+                            )
+                          )
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
+                        }`}
                       >
                         {yStats.velocityTopPeak} mm/s
                       </span>
@@ -2487,10 +2580,13 @@ export default function SensorDetailPage() {
               >
                 <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
-                      ? "!text-white"
-                      : "!text-black"
-                      }`}
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${
+                      shouldTextBeWhite(
+                        getDetailCardColor(parseFloat(zStats.velocityTopPeak))
+                      )
+                        ? "!text-white"
+                        : "!text-black"
+                    }`}
                   >
                     Axial (A)
                   </h3>
@@ -2498,7 +2594,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(zStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2507,7 +2607,11 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(zStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white text-sm md:text-base 2xl:text-2xl"
                             : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
@@ -2518,7 +2622,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(zStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2527,7 +2635,11 @@ export default function SensorDetailPage() {
                       </span>
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(zStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white text-sm md:text-base 2xl:text-2xl"
                             : "!text-black text-sm md:text-base 2xl:text-2xl"
                         }
@@ -2538,7 +2650,11 @@ export default function SensorDetailPage() {
                     <div className="flex justify-between">
                       <span
                         className={
-                          shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(zStats.velocityTopPeak)
+                            )
+                          )
                             ? "!text-white"
                             : "!text-black"
                         }
@@ -2546,10 +2662,15 @@ export default function SensorDetailPage() {
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${shouldTextBeWhite(getCardBackgroundColorCallback(parseFloat(zStats.velocityTopPeak)))
-                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
-                          : "!text-black text-sm md:text-base 2xl:text-2xl"
-                          }`}
+                        className={`text-right ${
+                          shouldTextBeWhite(
+                            getCardBackgroundColorCallback(
+                              parseFloat(zStats.velocityTopPeak)
+                            )
+                          )
+                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                            : "!text-black text-sm md:text-base 2xl:text-2xl"
+                        }`}
                       >
                         {zStats.velocityTopPeak} mm/s
                       </span>
@@ -2726,38 +2847,49 @@ export default function SensorDetailPage() {
                             </thead>
                             <tbody>
                               {hasData && history.length > 0 ? (
-                                history
-                                  .slice(0, 10)
-                                  .map((item, i) => {
-                                    const axisKey = selectedAxis === "H-axis" ? "h" : selectedAxis === "V-axis" ? "v" : "a";
-                                    let rmsValue = "-";
-                                    let unitShort = "";
+                                history.slice(0, 10).map((item, i) => {
+                                  const axisKey =
+                                    selectedAxis === "H-axis"
+                                      ? "h"
+                                      : selectedAxis === "V-axis"
+                                        ? "v"
+                                        : "a";
+                                  let rmsValue = "-";
+                                  let unitShort = "";
 
-                                    if (selectedUnit === "Acceleration (G)") {
-                                      rmsValue = (item[`g_rms_${axisKey}`] || 0).toFixed(3);
-                                      unitShort = "G";
-                                    } else if (selectedUnit === "Acceleration (mm/s²)") {
-                                      rmsValue = (item[`a_rms_${axisKey}`] || 0).toFixed(2);
-                                      unitShort = "mm/s²";
-                                    } else {
-                                      rmsValue = (item[`velo_rms_${axisKey}`] || 0).toFixed(3);
-                                      unitShort = "mm/s";
-                                    }
+                                  if (selectedUnit === "Acceleration (G)") {
+                                    rmsValue = (
+                                      item[`g_rms_${axisKey}`] || 0
+                                    ).toFixed(3);
+                                    unitShort = "G";
+                                  } else if (
+                                    selectedUnit === "Acceleration (mm/s²)"
+                                  ) {
+                                    rmsValue = (
+                                      item[`a_rms_${axisKey}`] || 0
+                                    ).toFixed(2);
+                                    unitShort = "mm/s²";
+                                  } else {
+                                    rmsValue = (
+                                      item[`velo_rms_${axisKey}`] || 0
+                                    ).toFixed(3);
+                                    unitShort = "mm/s";
+                                  }
 
-                                    return (
-                                      <tr
-                                        key={i}
-                                        className="border-b border-gray-700 hover:bg-gray-800 transition-colors"
-                                      >
-                                        <td className="px-3 py-3 text-lg font-medium text-white">
-                                          {formatDateTimeDayFirst(item.datetime)}
-                                        </td>
-                                        <td className="px-3 py-3 text-lg font-medium text-right text-white">
-                                          {rmsValue} {unitShort}
-                                        </td>
-                                      </tr>
-                                    );
-                                  })
+                                  return (
+                                    <tr
+                                      key={i}
+                                      className="border-b border-gray-700 hover:bg-gray-800 transition-colors"
+                                    >
+                                      <td className="px-3 py-3 text-lg font-medium text-white">
+                                        {formatDateTimeDayFirst(item.datetime)}
+                                      </td>
+                                      <td className="px-3 py-3 text-lg font-medium text-right text-white">
+                                        {rmsValue} {unitShort}
+                                      </td>
+                                    </tr>
+                                  );
+                                })
                               ) : (
                                 <tr>
                                   <td

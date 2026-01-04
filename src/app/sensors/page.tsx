@@ -197,9 +197,9 @@ function prepareChartData(
   const rms =
     processedData.length > 0
       ? Math.sqrt(
-        processedData.reduce((sum, val) => sum + val * val, 0) /
-        processedData.length
-      )
+          processedData.reduce((sum, val) => sum + val * val, 0) /
+            processedData.length
+        )
       : 0;
   const peak = Math.max(...processedData.map(Math.abs));
 
@@ -403,15 +403,12 @@ export default function SensorDetailPage() {
   // ฟังก์ชันดึงข้อมูลล่าสุดจากเซ็นเซอร์
   const fetchSensorLastData = async (sensorId: string) => {
     try {
-      const response = await fetch(
-        `${"/api"}/sensors/${sensorId}/last-data`,
-        {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache",
-          },
-        }
-      );
+      const response = await fetch(`${"/api"}/sensors/${sensorId}/last-data`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -428,15 +425,12 @@ export default function SensorDetailPage() {
   // ฟังก์ชันดึงข้อมูล configuration ของเซ็นเซอร์
   const fetchSensorConfig = async (sensorId: string) => {
     try {
-      const response = await fetch(
-        `${"/api"}/sensors/${sensorId}/config`,
-        {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache",
-          },
-        }
-      );
+      const response = await fetch(`${"/api"}/sensors/${sensorId}/config`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -575,16 +569,13 @@ export default function SensorDetailPage() {
   // ฟังก์ชันดึงข้อมูลวันที่ของเซ็นเซอร์
   const fetchSensorDatetimes = async (sensorId: string) => {
     try {
-      const response = await fetch(
-        `${"/api"}/sensors/${sensorId}/datetimes`,
-        {
-          cache: "no-store",
-          headers: {
-            Accept: "application/json",
-            "Cache-Control": "no-cache",
-          },
-        }
-      );
+      const response = await fetch(`${"/api"}/sensors/${sensorId}/datetimes`, {
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+          "Cache-Control": "no-cache",
+        },
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

@@ -39,19 +39,19 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Use undefined for missing data to distinguish from 0 (which is valid data)
   const veloRmsH =
     sensor?.last_data?.velo_rms_h !== undefined &&
-      sensor?.last_data?.velo_rms_h !== null
+    sensor?.last_data?.velo_rms_h !== null
       ? Number(sensor.last_data.velo_rms_h)
       : undefined;
 
   const veloRmsV =
     sensor?.last_data?.velo_rms_v !== undefined &&
-      sensor?.last_data?.velo_rms_v !== null
+    sensor?.last_data?.velo_rms_v !== null
       ? Number(sensor.last_data.velo_rms_v)
       : undefined;
 
   const veloRmsA =
     sensor?.last_data?.velo_rms_a !== undefined &&
-      sensor?.last_data?.velo_rms_a !== null
+    sensor?.last_data?.velo_rms_a !== null
       ? Number(sensor.last_data.velo_rms_a)
       : undefined;
 
@@ -116,18 +116,16 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     ? new Date(rawLastUpdate.toISOString().replace("Z", ""))
     : null;
 
-
-
   const lastUpdateText = lastUpdate
     ? lastUpdate.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
     : "-";
 
   // Determine card background color based on sensor status
@@ -193,12 +191,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
               style={
                 deviceRole.toLowerCase() === "master"
                   ? {
-                    borderRadius: "50% 50% 15% 15%",
-                  }
+                      borderRadius: "50% 50% 15% 15%",
+                    }
                   : undefined
               }
             >
-              <span className={`text-white text-lg font-bold ${deviceRole.toLowerCase() !== "master" ? "" : ""}`}>
+              <span
+                className={`text-white text-lg font-bold ${deviceRole.toLowerCase() !== "master" ? "" : ""}`}
+              >
                 {deviceRole.toLowerCase() === "master" ? "M" : "S"}
               </span>
             </div>
@@ -228,14 +228,12 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
               A
             </span>
           </div>
-
         </div>
         {/* Divider */}
         <div className="my-1.5 2xl:my-2 h-px w-full bg-[#374151]" />
         {/* Row 2: Area/Machine | Temperature */}
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
           <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-
             <div className="text-xs sm:text-sm lg:text-base 2xl:text-lg font-semibold truncate text-gray-300">
               {areaLabel} / {machineLabel}
             </div>

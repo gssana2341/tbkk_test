@@ -82,7 +82,11 @@ const axisColors = {
 
 function getAxisColor(
   value: number | null | undefined,
-  config?: { thresholdMin: number; thresholdMedium: number; thresholdMax: number }
+  config?: {
+    thresholdMin: number;
+    thresholdMedium: number;
+    thresholdMax: number;
+  }
 ) {
   if (value == null) return "bg-gray-400";
 
@@ -193,7 +197,9 @@ export function NotificationHistoryTable({
         <ArrowDown className="ml-1 h-3 w-3 sm:h-4 sm:w-4" />
       );
     }
-    return <ArrowUpDown className="ml-1 h-3 w-3 sm:h-4 sm:w-4 text-gray-500 opacity-50" />;
+    return (
+      <ArrowUpDown className="ml-1 h-3 w-3 sm:h-4 sm:w-4 text-gray-500 opacity-50" />
+    );
   };
 
   return (
@@ -207,7 +213,10 @@ export function NotificationHistoryTable({
             </h2>
             <div className="flex flex-wrap gap-6 items-center">
               {Object.entries(statusStyles).map(([key, val]) => (
-                <div key={key} className="flex items-center gap-2 text-base 2xl:text-xl">
+                <div
+                  key={key}
+                  className="flex items-center gap-2 text-base 2xl:text-xl"
+                >
                   <span
                     className={`inline-block w-4 h-4 2xl:w-6 2xl:h-6 rounded-full border border-gray-300 ${val.dot}`}
                   />
@@ -235,7 +244,9 @@ export function NotificationHistoryTable({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <span className="ml-2 text-base 2xl:text-xl text-gray-300">Date:</span>
+          <span className="ml-2 text-base 2xl:text-xl text-gray-300">
+            Date:
+          </span>
           <input
             type="date"
             className="border border-gray-600 rounded-md px-2 py-2 text-base 2xl:text-xl bg-[#11171F] text-white [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"

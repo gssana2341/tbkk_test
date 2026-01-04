@@ -137,7 +137,7 @@ export function calculateFFT(
     // Real Fs = Fmax * 2.56.
     // Delta F = Fs / N_FFT (nextPow2).
 
-    // However, user said "Amount must be equal". 
+    // However, user said "Amount must be equal".
     // If we use nextPow2, we get more points. If we use n, it's not power of 2.
     // Let's return `nextPow2` points because that's the FFT result.
 
@@ -216,8 +216,8 @@ export function getAxisTopPeakStats(
     const rms =
       velocity.length > 0
         ? Math.sqrt(
-          velocity.reduce((sum, val) => sum + val * val, 0) / velocity.length
-        )
+            velocity.reduce((sum, val) => sum + val * val, 0) / velocity.length
+          )
         : 0;
     const peak = rms;
     const peakToPeak = peak * 2;
@@ -436,10 +436,10 @@ export function getAxisTopPeakStatsEnhanced(
       totalVelocityPeaks: velocityPeakResult.totalPeaksFound,
       dominantPeak: velocityPeakResult.dominantPeak
         ? {
-          peak: (velocityPeakResult.dominantPeak.peak * 0.707).toFixed(2),
-          frequency: velocityPeakResult.dominantPeak.frequency,
-          index: velocityPeakResult.dominantPeak.index,
-        }
+            peak: (velocityPeakResult.dominantPeak.peak * 0.707).toFixed(2),
+            frequency: velocityPeakResult.dominantPeak.frequency,
+            index: velocityPeakResult.dominantPeak.index,
+          }
         : null,
     };
   } catch (error) {
@@ -914,10 +914,10 @@ export function findTopPeaksEnhanced(
     const dominantPeak =
       topPeaks.length > 0
         ? {
-          peak: topPeaks[0].peak,
-          frequency: topPeaks[0].frequency,
-          index: topPeaks[0].index,
-        }
+            peak: topPeaks[0].peak,
+            frequency: topPeaks[0].frequency,
+            index: topPeaks[0].index,
+          }
         : null;
 
     return {
@@ -961,19 +961,12 @@ export interface TimeReconstructionResult {
 export function reconstructTimeDomainFromAPI(
   input: TimeReconstructionRequest
 ): TimeReconstructionResult {
-
   const { LOR, Fmax, Acc, FreqPoint, areFrequenciesInHz } = input;
 
   // -----------------------------
   // Basic validation
   // -----------------------------
-  if (
-    !LOR || !Fmax ||
-
-    !Acc || !FreqPoint ||
-
-    Acc.length !== FreqPoint.length
-  ) {
+  if (!LOR || !Fmax || !Acc || !FreqPoint || Acc.length !== FreqPoint.length) {
     throw new Error("Invalid API input");
   }
 
@@ -991,10 +984,10 @@ export function reconstructTimeDomainFromAPI(
   // -----------------------------
   const SCALE = 2.56;
 
-  const LOR_new = LOR * SCALE;       // 2048
-  const Fmax_new = Fmax * SCALE;     // 1024 Hz
+  const LOR_new = LOR * SCALE; // 2048
+  const Fmax_new = Fmax * SCALE; // 1024 Hz
 
-  const step = Fmax_new / LOR_new;   // 0.5 Hz
+  const step = Fmax_new / LOR_new; // 0.5 Hz
 
   // Convert Frequency Points → Hz
   const freqHz: number[] = [];
@@ -1008,7 +1001,7 @@ export function reconstructTimeDomainFromAPI(
     }
   }
 
-  const time_step = 1 / Fmax_new;    // 1/1024 s
+  const time_step = 1 / Fmax_new; // 1/1024 s
   // const time_stop = LOR_new / Fmax_new; // 2 s (info only) - Removed unused variable
 
   // -----------------------------
@@ -1023,8 +1016,7 @@ export function reconstructTimeDomainFromAPI(
     let G = 0;
 
     for (let index = 0; index < Acc.length; index++) {
-      G += Acc[index] *
-        Math.sin(2 * Math.PI * freqHz[index] * t);
+      G += Acc[index] * Math.sin(2 * Math.PI * freqHz[index] * t);
     }
 
     time[sample] = t;
@@ -1035,5 +1027,3 @@ export function reconstructTimeDomainFromAPI(
 
   return { time, signal };
 }
-
-

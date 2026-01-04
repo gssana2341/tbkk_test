@@ -193,7 +193,8 @@ export default function SensorsPage() {
     if (selectedStatuses.length > 0) {
       result = result.filter((sensor) => {
         // Use pre-calculated status
-        const calculatedStatus = sensor.status === "ok" ? "normal" : sensor.status;
+        const calculatedStatus =
+          sensor.status === "ok" ? "normal" : sensor.status;
 
         // Check if calculated status is in selected statuses
         if (

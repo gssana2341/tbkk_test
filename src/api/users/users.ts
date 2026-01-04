@@ -145,17 +145,20 @@ export async function uploadAvatar(
 
 // Get all users (Admin only)
 // Get all users (Admin only)
-export async function getAllUsers(): Promise<Array<import("@/lib/types").UserAdminResponse>> {
+export async function getAllUsers(): Promise<
+  Array<import("@/lib/types").UserAdminResponse>
+> {
   try {
     const axiosInstance = getAxiosInstance();
     // Backend doesn't return status/last_login yet, so we fetch as any[] and map
-    const response = await axiosInstance.get<Array<Record<string, unknown>>>("/users");
+    const response =
+      await axiosInstance.get<Array<Record<string, unknown>>>("/users");
 
     if (response.data.length > 0) {
       console.log("Sample user data (First User):", {
         id: response.data[0].id,
         status: response.data[0].status,
-        role: response.data[0].role
+        role: response.data[0].role,
       });
     }
 
