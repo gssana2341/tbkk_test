@@ -234,7 +234,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-800 border-b border-gray-700 py-3 px-6 shrink-0">
+    <header className="bg-[#030616] border-b-[1.35px] border-[#374151] py-3 px-6 shrink-0">
       <div className="flex items-center justify-between">
         <div className="flex-1 flex items-center gap-2">
           <span className="text-lg 2xl:text-2xl font-medium text-white">TBKK-Surazense</span>
@@ -263,7 +263,7 @@ export default function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-[#1F2937] text-white w-[380px] shadow-2xl border border-[#374151] p-0 rounded-2xl overflow-hidden"
+              className="bg-[#030616] text-white w-[380px] shadow-2xl border-[1.35px] border-[#374151] p-0 rounded-2xl overflow-hidden"
             >
               <div className="flex items-center justify-between px-5 py-3 border-b border-[#374151]">
                 <div>
@@ -339,7 +339,7 @@ export default function Header() {
                   ))
                 )}
               </div>
-              <div className="px-5 py-3 text-sm font-medium text-gray-400 text-center border-t border-[#374151] bg-[#11171F]">
+              <div className="px-5 py-3 text-sm font-medium text-gray-400 text-center border-t-[1.35px] border-[#374151] bg-[#030616]">
                 {notifications.length} Notifications
               </div>
             </DropdownMenuContent>
@@ -378,7 +378,7 @@ export default function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-gray-800 border-gray-700"
+              className="bg-[#030616] border-[1.35px] border-[#374151]"
             >
               <DropdownMenuLabel className="text-white">
                 {user ? user.name : "Guest"}

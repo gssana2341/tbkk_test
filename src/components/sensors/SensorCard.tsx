@@ -168,11 +168,11 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     }
 
     return {
-      backgroundColor: "#111827", // Hex for bg-gray-900 (Dark)
+      backgroundColor: "#030616",
       borderTop: `12px solid ${borderColor}`, // Thick top colored border
-      borderRight: "1px solid #374151", // Thin gray border for shape
-      borderBottom: "1px solid #374151",
-      borderLeft: "1px solid #374151",
+      borderRight: "1.35px solid #374151", // Thin gray border for shape
+      borderBottom: "1.35px solid #374151",
+      borderLeft: "1.35px solid #374151",
       color: "#ffffff", // White text for everything
     };
   };
@@ -231,7 +231,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
         </div>
         {/* Divider */}
-        <div className="my-1.5 2xl:my-2 h-px w-full bg-gray-600" />
+        <div className="my-1.5 2xl:my-2 h-px w-full bg-[#374151]" />
         {/* Row 2: Area/Machine | Temperature */}
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
           <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">

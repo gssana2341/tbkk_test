@@ -108,8 +108,8 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4 py-8">
-      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+    <div className="min-h-screen flex items-center justify-center bg-[#030616] px-4 py-8">
+      <Card className="w-full max-w-md bg-[#030616] border-[1.35px] border-[#374151]">
         {!showNewPassword ? (
           <>
             <CardHeader className="space-y-1">
@@ -159,7 +159,7 @@ export default function ForgotPasswordPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                      className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
                     />
                   </div>
                   <Button
@@ -199,7 +199,7 @@ export default function ForgotPasswordPage() {
                         maxLength={1}
                         value={digit}
                         onChange={(e) => handleOtpChange(idx, e.target.value)}
-                        className="w-14 h-14 text-center text-2xl bg-gray-900 border-gray-400 focus:border-blue-500"
+                        className="w-14 h-14 text-center text-2xl bg-[#030616] border-[1.35px] border-[#374151] focus:border-blue-500"
                       />
                     ))}
                   </div>
@@ -226,7 +226,7 @@ export default function ForgotPasswordPage() {
         ) : (
           <>
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-center text-black">
+              <CardTitle className="text-2xl font-bold text-center text-white">
                 Create New Password
               </CardTitle>
               <CardDescription className="text-center text-gray-400 text-base">
@@ -247,7 +247,7 @@ export default function ForgotPasswordPage() {
                   </Alert>
                 )}
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword" className="text-black">
+                  <Label htmlFor="newPassword" className="text-white">
                     New Password
                   </Label>
                   <div className="relative">
@@ -256,7 +256,7 @@ export default function ForgotPasswordPage() {
                       type={showNewPasswordEye ? "text" : "password"}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="bg-white border-gray-400 text-black pr-10"
+                      className="bg-[#030616] border-[1.35px] border-[#374151] text-white pr-10"
                     />
                     <button
                       type="button"
@@ -273,7 +273,7 @@ export default function ForgotPasswordPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-black">
+                  <Label htmlFor="confirmPassword" className="text-white">
                     Confirm Password
                   </Label>
                   <div className="relative">
@@ -282,7 +282,7 @@ export default function ForgotPasswordPage() {
                       type={showConfirmPasswordEye ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="bg-white border-gray-400 text-black pr-10"
+                      className="bg-[#030616] border-[1.35px] border-[#374151] text-white pr-10"
                     />
                     <button
                       type="button"

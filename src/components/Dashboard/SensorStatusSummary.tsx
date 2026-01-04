@@ -108,9 +108,9 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
   return (
     <div className="w-full flex flex-col md:flex-row gap-4">
       {/* Card 1: Main Summary */}
-      <div className="flex-[2] p-2 border border-gray-700 rounded-xl bg-[#1F2937] shadow-md text-white flex flex-col">
+      <div className="flex-[2] p-2 border-[1.35px] border-[#374151] rounded-xl bg-[#030616] shadow-md text-white flex flex-col">
         {/* Top Section: Total Sensor Info */}
-        <div className="rounded-lg p-0 bg-[#1F2937] mb-2">
+        <div className="rounded-lg p-0 bg-[#030616] mb-2">
           <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
             {/* Left: Total Sensor Info */}
             <div className="flex-shrink-0">
@@ -198,8 +198,8 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
       </div>
 
       {/* Card 2: Disconnect Section */}
-      <div className="flex-1 p-2 border border-gray-700 rounded-xl bg-[#1F2937] shadow-md text-white flex flex-col">
-        <div className="rounded-lg p-0 bg-[#1F2937] mb-2">
+      <div className="flex-1 p-2 border-[1.35px] border-[#374151] rounded-xl bg-[#030616] shadow-md text-white flex flex-col">
+        <div className="rounded-lg p-0 bg-[#030616] mb-2">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="min-w-0 flex-1 break-words whitespace-normal">
               <div className="text-base sm:text-xl md:text-2xl font-semibold text-white">

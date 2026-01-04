@@ -549,13 +549,13 @@ export default function ThresholdSettings() {
       )}
 
       <Tabs defaultValue="temperature" className="w-full">
-        <TabsList className="grid w-full md:w-auto grid-cols-2 bg-[#1F2937] border border-[#374151] text-white">
+        <TabsList className="grid w-full md:w-auto grid-cols-2 bg-[#030616] border-[1.35px] border-[#374151] text-white">
           <TabsTrigger value="temperature">Temperature</TabsTrigger>
           <TabsTrigger value="vibration">Vibration</TabsTrigger>
         </TabsList>
 
         <TabsContent value="temperature">
-          <Card className="bg-[#1F2937] border-[#374151] text-white">
+          <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
             <CardHeader>
               <CardTitle>Temperature Thresholds</CardTitle>
               <CardDescription>
@@ -717,7 +717,7 @@ export default function ThresholdSettings() {
                           )
                         }
                         disabled={saving || !selectedMachine}
-                        className="w-full bg-[#11171F] border-[#4B5563] text-white hover:bg-[#1F2937] hover:text-white"
+                        className="w-full bg-[#030616] border-[1.35px] border-[#374151] text-white hover:bg-[#374151]/50 hover:text-white"
                       >
                         <Plus className="mr-2 h-4 w-4" />
                         Add Override
@@ -783,7 +783,7 @@ export default function ThresholdSettings() {
         </TabsContent>
 
         <TabsContent value="vibration">
-          <Card className="bg-[#1F2937] border-[#374151] text-white">
+          <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
             <CardHeader>
               <CardTitle>Vibration Thresholds</CardTitle>
               <CardDescription>

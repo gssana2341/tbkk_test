@@ -413,7 +413,7 @@ export default function UserSettings() {
         </Alert>
       )}
 
-      <Card className="bg-[#1F2937] border-[#374151] text-white">
+      <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
         <CardHeader>
           <CardTitle>User Profile</CardTitle>
           <CardDescription>Manage your account information</CardDescription>
@@ -433,7 +433,7 @@ export default function UserSettings() {
                   variant="outline"
                   size="sm"
                   asChild
-                  className="bg-[#11171F] border-[#4B5563] text-white hover:bg-[#1F2937] hover:text-white"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white hover:bg-[#374151]/50 hover:text-white"
                 >
                   <span>Change Avatar</span>
                 </Button>
@@ -456,7 +456,7 @@ export default function UserSettings() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={saving}
-                  className="bg-[#11171F] border-[#4B5563] text-white"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                 />
               </div>
 
@@ -467,7 +467,7 @@ export default function UserSettings() {
                   type="email"
                   value={email}
                   disabled
-                  className="bg-[#11171F] border-[#4B5563] text-white cursor-not-allowed opacity-50"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white cursor-not-allowed opacity-50"
                 />
               </div>
 
@@ -520,7 +520,7 @@ export default function UserSettings() {
         </CardContent>
       </Card>
 
-      <Card className="bg-[#1F2937] border-[#374151] text-white">
+      <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
         <CardHeader>
           <CardTitle>Security</CardTitle>
           <CardDescription>
@@ -613,10 +613,10 @@ export default function UserSettings() {
                 onValueChange={handleSessionTimeoutChange}
                 disabled={saving}
               >
-                <SelectTrigger className="w-[180px] bg-[#11171F] border-[#4B5563] text-white">
+                <SelectTrigger className="w-[180px] bg-[#030616] border-[1.35px] border-[#374151] text-white">
                   <SelectValue placeholder="Select timeout" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#11171F] border-[#4B5563] text-white">
+                <SelectContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                   <SelectItem value="15">15 minutes</SelectItem>
                   <SelectItem value="30">30 minutes</SelectItem>
                   <SelectItem value="60">1 hour</SelectItem>

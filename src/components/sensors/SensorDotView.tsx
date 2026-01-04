@@ -217,7 +217,7 @@ export default function SensorDotView({
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
-                    className="bg-gray-900 border-gray-700 text-white"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   >
                     {/* Tooltip Content */}
                     <div className="space-y-1 text-xs">
@@ -326,7 +326,7 @@ export default function SensorDotView({
                 </TooltipTrigger>
                 <TooltipContent
                   side="top"
-                  className="bg-gray-900 border-gray-700 text-white"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                 >
                   <div className="space-y-1 text-xs">
                     <div className="font-semibold">

@@ -1810,7 +1810,7 @@ export default function SensorDetailPage() {
 
   if (!mounted || loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-black">
+      <div className="flex h-screen items-center justify-center bg-[#030616]">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
       </div>
     );
@@ -1818,7 +1818,7 @@ export default function SensorDetailPage() {
 
   if (!sensor) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-black text-white">
+      <div className="flex h-screen flex-col items-center justify-center bg-[#030616] text-white">
         <h2 className="text-2xl font-bold">Sensor not found</h2>
         <Button
           variant="outline"
@@ -1832,14 +1832,14 @@ export default function SensorDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[#030616] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-800">
+      <div className="flex items-center justify-between p-4 border-b-[1.35px] border-[#374151]">
         <div className="flex items-center">
           <Button
             variant="outline"
             size="sm"
-            className="mr-4 bg-transparent border-gray-700 hover:bg-gray-800"
+            className="mr-4 bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50"
             onClick={() => router.push("/")}
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Sensor
@@ -1869,7 +1869,7 @@ export default function SensorDetailPage() {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            className="bg-transparent border-gray-700 hover:bg-gray-800"
+            className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50"
             onClick={() => router.push(`/sensors/${sensor.id}/history`)}
           >
             View History
@@ -1879,14 +1879,14 @@ export default function SensorDetailPage() {
               <Button
                 variant="outline"
                 size="icon"
-                className="bg-transparent border-gray-700 hover:bg-gray-800"
+                className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50"
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-gray-900 border-gray-800"
+              className="bg-[#030616] border-[1.35px] border-[#374151]"
             >
               <DropdownMenuItem
                 className="text-white"
@@ -1952,7 +1952,7 @@ export default function SensorDetailPage() {
           </div>
         )}
         {/* Horizontal Sensor Information */}
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-12">
               <div className="shrink-0 flex justify-center">
@@ -1972,7 +1972,7 @@ export default function SensorDetailPage() {
               </div>
 
               <div className="grow flex flex-wrap gap-4 items-stretch">
-                <div className="flex-[3_1_300px] border border-gray-700 rounded-xl p-4 2xl:p-6">
+                <div className="flex-[3_1_300px] border-[1.35px] border-[#374151] rounded-xl p-4 2xl:p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-6">
                     <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
                       Sensor Information
@@ -1980,7 +1980,7 @@ export default function SensorDetailPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="bg-transparent border-gray-700 hover:bg-gray-800 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
+                      className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
                       onClick={() => router.push(`/register?id=${params.id}`)}
                     >
                       <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
@@ -2045,7 +2045,7 @@ export default function SensorDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex-[3_1_300px] border border-gray-700 rounded-xl p-4 2xl:p-6">
+                <div className="flex-[3_1_300px] border-[1.35px] border-[#374151] rounded-xl p-4 2xl:p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-6">
                     <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">Status</h2>
                     <div className="flex items-center">
@@ -2174,7 +2174,7 @@ export default function SensorDetailPage() {
                     </h2>
                   </div>
                   <div
-                    className="bg-gray-900 border border-gray-700 rounded-md p-2 overflow-y-auto"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] rounded-md p-2 overflow-y-auto"
                     style={{ maxHeight: "200px" }}
                   >
                     {sortedDatetimes.length > 0 ? (
@@ -2182,7 +2182,7 @@ export default function SensorDetailPage() {
                         {sortedDatetimes.map((datetime) => (
                           <li key={datetime}>
                             <button
-                              className={`w-full text-left px-2 py-1 rounded hover:bg-gray-800 text-white ${selectedDatetime === datetime ? "bg-blue-600" : ""
+                              className={`w-full text-left px-2 py-1 rounded hover:bg-[#374151]/50 text-white ${selectedDatetime === datetime ? "bg-blue-600" : ""
                                 }`}
                               onClick={async () => {
                                 setSelectedDatetime(datetime);
@@ -2219,7 +2219,7 @@ export default function SensorDetailPage() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4 2xl:gap-8">
             <Card
-              className="border-gray-800"
+              className="border-[1.35px] border-[#374151]"
               style={{
                 backgroundColor:
                   safeTemp > (configData?.alarm_ths || 35)
@@ -2322,7 +2322,7 @@ export default function SensorDetailPage() {
             {/* Conditionally show H-axis card */}
             {configData.hAxisEnabled && (
               <Card
-                className={`border-gray-800 
+                className={`border-[1.35px] border-[#374151]
               ${getDetailCardColor(parseFloat(xStats.velocityTopPeak))}`}
               >
                 <CardContent className="p-4 2xl:p-6">
@@ -2483,7 +2483,7 @@ export default function SensorDetailPage() {
             {/* Conditionally show A-axis card */}
             {configData.aAxisEnabled && (
               <Card
-                className={`border-gray-800 ${getDetailCardColor(parseFloat(zStats.velocityTopPeak))}`}
+                className={`border-[1.35px] border-[#374151]${getDetailCardColor(parseFloat(zStats.velocityTopPeak))}`}
               >
                 <CardContent className="p-4 2xl:p-6">
                   <h3
@@ -2561,7 +2561,7 @@ export default function SensorDetailPage() {
           </div>
 
           {/* Vibration Analysis Section */}
-          <Card className="bg-[#1F2937] border border-gray-700">
+          <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
             <CardContent className="p-6">
               <h2 className="text-lg md:text-xl lg:text-2xl font-extrabold mb-4 text-white">
                 Vibration Frequency Analysis

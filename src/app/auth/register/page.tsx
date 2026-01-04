@@ -74,7 +74,7 @@ export default function RegisterPage() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -87,7 +87,7 @@ export default function RegisterPage() {
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-[#030616]">
         <div className="flex items-center space-x-2">
           <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
           <span className="text-white">Loading...</span>
@@ -99,7 +99,7 @@ export default function RegisterPage() {
   // Don't show register form if already authenticated
   if (isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-[#030616]">
         <div className="flex items-center space-x-2">
           <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
           <span className="text-white">Redirecting...</span>
@@ -109,8 +109,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4 py-8">
-      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+    <div className="min-h-screen flex items-center justify-center bg-[#030616] px-4 py-8">
+      <Card className="w-full max-w-md bg-[#030616] border-[1.35px] border-[#374151]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-white">
             Create an account
@@ -151,7 +151,7 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
               />
             </div>
 
@@ -166,7 +166,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
               />
             </div>
 
@@ -181,7 +181,7 @@ export default function RegisterPage() {
                 value={orgCode}
                 onChange={(e) => setOrgCode(e.target.value)}
                 required
-                className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
               />
             </div>
 

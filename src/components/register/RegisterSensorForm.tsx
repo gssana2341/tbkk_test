@@ -589,8 +589,8 @@ export default function RegisterSensorForm() {
         <h1 className="text-2xl font-bold text-white">
           {editId ? `Edit Sensor : ${form.watch("sensors.0.serialNumber") || "Loading..."}` : "Register New Device"}
         </h1>
-        <Card className="flex-1 flex flex-col border border-gray-700 bg-[#1F2937] text-white">
-          <CardHeader className="p-0 border-b border-gray-700">
+        <Card className="flex-1 flex flex-col border-[1.35px] border-[#374151] bg-[#030616] text-white">
+          <CardHeader className="p-0 border-b-[1.35px] border-[#374151]">
             {(!editId || form.watch("sensors.0.sensorType") === "Master") && (
               <TabsList className="flex w-full justify-start bg-transparent p-0">
                 <TabsTrigger value="master" className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">Master</TabsTrigger>
@@ -661,13 +661,13 @@ export default function RegisterSensorForm() {
       </div>
       <ImageCropper isOpen={showCropper} imageSrc={cropImageSrc} onClose={() => { setShowCropper(false); setCropImageSrc(null); setCropIndex(null); }} onCropComplete={handleCropComplete} />
       <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <AlertDialogContent className="bg-[#1F2937] border-gray-700 text-white">
+        <AlertDialogContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl">Confirm {editId ? "Update" : "Registration"}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-400">Are you sure you want to {editId ? "update" : "register"} these sensors? This action will save the configuration to the system.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-transparent border-gray-600 text-white hover:bg-gray-700">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="bg-transparent border-[1.35px] border-[#374151] text-white hover:bg-[#374151]/50">Cancel</AlertDialogCancel>
             <AlertDialogAction className="bg-[#2186F3] text-white hover:bg-blue-600" onClick={() => { if (pendingValues) handleRealSubmit(pendingValues); }}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

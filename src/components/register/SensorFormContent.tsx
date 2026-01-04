@@ -127,7 +127,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent>
+                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                         <p>Enter the serial number of the sensor</p>
                       </TooltipContent>
                     </Tooltip>
@@ -136,7 +136,7 @@ export function SensorFormContent({
                 <FormControl>
                   <Input
                     placeholder="Enter serial number"
-                    className="bg-[#11171F] border-[#4B5563] text-white"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                     {...field}
                   />
                 </FormControl>
@@ -157,7 +157,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent>
+                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                         <p>Enter the area where the sensor is installed</p>
                       </TooltipContent>
                     </Tooltip>
@@ -194,7 +194,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent>
+                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                         <p>Select the motor start date and time</p>
                       </TooltipContent>
                     </Tooltip>
@@ -207,7 +207,7 @@ export function SensorFormContent({
                       field.onChange(date);
                     }}
                     label=""
-                    className="bg-[#11171F] border-[#4B5563] text-white"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   />
                 </FormControl>
                 <FormMessage />
@@ -230,7 +230,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent>
+                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                         <p>Select the type of sensor</p>
                       </TooltipContent>
                     </Tooltip>
@@ -242,7 +242,7 @@ export function SensorFormContent({
                   disabled
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-[#11171F] border-[#4B5563] text-white">
+                    <SelectTrigger className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                       <SelectValue placeholder="Select sensor type" />
                     </SelectTrigger>
                   </FormControl>
@@ -271,7 +271,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent>
+                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                         <p>Enter the machine name</p>
                       </TooltipContent>
                     </Tooltip>
@@ -339,7 +339,7 @@ export function SensorFormContent({
 
       {/* Machine Class Section */}
       {watchedMachineClassEnabled && (
-        <div className="p-4 border border-gray-700 rounded-lg bg-[#1F2937] space-y-4">
+        <div className="p-4 border-[1.35px] border-[#374151] rounded-lg bg-[#030616] space-y-4">
           <FormField
             control={form.control}
             name={`sensors.${index}.machineClass`}
@@ -352,7 +352,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent>
+                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                         <p>Select machine class to auto-fill thresholds</p>
                       </TooltipContent>
                     </Tooltip>
@@ -382,7 +382,7 @@ export function SensorFormContent({
 
           {/* Thresholds - Three Boxes */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3 border border-gray-700 rounded-lg bg-[#1F2937]">
+            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.warningThreshold`}
@@ -461,7 +461,7 @@ export function SensorFormContent({
       )}
 
       {watchedNamePlaceEnabled && (
-        <div className="p-4 border border-gray-700 rounded-lg bg-[#1F2937] space-y-4">
+        <div className="p-4 border-[1.35px] border-[#374151] rounded-lg bg-[#030616] space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -475,7 +475,7 @@ export function SensorFormContent({
                         <TooltipTrigger asChild>
                           <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                           <p>Specify the motor power for this sensor</p>
                         </TooltipContent>
                       </Tooltip>
@@ -505,7 +505,7 @@ export function SensorFormContent({
                         <TooltipTrigger asChild>
                           <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                           <p>Select the motor type</p>
                         </TooltipContent>
                       </Tooltip>
@@ -536,7 +536,7 @@ export function SensorFormContent({
 
           {/* Thresholds - Three Boxes (UI only) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3 border border-gray-700 rounded-lg bg-[#1F2937]">
+            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.namePlaceWarningThreshold`}
@@ -640,7 +640,7 @@ export function SensorFormContent({
                   type="number"
                   step="0.1"
                   placeholder="10"
-                  className="bg-[#11171F] border-[#4B5563] text-white"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   {...field}
                 />
               </FormControl>
@@ -672,7 +672,7 @@ export function SensorFormContent({
                   type="number"
                   placeholder="60"
                   min="1"
-                  className="bg-[#11171F] border-[#4B5563] text-white"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   {...field}
                 />
               </FormControl>
@@ -707,7 +707,7 @@ export function SensorFormContent({
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger className="bg-[#11171F] border-[#4B5563] text-white">
+                  <SelectTrigger className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                     <SelectValue placeholder="Select G-scale" />
                   </SelectTrigger>
                 </FormControl>
@@ -827,7 +827,7 @@ export function SensorFormContent({
                   type="number"
                   step="0.1"
                   placeholder="0.0"
-                  className="bg-[#11171F] border-[#4B5563] text-white"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   {...field}
                 />
               </FormControl>
@@ -859,7 +859,7 @@ export function SensorFormContent({
                   type="number"
                   step="0.1"
                   placeholder="0.0"
-                  className="bg-[#11171F] border-[#4B5563] text-white"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   {...field}
                 />
               </FormControl>
@@ -882,7 +882,7 @@ export function SensorFormContent({
                   <TooltipTrigger asChild>
                     <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
                     <p>Add any additional notes or comments</p>
                   </TooltipContent>
                 </Tooltip>
@@ -891,7 +891,7 @@ export function SensorFormContent({
             <FormControl>
               <Textarea
                 placeholder="Enter any additional notes..."
-                className="bg-[#11171F] border-[#4B5563] text-white"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                 {...field}
                 rows={4}
               />

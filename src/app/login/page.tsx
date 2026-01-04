@@ -63,8 +63,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
-      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+    <div className="min-h-screen flex items-center justify-center bg-[#030616] px-4">
+      <Card className="w-full max-w-md bg-[#030616] border-[1.35px] border-[#374151]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-white">
             Welcome back
@@ -92,7 +92,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
               />
             </div>
 
@@ -108,7 +108,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 pr-10"
+                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400 pr-10"
                 />
                 <button
                   type="button"

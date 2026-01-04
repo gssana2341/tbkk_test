@@ -197,7 +197,7 @@ export function NotificationHistoryTable({
   };
 
   return (
-    <Card className="border border-[#374151] shadow-sm rounded-xl bg-[#1F2937] w-[98%] mx-auto pb-10">
+    <Card className="border-[1.35px] border-[#374151] shadow-sm rounded-xl bg-[#030616] w-[98%] mx-auto pb-10">
       <CardContent className="p-0">
         {/* Header & Legend with Clear All button */}
         <div className="flex px-8 pt-6 pb-2 items-center justify-between gap-4">
@@ -255,7 +255,7 @@ export function NotificationHistoryTable({
         <div className="overflow-x-auto">
           <table className="min-w-full text-base 2xl:text-xl">
             <thead>
-              <tr className="bg-[#374151] text-center text-gray-200 text-lg 2xl:text-2xl">
+              <tr className="bg-[#030616] border-b-[1.35px] border-[#374151] text-center text-gray-200 text-lg 2xl:text-2xl">
                 <th
                   className="py-3 px-4 font-medium cursor-pointer hover:text-white transition-colors"
                   onClick={() => requestSort("sensorName")}

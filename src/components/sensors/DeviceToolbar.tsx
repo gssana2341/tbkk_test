@@ -33,7 +33,7 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
 
   return (
     <div
-      className="flex flex-wrap justify-between items-center p-3 rounded-xl bg-[#1F2937] shadow-md text-white"
+      className="flex flex-wrap justify-between items-center p-3 rounded-xl bg-[#030616] shadow-md text-white border-[1.35px] border-[#374151]"
       style={{ minWidth: 0 }}
     >
       {/* Left Side: Title and M/S icons */}
@@ -108,9 +108,7 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
           />
         )}
         <Button
-          variant={currentView === "grid" ? "secondary" : "ghost"}
-          size="icon"
-          className={`${currentView === "grid" ? "bg-[#3758F9] hover:bg-[#3758F9]" : "bg-[#1F2937] hover:bg-[#232e3c]"} border border-gray-700 text-white`}
+          className={`${currentView === "grid" ? "bg-[#3758F9] hover:bg-[#3758F9]" : "bg-[#030616] hover:bg-[#232e3c]"} border border-gray-700 text-white`}
           onClick={() => handleViewChange("grid")}
         >
           <Grid3X3 className="h-5 w-5 text-white" />
@@ -119,7 +117,7 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
         <Button
           variant={currentView === "dot" ? "secondary" : "ghost"}
           size="icon"
-          className={`${currentView === "dot" ? "bg-[#3758F9] hover:bg-[#3758F9]" : "bg-[#1F2937] hover:bg-[#232e3c]"} border border-gray-700 text-white`}
+          className={`${currentView === "dot" ? "bg-[#3758F9] hover:bg-[#3758F9]" : "bg-[#030616] hover:bg-[#232e3c]"} border border-gray-700 text-white`}
           onClick={() => handleViewChange("dot")}
         >
           <Circle className="h-5 w-5 text-white" />

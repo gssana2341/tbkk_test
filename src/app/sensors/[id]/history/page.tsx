@@ -241,8 +241,8 @@ export default function SensorHistoryPage() {
 
 
   return (
-    <div className="min-h-screen bg-[#1F2937] text-white">
-      <div className="bg-[#232e3c] px-6 py-4 flex items-center justify-between border-b border-gray-700">
+    <div className="min-h-screen bg-[#030616] text-white">
+      <div className="bg-[#030616] px-6 py-4 flex items-center justify-between border-b-[1.35px] border-[#374151]">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -263,7 +263,7 @@ export default function SensorHistoryPage() {
       </div>
 
       <div className="p-6 space-y-6">
-        <Card className="bg-[#232e3c] border-gray-700">
+        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
           <CardContent className="p-4 flex flex-wrap gap-6 items-center">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-300">Axis:</span>
@@ -273,7 +273,7 @@ export default function SensorHistoryPage() {
                   onClick={() => setSelectedAxis(axis)}
                   className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
                     ? "bg-blue-600 border-blue-500 text-white"
-                    : "bg-[#1f2937] border-gray-600 text-gray-300 hover:bg-[#374151]"
+                    : "bg-[#030616] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
                     }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
@@ -284,7 +284,7 @@ export default function SensorHistoryPage() {
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-300">Unit:</span>
               <select
-                className="bg-[#1f2937] border border-gray-600 text-white text-sm rounded px-3 py-1.5 focus:outline-none"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none"
                 value={selectedUnit}
                 onChange={(e) => setSelectedUnit(e.target.value)}
               >
@@ -296,9 +296,9 @@ export default function SensorHistoryPage() {
 
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-300">Date:</span>
-              <input type="date" className="bg-[#1f2937] border border-gray-600 text-white text-sm rounded px-3 py-1.5" />
+              <input type="date" className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5" />
               <span className="text-gray-400">-</span>
-              <input type="date" className="bg-[#1f2937] border border-gray-600 text-white text-sm rounded px-3 py-1.5" />
+              <input type="date" className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5" />
             </div>
 
             <div className="flex gap-2 ml-auto">
@@ -309,7 +309,7 @@ export default function SensorHistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#232e3c] border-gray-700">
+        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
           <CardContent className="p-6">
             {loading && <div className="text-center h-[400px] flex items-center justify-center">Loading...</div>}
             {!loading && !history.length && <div className="text-center h-[400px] flex items-center justify-center text-gray-400">No History Data Available</div>}
@@ -337,12 +337,12 @@ export default function SensorHistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#232e3c] border-gray-700">
+        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
           <CardContent className="p-6">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-center">
                 <thead>
-                  <tr className="border-b border-gray-700 text-gray-400">
+                  <tr className="border-b-[1.35px] border-[#374151] text-gray-400">
                     <th className="py-3 font-medium">Date</th>
                     <th className="py-3 font-medium">Time</th>
                     {(selectedAxis === 'all' || selectedAxis === 'h') && (

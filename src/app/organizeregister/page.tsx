@@ -46,7 +46,7 @@ export default function OrganizeregisterPage() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;
@@ -57,8 +57,8 @@ export default function OrganizeregisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4 py-8">
-      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+    <div className="min-h-screen flex items-center justify-center bg-[#030616] px-4 py-8">
+      <Card className="w-full max-w-md bg-[#030616] border-[1.35px] border-[#374151]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-white">
             Register Organization
@@ -97,7 +97,7 @@ export default function OrganizeregisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
               />
             </div>
             <div className="space-y-2">
@@ -111,7 +111,7 @@ export default function OrganizeregisterPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
               />
             </div>
             <Button

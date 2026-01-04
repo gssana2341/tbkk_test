@@ -20,5 +20,5 @@ export const getCardBackgroundColor = (
   } else if (velocityValue > thresholdMin) {
     return "bg-green-500";
   }
-  return "bg-gray-900";
+  return "bg-[#030616]";
 };

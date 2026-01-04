@@ -300,14 +300,14 @@ export default function NotificationSettings() {
       )}
 
       <Tabs defaultValue="email" className="w-full">
-        <TabsList className="grid w-full md:w-auto grid-cols-3 bg-[#11171F] border border-[#4B5563] text-white">
+        <TabsList className="grid w-full md:w-auto grid-cols-3 bg-[#030616] border-[1.35px] border-[#374151] text-white">
           <TabsTrigger value="email">Email</TabsTrigger>
           <TabsTrigger value="sms">SMS</TabsTrigger>
           <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
         </TabsList>
 
         <TabsContent value="email">
-          <Card className="bg-[#1F2937] border-[#374151] text-white">
+          <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
             <CardHeader>
               <CardTitle>Email Notification Settings</CardTitle>
               <CardDescription>
@@ -344,7 +344,7 @@ export default function NotificationSettings() {
                           updateEmailSetting("recipients", e.target.value)
                         }
                         placeholder="Enter email addresses (comma separated)"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                       />
                     </div>
 
@@ -357,7 +357,7 @@ export default function NotificationSettings() {
                           updateEmailSetting("sender_email", e.target.value)
                         }
                         placeholder="Enter sender email"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                       />
                     </div>
                   </div>
@@ -440,7 +440,7 @@ export default function NotificationSettings() {
         </TabsContent>
 
         <TabsContent value="sms">
-          <Card className="bg-[#1F2937] border-[#374151] text-white">
+          <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
             <CardHeader>
               <CardTitle>SMS Notification Settings</CardTitle>
               <CardDescription>
@@ -477,7 +477,7 @@ export default function NotificationSettings() {
                           updateSmsSetting("phone_numbers", e.target.value)
                         }
                         placeholder="Enter phone numbers (comma separated)"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                       />
                     </div>
 
@@ -491,7 +491,7 @@ export default function NotificationSettings() {
                       >
                         <SelectTrigger
                           id="sms-provider"
-                          className="bg-[#11171F] border-[#4B5563] text-white"
+                          className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                         >
                           <SelectValue placeholder="Select provider" />
                         </SelectTrigger>
@@ -568,7 +568,7 @@ export default function NotificationSettings() {
         </TabsContent>
 
         <TabsContent value="webhooks">
-          <Card className="bg-[#1F2937] border-[#374151] text-white">
+          <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
             <CardHeader>
               <CardTitle>Webhook Notification Settings</CardTitle>
               <CardDescription>
@@ -605,7 +605,7 @@ export default function NotificationSettings() {
                           updateWebhookSetting("webhook_url", e.target.value)
                         }
                         placeholder="https://your-webhook-endpoint.com/notify"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                       />
                     </div>
 
@@ -621,7 +621,7 @@ export default function NotificationSettings() {
                           updateWebhookSetting("webhook_secret", e.target.value)
                         }
                         placeholder="Enter secret key"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                       />
                     </div>
 
@@ -635,7 +635,7 @@ export default function NotificationSettings() {
                       >
                         <SelectTrigger
                           id="webhook-format"
-                          className="bg-[#11171F] border-[#4B5563] text-white"
+                          className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                         >
                           <SelectValue placeholder="Select format" />
                         </SelectTrigger>
@@ -661,7 +661,7 @@ export default function NotificationSettings() {
                           )
                         }
                         placeholder='{"event": "{{event}}", "sensor": "{{sensor}}", "value": "{{value}}", "timestamp": "{{timestamp}}"}'
-                        className="font-mono text-sm h-32 bg-[#11171F] border-[#4B5563] text-white"
+                        className="font-mono text-sm h-32 bg-[#030616] border-[1.35px] border-[#374151] text-white"
                       />
                       <p className="text-xs text-gray-500">
                         Use{" "}

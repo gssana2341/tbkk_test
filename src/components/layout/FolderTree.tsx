@@ -21,8 +21,8 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     background: {
-      default: "#1f2937",
-      paper: "#1f2937",
+      default: "#030616",
+      paper: "#030616",
     },
     text: {
       primary: "#ffffff",
@@ -54,24 +54,24 @@ function buildTreeFromSensors(sensors: Sensor[]): TreeItemData[] {
     // Get area name directly from API (installation_point or location)
     const areaName =
       sensor.installation_point &&
-      typeof sensor.installation_point === "string" &&
-      sensor.installation_point.trim()
+        typeof sensor.installation_point === "string" &&
+        sensor.installation_point.trim()
         ? sensor.installation_point.trim()
         : sensor.location &&
-            typeof sensor.location === "string" &&
-            sensor.location.trim()
+          typeof sensor.location === "string" &&
+          sensor.location.trim()
           ? sensor.location.trim()
           : "Unknown Area";
 
     // Get machine name directly from API
     const machineName =
       sensor.machine_number &&
-      typeof sensor.machine_number === "string" &&
-      sensor.machine_number.trim()
+        typeof sensor.machine_number === "string" &&
+        sensor.machine_number.trim()
         ? sensor.machine_number.trim()
         : sensor.machineName &&
-            typeof sensor.machineName === "string" &&
-            sensor.machineName.trim()
+          typeof sensor.machineName === "string" &&
+          sensor.machineName.trim()
           ? sensor.machineName.trim()
           : "Unknown Machine";
 
@@ -704,7 +704,8 @@ const FolderTree: React.FC<FolderTreeProps> = ({ onFilterChange }) => {
             height: "100%",
             display: "flex",
             flexDirection: "column",
-            backgroundColor: "#1f2937",
+            backgroundColor: "#030616",
+            border: "1.35px solid #374151",
           }}
         >
           <ToggleButton
@@ -736,7 +737,8 @@ const FolderTree: React.FC<FolderTreeProps> = ({ onFilterChange }) => {
             height: "100%",
             display: "flex",
             flexDirection: "column",
-            backgroundColor: "#1f2937",
+            backgroundColor: "#030616",
+            border: "1.35px solid #374151",
           }}
         >
           <ToggleButton
@@ -767,7 +769,8 @@ const FolderTree: React.FC<FolderTreeProps> = ({ onFilterChange }) => {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "#1f2937",
+          backgroundColor: "#030616",
+          borderRight: "1.35px solid #374151",
         }}
       >
         <ToggleButton
@@ -938,11 +941,11 @@ const FolderTree: React.FC<FolderTreeProps> = ({ onFilterChange }) => {
                 },
                 // เขยิบ content ของ child items ในระดับที่ 1 - ใช้ attribute selector
                 "& [class*='MuiTreeItem-group'] [class*='MuiTreeItem-root'] [class*='MuiTreeItem-content']":
-                  {
-                    borderLeft: "1px dashed rgba(255, 255, 255, 0.2)",
-                    paddingLeft: "24px !important",
-                    marginLeft: "-24px !important",
-                  },
+                {
+                  borderLeft: "1px dashed rgba(255, 255, 255, 0.2)",
+                  paddingLeft: "24px !important",
+                  marginLeft: "-24px !important",
+                },
                 // ระดับที่ 2 - ข้อย่อยที่ 2 (Area > Machine เช่น "M-1", "MC-22")
                 // เขยิบเข้ามาเพิ่มอีก 24px (รวม 48px จากหัวข้อหลัก)
                 "& [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group']": {
@@ -952,41 +955,41 @@ const FolderTree: React.FC<FolderTreeProps> = ({ onFilterChange }) => {
                 },
                 // เขยิบ content ของ child items ในระดับที่ 2
                 "& [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-root'] [class*='MuiTreeItem-content']":
-                  {
-                    borderLeft: "1px dashed rgba(255, 255, 255, 0.2)",
-                    paddingLeft: "24px !important",
-                    marginLeft: "-24px !important",
-                  },
+                {
+                  borderLeft: "1px dashed rgba(255, 255, 255, 0.2)",
+                  paddingLeft: "24px !important",
+                  marginLeft: "-24px !important",
+                },
                 // ระดับที่ 3 - ข้อย่อยที่ 3 (Machine > Sensor)
                 // เขยิบเข้ามาเพิ่มอีก 24px (รวม 72px จากหัวข้อหลัก)
                 "& [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group']":
-                  {
-                    marginLeft: "0px !important",
-                    paddingLeft: "24px !important",
-                    borderLeft: "1px dashed rgba(255, 255, 255, 0.3)",
-                  },
+                {
+                  marginLeft: "0px !important",
+                  paddingLeft: "24px !important",
+                  borderLeft: "1px dashed rgba(255, 255, 255, 0.3)",
+                },
                 // เขยิบ content ของ child items ในระดับที่ 3
                 "& [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-root'] [class*='MuiTreeItem-content']":
-                  {
-                    borderLeft: "1px dashed rgba(255, 255, 255, 0.2)",
-                    paddingLeft: "24px !important",
-                    marginLeft: "-24px !important",
-                  },
+                {
+                  borderLeft: "1px dashed rgba(255, 255, 255, 0.2)",
+                  paddingLeft: "24px !important",
+                  marginLeft: "-24px !important",
+                },
                 // ระดับที่ 4 - ข้อย่อยที่ 4 (ถ้ามี)
                 // เขยิบเข้ามาเพิ่มอีก 24px (รวม 96px จากหัวข้อหลัก)
                 "& [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group']":
-                  {
-                    marginLeft: "0px !important",
-                    paddingLeft: "24px !important",
-                    borderLeft: "1px dashed rgba(255, 255, 255, 0.3)",
-                  },
+                {
+                  marginLeft: "0px !important",
+                  paddingLeft: "24px !important",
+                  borderLeft: "1px dashed rgba(255, 255, 255, 0.3)",
+                },
                 // เขยิบ content ของ child items ในระดับที่ 4
                 "& [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-group'] [class*='MuiTreeItem-root'] [class*='MuiTreeItem-content']":
-                  {
-                    borderLeft: "1px dashed rgba(255, 255, 255, 0.2)",
-                    paddingLeft: "24px !important",
-                    marginLeft: "-24px !important",
-                  },
+                {
+                  borderLeft: "1px dashed rgba(255, 255, 255, 0.2)",
+                  paddingLeft: "24px !important",
+                  marginLeft: "-24px !important",
+                },
               }}
             >
               {renderTree(items as TreeItemData[])}

@@ -376,7 +376,7 @@ export default function SystemSettings() {
         </Alert>
       )}
 
-      <Card className="bg-[#1F2937] border-[#374151] text-white">
+      <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
         <CardHeader>
           <CardTitle>System Information</CardTitle>
           <CardDescription>View and manage system information</CardDescription>
@@ -467,7 +467,7 @@ export default function SystemSettings() {
         </CardContent>
       </Card>
 
-      <Card className="bg-[#1F2937] border-[#374151] text-white">
+      <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
         <CardHeader>
           <CardTitle>Data Management</CardTitle>
           <CardDescription>
@@ -493,7 +493,7 @@ export default function SystemSettings() {
                 >
                   <SelectTrigger
                     id="sensor-data"
-                    className="bg-[#11171F] border-[#4B5563] text-white"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   >
                     <SelectValue placeholder="Select period" />
                   </SelectTrigger>
@@ -516,7 +516,7 @@ export default function SystemSettings() {
                 >
                   <SelectTrigger
                     id="alert-data"
-                    className="bg-[#11171F] border-[#4B5563] text-white"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   >
                     <SelectValue placeholder="Select period" />
                   </SelectTrigger>
@@ -566,7 +566,7 @@ export default function SystemSettings() {
                 >
                   <SelectTrigger
                     id="backup-frequency"
-                    className="bg-[#11171F] border-[#4B5563] text-white"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   >
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
@@ -588,7 +588,7 @@ export default function SystemSettings() {
                 >
                   <SelectTrigger
                     id="backup-retention"
-                    className="bg-[#11171F] border-[#4B5563] text-white"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
                   >
                     <SelectValue placeholder="Select retention" />
                   </SelectTrigger>

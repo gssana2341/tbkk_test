@@ -908,7 +908,7 @@ export default function SensorDetailPage() {
   // Early returns after all hooks
   if (!mounted || loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-[#030616]">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
       </div>
     );
@@ -916,7 +916,7 @@ export default function SensorDetailPage() {
 
   if (!sensor) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-black text-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#030616] px-4 py-8">
         <h2 className="text-2xl font-bold">Sensor not found</h2>
         <Button
           variant="outline"

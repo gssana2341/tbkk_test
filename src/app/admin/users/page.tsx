@@ -188,7 +188,7 @@ export default function UserManagementPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-white p-8 space-y-8">
+        <div className="min-h-screen bg-[#030616] text-white p-8 space-y-8">
             {/* Header */}
             <div>
                 <h1 className="text-4xl 2xl:text-6xl font-bold mb-2">User Management</h1>
@@ -198,7 +198,7 @@ export default function UserManagementPage() {
 
             {/* Filters */}
             <div className="flex flex-wrap gap-4 items-center">
-                <div className="flex items-center gap-2 bg-[#1e293b] rounded-md px-3 py-1 border border-gray-700 w-full md:w-auto">
+                <div className="flex items-center gap-2 bg-[#030616] rounded-md px-3 py-1 border-[1.35px] border-[#374151] w-full md:w-auto">
                     <span className="text-gray-400 text-base whitespace-nowrap">Search :</span>
                     <div className="relative flex-1 md:w-64">
                         <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -212,7 +212,7 @@ export default function UserManagementPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 bg-[#1e293b] rounded-md px-3 py-1 border border-gray-700">
+                <div className="flex items-center gap-2 bg-[#030616] rounded-md px-3 py-1 border-[1.35px] border-[#374151]">
                     <span className="text-gray-400 text-base whitespace-nowrap">Role :</span>
                     <Select value={roleFilter} onValueChange={setRoleFilter}>
                         <SelectTrigger className="w-32 bg-transparent border-none h-10 text-white focus:ring-0 text-base">
@@ -227,7 +227,7 @@ export default function UserManagementPage() {
                     </Select>
                 </div>
 
-                <div className="flex items-center gap-2 bg-[#1e293b] rounded-md px-3 py-1 border border-gray-700">
+                <div className="flex items-center gap-2 bg-[#030616] rounded-md px-3 py-1 border-[1.35px] border-[#374151]">
                     <span className="text-gray-400 text-base whitespace-nowrap">Status :</span>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
                         <SelectTrigger className="w-32 bg-transparent border-none h-10 text-white focus:ring-0 text-base">
@@ -245,10 +245,10 @@ export default function UserManagementPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-[#1e293b] rounded-lg border border-gray-700 overflow-hidden overflow-x-auto">
+            <div className="bg-[#030616] rounded-lg border-[1.35px] border-[#374151] overflow-hidden overflow-x-auto">
                 <Table className="min-w-[800px] 2xl:min-w-full">
-                    <TableHeader className="bg-[#0f172a]">
-                        <TableRow className="border-gray-700 hover:bg-[#0f172a]">
+                    <TableHeader className="bg-[#030616]">
+                        <TableRow className="border-b-[1.35px] border-[#374151] hover:bg-[#030616]">
                             <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">User</TableHead>
                             <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">Contact</TableHead>
                             <TableHead className="text-white font-semibold text-center text-lg 2xl:text-2xl font-bold">Role</TableHead>
@@ -270,7 +270,7 @@ export default function UserManagementPage() {
                             currentUsers.map((user) => (
                                 <TableRow
                                     key={user.id}
-                                    className="border-gray-700 hover:bg-[#2d3748]"
+                                    className="border-b-[1.35px] border-[#374151] hover:bg-[#374151]/50"
                                 >
                                     <TableCell>
                                         <div className="font-medium text-base 2xl:text-xl">{user.name}</div>
@@ -402,7 +402,7 @@ export default function UserManagementPage() {
             {/* Pagination */}
             {totalPages > 0 && (
                 <div className="flex items-center justify-center mt-6">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 border-2 border-gray-700 rounded-full bg-[#232e3c] shadow">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 border-[1.35px] border-[#374151] rounded-full bg-[#030616] shadow">
                         <button
                             onClick={handlePrevious}
                             disabled={currentPage === 1}
