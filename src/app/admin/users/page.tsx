@@ -25,7 +25,7 @@ import { formatDate } from "@/lib/utils";
 import { getAllUsers, deleteUser, updateUserRole, updateUserStatus } from "@/api/users/users";
 import { getUser } from "@/lib/auth";
 
-type UserStatus = "Online" | "Offline" | "Pending" | "Suspended" | string;
+type UserStatus = "ONLINE" | "OFFLINE" | "PENDING" | "SUSPENDED" | string;
 
 export default function UserManagementPage() {
     const [users, setUsers] = useState<UserAdminResponse[]>([]);
@@ -90,28 +90,28 @@ export default function UserManagementPage() {
 
     // Helper function to get status badge styles
     const getStatusBadgeStyles = (status: UserStatus) => {
-        const s = status.toLowerCase();
-        // Online (Active)
-        if (s === "active" || s === "online")
+        const s = status.toUpperCase();
+        // ONLINE (Active)
+        if (s === "ACTIVE" || s === "ONLINE")
             return "bg-[#14532d] hover:bg-[#14532d] text-[#4ade80] border border-[#14532d]";
-        // Offline (Disabled)
-        if (s === "disabled" || s === "offline")
+        // OFFLINE (Disabled)
+        if (s === "DISABLED" || s === "OFFLINE")
             return "bg-[#334155] hover:bg-[#334155] text-[#94a3b8] border border-[#334155]";
-        // Pending
-        if (s === "pending")
+        // PENDING
+        if (s === "PENDING")
             return "bg-[#713f12] hover:bg-[#713f12] text-[#facc15] border border-[#713f12]";
-        // Suspended
-        if (s === "suspended")
+        // SUSPENDED
+        if (s === "SUSPENDED")
             return "bg-[#7f1d1d] hover:bg-[#7f1d1d] text-[#fca5a5] border border-[#7f1d1d]";
         return "bg-gray-500 text-white";
     };
 
     const getStatusDotColor = (status: UserStatus) => {
-        const s = status.toLowerCase();
-        if (s === "active" || s === "online") return "bg-[#22c55e]";
-        if (s === "disabled" || s === "offline") return "bg-[#94a3b8]";
-        if (s === "pending") return "bg-[#facc15]";
-        if (s === "suspended") return "bg-[#f87171]";
+        const s = status.toUpperCase();
+        if (s === "ACTIVE" || s === "ONLINE") return "bg-[#22c55e]";
+        if (s === "DISABLED" || s === "OFFLINE") return "bg-[#94a3b8]";
+        if (s === "PENDING") return "bg-[#facc15]";
+        if (s === "SUSPENDED") return "bg-[#f87171]";
         return "bg-gray-400";
     };
 
@@ -235,10 +235,10 @@ export default function UserManagementPage() {
                         </SelectTrigger>
                         <SelectContent className="bg-[#1e293b] border-gray-700 text-white">
                             <SelectItem value="All">All</SelectItem>
-                            <SelectItem value="Online">Online</SelectItem>
-                            <SelectItem value="Offline">Offline</SelectItem>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                            <SelectItem value="Suspended">Suspended</SelectItem>
+                            <SelectItem value="ONLINE">ONLINE</SelectItem>
+                            <SelectItem value="OFFLINE">OFFLINE</SelectItem>
+                            <SelectItem value="PENDING">PENDING</SelectItem>
+                            <SelectItem value="SUSPENDED">SUSPENDED</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -319,14 +319,14 @@ export default function UserManagementPage() {
                                                 let statusBg = "bg-[#334155] text-[#94a3b8] border-[#334155]";
 
                                                 // 1. Pending: If no role assigned or explicitly pending
-                                                if (!user.role || user.role.toLowerCase() === "user" || user.status.toLowerCase() === "pending") {
-                                                    displayStatus = "Pending";
+                                                if (!user.role || user.role.toLowerCase() === "user" || user.status.toUpperCase() === "PENDING") {
+                                                    displayStatus = "PENDING";
                                                     statusColor = "bg-[#facc15]";
                                                     statusBg = "bg-[#713f12] text-[#facc15] border-[#713f12]";
                                                 }
                                                 // 2. Suspended: Explicitly suspended in DB
-                                                else if (user.status.toLowerCase() === "suspended") {
-                                                    displayStatus = "Suspended";
+                                                else if (user.status.toUpperCase() === "SUSPENDED") {
+                                                    displayStatus = "SUSPENDED";
                                                     statusColor = "bg-[#f87171]";
                                                     statusBg = "bg-[#7f1d1d] text-[#fca5a5] border-[#7f1d1d]";
                                                 }
@@ -346,11 +346,11 @@ export default function UserManagementPage() {
                                                     }
 
                                                     if (isOnline) {
-                                                        displayStatus = "Online";
+                                                        displayStatus = "ONLINE";
                                                         statusColor = "bg-[#22c55e]";
                                                         statusBg = "bg-[#14532d] text-[#4ade80] border-[#14532d]";
                                                     } else {
-                                                        displayStatus = "Offline";
+                                                        displayStatus = "OFFLINE";
                                                         statusColor = "bg-[#94a3b8]";
                                                         statusBg = "bg-[#334155] text-[#94a3b8] border-[#334155]";
                                                     }

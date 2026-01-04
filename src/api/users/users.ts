@@ -165,11 +165,11 @@ export async function getAllUsers(): Promise<Array<import("@/lib/types").UserAdm
       let displayStatus = (user.status as string) || "Online";
       const s = displayStatus.toLowerCase();
 
-      if (s === "active") displayStatus = "Online";
-      else if (s === "disabled") displayStatus = "Offline";
-      else if (s === "pending") displayStatus = "Pending";
-      else if (s === "suspended") displayStatus = "Suspended";
-      else displayStatus = "Offline"; // Fallback
+      if (s === "active") displayStatus = "ONLINE";
+      else if (s === "disabled") displayStatus = "OFFLINE";
+      else if (s === "pending") displayStatus = "PENDING";
+      else if (s === "suspended") displayStatus = "SUSPENDED";
+      else displayStatus = "OFFLINE"; // Fallback
 
       return {
         ...user,
