@@ -468,9 +468,9 @@ export default function RegisterSensorForm() {
             };
 
             const payload = {
-              area: sensorData.area,
+              area: sensorData.area?.toUpperCase(),
               machine_class: sensorData.machineClassEnabled && sensorData.machineClass ? (getMachineClassCode(sensorData.machineClass) ?? null) : null,
-              machine: sensorData.machine,
+              machine: sensorData.machine?.toUpperCase(),
               sensor_type: sensorData.sensorType,
               fmax: parseInt(sensorData.frequencyMax || "0"),
               lor: parseInt(sensorData.lor || "0"),
@@ -538,9 +538,9 @@ export default function RegisterSensorForm() {
         };
         return {
           mac_address: sensorData.serialNumber?.toUpperCase(),
-          area: sensorData.area,
+          area: sensorData.area?.toUpperCase(),
           machine_class: sensorData.machineClassEnabled && sensorData.machineClass ? (getMachineClassCode(sensorData.machineClass) ?? null) : null,
-          machine: sensorData.machine,
+          machine: sensorData.machine?.toUpperCase(),
           sensor_type: sensorData.sensorType,
           motor_start_time: sensorData.motorStartTime ? formatMotorStartTime(sensorData.motorStartTime) : null,
           time_interval: sensorData.timeInterval ? Number(sensorData.timeInterval) : null,

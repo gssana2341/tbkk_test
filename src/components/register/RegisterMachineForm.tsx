@@ -76,7 +76,12 @@ export default function RegisterMachineForm() {
     setIsSubmitting(true);
 
     try {
-      const result = await registerMachine(values);
+      const normalizedValues = {
+        ...values,
+        name: values.name.toUpperCase(),
+        location: values.location.toUpperCase(),
+      };
+      const result = await registerMachine(normalizedValues);
 
       toast({
         title: "Machine Registered",

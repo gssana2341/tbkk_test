@@ -177,8 +177,8 @@ export function NotificationHistoryTable({
   }, [search, dateStart, dateEnd, data, sortConfig]);
 
   const hasEntries = rows.length > 0;
-  const totalPages = Math.max(1, Math.ceil(rows.length / 5));
-  const pagedRows = rows.slice((activePage - 1) * 5, activePage * 5);
+  const totalPages = Math.max(1, Math.ceil(rows.length / 10));
+  const pagedRows = rows.slice((activePage - 1) * 10, activePage * 10);
 
   const getClassNamesFor = (name: keyof NotificationEntry) => {
     if (!sortConfig) return "";
