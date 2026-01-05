@@ -297,35 +297,39 @@ export default function SensorDotView({
               <Tooltip key={sensor.id}>
                 <TooltipTrigger asChild>
                   <div
-                    className={`${sizeClass} flex flex-col cursor-pointer hover:opacity-80 relative overflow-hidden`}
-                    style={{
-                      transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-                      border: `3px solid ${statusColorCode}`, // Status Border
-                      borderRadius: "50% 50% 15% 15%",
-                    }}
+                    className={`${sizeClass} cursor-pointer hover:opacity-80 transition-all duration-500`}
                     onClick={() => handleSensorClick(sensor.id)}
                   >
-                    {/* Top 60% - Status Color */}
-                    <div
-                      className="absolute top-0 left-0 right-0 h-[50%]"
-                      style={topSectionStyle}
-                    ></div>
-
-                    {/* Bottom 40% - Temperature based color */}
-                    <div
-                      className={`absolute bottom-0 left-0 right-0 h-[50%] bg-white`}
-                    ></div>
-
-                    {/* Content - Centered within bottom 40% only */}
-                    <div className="absolute bottom-0 left-0 right-0 h-[50%] z-10 flex items-center justify-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <span
-                          className={`font-bold ${textSizeClass} ${textColor} leading-none`}
-                        >
-                          {Math.round(temperature)}°
-                        </span>
-                      </div>
-                    </div>
+                    <svg
+                      viewBox="0 0 100 110"
+                      className="w-full h-full overflow-visible drop-shadow-sm"
+                      preserveAspectRatio="xMidYMid meet"
+                    >
+                      {/* Outer Shell (Bread/Helmet Shape with Flat Base) */}
+                      <path
+                        d="M 50 2 C 20 2 2 20 2 50 L 10 108 L 90 108 L 98 50 C 98 20 80 2 50 2 Z"
+                        fill={statusColorCode}
+                      />
+                      {/* Inner Window (White Inset with Flat Base - Expanded for thinner border) */}
+                      <path
+                        d="M 8 52 L 92 52 L 85 102 L 15 102 Z"
+                        fill="white"
+                      />
+                      {/* Temperature Text - Centered vertically in the expanded window */}
+                      <text
+                        x="50"
+                        y="77"
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill="#000"
+                        fontSize="32"
+                        fontWeight="900"
+                        fontFamily="'Inter', sans-serif"
+                        className="select-none"
+                      >
+                        {Math.round(temperature)}°
+                      </text>
+                    </svg>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent
