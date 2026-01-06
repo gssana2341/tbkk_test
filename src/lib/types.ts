@@ -36,6 +36,7 @@ export interface User {
   avatar_url?: string;
   created_at: string;
   updated_at: string;
+  status?: string;
 }
 
 export interface AuthResponse {

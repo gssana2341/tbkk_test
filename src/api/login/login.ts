@@ -18,6 +18,7 @@ export interface LoginResponse {
     role: string;
     created_at: string;
     updated_at?: string;
+    status?: string;
   };
 }
 

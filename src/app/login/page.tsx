@@ -17,6 +17,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { login as apiLogin } from "@/api/login/login";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -24,6 +32,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPendingDialog, setShowPendingDialog] = useState(false);
   const router = useRouter();
   const { login: setAuth } = useAuth();
 
@@ -34,6 +43,13 @@ export default function LoginPage() {
     try {
       const data = await apiLogin({ email, password });
       if (data.token && data.user) {
+        // Check if user is pending
+        if (data.user.status && data.user.status.toLowerCase() === "pending") {
+          setShowPendingDialog(true);
+          setIsSubmitting(false);
+          return;
+        }
+
         // Ensure user object has all required fields matching User type
         const user = {
           id: data.user.id,
@@ -45,6 +61,7 @@ export default function LoginPage() {
             data.user.updated_at ||
             data.user.created_at ||
             new Date().toISOString(),
+          status: data.user.status,
         };
         setAuth(user, data.token);
         router.push("/");
@@ -55,7 +72,7 @@ export default function LoginPage() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : undefined;
       setError(errorMessage || "Login failed");
     }
@@ -160,6 +177,29 @@ export default function LoginPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={showPendingDialog} onOpenChange={setShowPendingDialog}>
+        <DialogContent className="bg-[#1e293b] border-gray-700 text-white sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-yellow-500">
+              Registration Pending
+            </DialogTitle>
+            <DialogDescription className="text-gray-300 mt-2 text-base">
+              Your account is currently waiting for admin approval. You will not
+              be able to log in until an administrator has approved your
+              registration request.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4">
+            <Button
+              onClick={() => setShowPendingDialog(false)}
+              className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
