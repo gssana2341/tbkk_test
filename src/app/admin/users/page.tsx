@@ -27,10 +27,11 @@ import {
   deleteUser,
   updateUserRole,
   updateUserStatus,
+  approveUser,
 } from "@/api/users/users";
 import { getUser } from "@/lib/auth";
 
-type UserStatus = "ONLINE" | "OFFLINE" | "PENDING" | "SUSPENDED" | string;
+type UserStatus = "PENDING" | "ACTIVE" | string;
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<UserAdminResponse[]>([]);
@@ -93,6 +94,16 @@ export default function UserManagementPage() {
     }
   };
 
+  const handleApproveUser = async (userId: string) => {
+    try {
+      await approveUser(userId);
+      await fetchUsers(); // Refresh list after update
+    } catch (error) {
+      console.error("Failed to approve user:", error);
+      alert("Failed to approve user");
+    }
+  };
+
   // Helper function to get status badge styles
   const getStatusBadgeStyles = (status: UserStatus) => {
     const s = status.toUpperCase();
@@ -108,7 +119,7 @@ export default function UserManagementPage() {
     // SUSPENDED
     if (s === "SUSPENDED")
       return "bg-[#7f1d1d] hover:bg-[#7f1d1d] text-[#fca5a5] border border-[#7f1d1d]";
-    return "bg-gray-500 text-white";
+    return "bg-gray-500 hover:bg-gray-500 text-white border border-gray-500";
   };
 
   const getStatusDotColor = (status: UserStatus) => {
@@ -285,8 +296,8 @@ export default function UserManagementPage() {
               <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">
                 ORC
               </TableHead>
-              <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">
-                Last Login
+              <TableHead className="text-white font-semibold text-center text-lg 2xl:text-2xl font-bold">
+                Approve
               </TableHead>
               <TableHead className="text-white font-semibold text-lg 2xl:text-2xl font-bold">
                 Status
@@ -369,83 +380,44 @@ export default function UserManagementPage() {
                       {user.org_code}
                     </span>
                   </TableCell>
-                  <TableCell>
-                    <div className="text-base 2xl:text-xl text-gray-300">
-                      {user.last_login ? formatDate(user.last_login) : "-"}
-                    </div>
+                  <TableCell className="text-center">
+                    {user.status.toUpperCase() === "PENDING" ? (
+                      <Select
+                        onValueChange={(value) => {
+                          if (value === "ACTIVE") {
+                            handleApproveUser(user.id);
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="w-28 h-8 2xl:w-36 2xl:h-10 bg-[#0f172a] border-blue-600 text-blue-400 text-base 2xl:text-xl">
+                          <SelectValue placeholder="Action" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#1e293b] border-gray-700 text-white">
+                          <SelectItem value="ACTIVE" className="text-base 2xl:text-xl">
+                            Approve
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span className="text-gray-500 text-base 2xl:text-xl">
+                        Approved
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-4">
-                      {(() => {
-                        // Automatic Status Logic
-                        let displayStatus = "Offline";
-                        let statusColor = "bg-gray-400";
-                        let statusBg =
-                          "bg-[#334155] text-[#94a3b8] border-[#334155]";
-
-                        // 1. Pending: If no role assigned or explicitly pending
-                        if (
-                          !user.role ||
-                          user.role.toLowerCase() === "user" ||
-                          user.status.toUpperCase() === "PENDING"
-                        ) {
-                          displayStatus = "PENDING";
-                          statusColor = "bg-[#facc15]";
-                          statusBg =
-                            "bg-[#713f12] text-[#facc15] border-[#713f12]";
-                        }
-                        // 2. Suspended: Explicitly suspended in DB
-                        else if (user.status.toUpperCase() === "SUSPENDED") {
-                          displayStatus = "SUSPENDED";
-                          statusColor = "bg-[#f87171]";
-                          statusBg =
-                            "bg-[#7f1d1d] text-[#fca5a5] border-[#7f1d1d]";
-                        }
-                        // 3. Online: last_login within 30 minutes
-                        // Note: This relies on user.last_login being accurate.
-                        // If null, they are Offline.
-                        else if (
-                          (currentUser && user.id === currentUser.id) ||
-                          user.last_login
-                        ) {
-                          let isOnline = false;
-
-                          if (currentUser && user.id === currentUser.id) {
-                            isOnline = true;
-                          } else if (user.last_login) {
-                            const lastLoginDate = new Date(user.last_login);
-                            const now = new Date();
-                            const diffMinutes =
-                              (now.getTime() - lastLoginDate.getTime()) /
-                              1000 /
-                              60;
-                            if (diffMinutes < 30) isOnline = true;
-                          }
-
-                          if (isOnline) {
-                            displayStatus = "ONLINE";
-                            statusColor = "bg-[#22c55e]";
-                            statusBg =
-                              "bg-[#14532d] text-[#4ade80] border-[#14532d]";
-                          } else {
-                            displayStatus = "OFFLINE";
-                            statusColor = "bg-[#94a3b8]";
-                            statusBg =
-                              "bg-[#334155] text-[#94a3b8] border-[#334155]";
-                          }
-                        }
-
-                        return (
-                          <Badge
-                            className={`rounded-full px-3 py-1 2xl:px-5 2xl:py-2 flex w-fit items-center gap-2 text-base 2xl:text-xl ${statusBg} hover:${statusBg}`}
-                          >
-                            <span
-                              className={`block w-2.5 h-2.5 2xl:w-4 2xl:h-4 rounded-full ${statusColor}`}
-                            />
-                            {displayStatus}
-                          </Badge>
-                        );
-                      })()}
+                      <Badge
+                        className={`rounded-full px-3 py-1 2xl:px-5 2xl:py-2 flex w-fit items-center gap-2 text-base 2xl:text-xl ${getStatusBadgeStyles(
+                          user.status
+                        )}`}
+                      >
+                        <span
+                          className={`block w-2.5 h-2.5 2xl:w-4 2xl:h-4 rounded-full ${getStatusDotColor(
+                            user.status
+                          )}`}
+                        />
+                        {user.status.toUpperCase()}
+                      </Badge>
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
@@ -498,11 +470,10 @@ export default function UserManagementPage() {
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-[#3758F9] text-white shadow"
-                      : "border border-gray-700 bg-[#1F2937] text-white hover:bg-[#232e3c]"
-                  }`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${isActive
+                    ? "bg-[#3758F9] text-white shadow"
+                    : "border border-gray-700 bg-[#1F2937] text-white hover:bg-[#232e3c]"
+                    }`}
                 >
                   {page}
                 </button>

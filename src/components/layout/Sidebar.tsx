@@ -12,7 +12,7 @@ import { useFolderTree } from "@/components/layout/FolderTreeContext";
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { setCollapsed: setFolderTreeCollapsed } = useFolderTree();
 
   // Auto-close both sidebars on any navigation
@@ -78,9 +78,8 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`${
-        collapsed ? "w-16" : "w-64"
-      } bg-[#030616] border-[1.35px] border-[#374151] transition-all duration-300 ease-in-out h-full flex flex-col`}
+      className={`${collapsed ? "w-16" : "w-64"
+        } bg-[#030616] border-[1.35px] border-[#374151] transition-all duration-300 ease-in-out h-full flex flex-col`}
     >
       <div className="flex items-center justify-between p-4 border-b border-[#374151]">
         {!collapsed && (
@@ -105,58 +104,64 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
-        {navItems.map((item) => {
-          // Check if the current path matches the nav item's href exactly
-          // or if it's a subpath (for sensor detail pages)
-          const isActive =
-            pathname === item.href ||
-            (item.href === "/" && pathname.startsWith("/sensors/")) ||
-            (pathname.startsWith(item.href) && item.href !== "/");
+        {navItems
+          .filter((item) => {
+            if (item.name === "Admin") {
+              return user?.role?.toLowerCase() === "admin";
+            }
+            return true;
+          })
+          .map((item) => {
+            // Check if the current path matches the nav item's href exactly
+            // or if it's a subpath (for sensor detail pages)
+            const isActive =
+              pathname === item.href ||
+              (item.href === "/" && pathname.startsWith("/sensors/")) ||
+              (pathname.startsWith(item.href) && item.href !== "/");
 
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={() => {
-                setFolderTreeCollapsed(true);
-                setCollapsed(true);
-              }}
-              className={`flex items-center transition-colors ${
-                isActive
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => {
+                  setFolderTreeCollapsed(true);
+                  setCollapsed(true);
+                }}
+                className={`flex items-center transition-colors ${isActive
                   ? "bg-blue-900 text-blue-200"
                   : "hover:bg-gray-700 text-gray-200"
-              }`}
-              style={{
-                height: 40,
-                width: collapsed ? 40 : undefined,
-                borderRadius: 12,
-                margin: collapsed ? "0 auto 8px auto" : undefined,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: collapsed ? "center" : "flex-start",
-                paddingLeft: collapsed ? 0 : 12,
-                paddingRight: collapsed ? 0 : 12,
-                border: "1.35px solid #374151",
-              }}
-            >
-              <div
+                  }`}
                 style={{
-                  width: 24,
-                  height: 24,
+                  height: 40,
+                  width: collapsed ? 40 : undefined,
+                  borderRadius: 12,
+                  margin: collapsed ? "0 auto 8px auto" : undefined,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: collapsed ? "center" : "flex-start",
-                  marginRight: !collapsed ? 8 : 0,
+                  paddingLeft: collapsed ? 0 : 12,
+                  paddingRight: collapsed ? 0 : 12,
+                  border: "1.35px solid #374151",
                 }}
               >
-                {typeof item.icon === "function"
-                  ? item.icon()
-                  : React.createElement(item.icon, { size: 24 })}
-              </div>
-              {!collapsed && <span>{item.name}</span>}
-            </Link>
-          );
-        })}
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: collapsed ? "center" : "flex-start",
+                    marginRight: !collapsed ? 8 : 0,
+                  }}
+                >
+                  {typeof item.icon === "function"
+                    ? item.icon()
+                    : React.createElement(item.icon, { size: 24 })}
+                </div>
+                {!collapsed && <span>{item.name}</span>}
+              </Link>
+            );
+          })}
       </nav>
 
       <div className="p-4 border-t border-[#374151] mt-auto">

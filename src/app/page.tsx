@@ -280,7 +280,7 @@ export default function SensorsPage() {
     switch (currentView) {
       case "grid":
         return (
-          <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#374151] p-4 mx-auto w-full transition-all duration-300">
+          <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#030616] p-4 mx-auto w-full transition-all duration-300">
             <SensorGrid sensorGroups={sensorGroups} />
             {/* Pagination for card view */}
             <SensorPagination
@@ -306,7 +306,7 @@ export default function SensorsPage() {
         return <SensorListView sensorGroups={sensorGroups} />;
       case "dot":
         return (
-          <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#374151] p-4 mx-auto w-full transition-all duration-300">
+          <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#030616] p-4 mx-auto w-full transition-all duration-300">
             <SensorDotView sensorGroups={sensorGroups} dotSize={dotSize} />
           </div>
         );
@@ -316,9 +316,9 @@ export default function SensorsPage() {
   };
 
   return (
-    <div className="space-y-3 bg-[#030616] min-h-screen">
+    <div className="space-y-2 bg-[#030616] min-h-screen">
       {/* Sensor Status Summary with Quick Filter */}
-      <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#374151] p-4 mx-auto w-full transition-all duration-300">
+      <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#030616] p-4 mx-auto w-full transition-all duration-300">
         <SensorStatusSummary
           data={sensorStatusData}
           selectedStatuses={selectedStatuses}
@@ -327,7 +327,7 @@ export default function SensorsPage() {
       </div>
 
       {/* Device Toolbar */}
-      <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#374151] p-4 mx-auto w-full transition-all duration-300">
+      <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#030616] px-4 py-0 mx-auto w-full transition-all duration-300">
         <DeviceToolbar
           currentView={currentView}
           onViewChange={handleViewChange}

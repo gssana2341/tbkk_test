@@ -160,13 +160,11 @@ export async function uploadAvatar(
 }
 
 // Get all users (Admin only)
-// Get all users (Admin only)
 export async function getAllUsers(): Promise<
   Array<import("@/lib/types").UserAdminResponse>
 > {
   try {
     const axiosInstance = getAxiosInstance();
-    // Backend doesn't return status/last_login yet, so we fetch as any[] and map
     const response =
       await axiosInstance.get<Array<Record<string, unknown>>>("/users");
 
@@ -179,20 +177,9 @@ export async function getAllUsers(): Promise<
     }
 
     return response.data.map((user) => {
-      // Normalize status mapping based on user requirements
-      // Backend status is still missing, defaulting to "Online" to show Green as requested
-      let displayStatus = (user.status as string) || "Online";
-      const s = displayStatus.toLowerCase();
-
-      if (s === "active") displayStatus = "ONLINE";
-      else if (s === "disabled") displayStatus = "OFFLINE";
-      else if (s === "pending") displayStatus = "PENDING";
-      else if (s === "suspended") displayStatus = "SUSPENDED";
-      else displayStatus = "OFFLINE"; // Fallback
-
       return {
         ...user,
-        status: displayStatus,
+        status: (user.status as string) || "PENDING",
         last_login: user.last_login,
       } as import("@/lib/types").UserAdminResponse;
     });
@@ -254,6 +241,20 @@ export async function deleteUser(userId: string): Promise<{ message: string }> {
     return response.data;
   } catch (error) {
     console.error(`Error deleting user ${userId}:`, error);
+    throw error;
+  }
+}
+
+// Approve user (Admin only)
+export async function approveUser(userId: string): Promise<{ message: string }> {
+  try {
+    const axiosInstance = getAxiosInstance();
+    const response = await axiosInstance.put<{ message: string }>(
+      `/admin/users/${userId}/approve`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error approving user ${userId}:`, error);
     throw error;
   }
 }

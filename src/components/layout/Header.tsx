@@ -124,15 +124,15 @@ export default function Header() {
 
           const datetime = sensor.last_data?.datetime
             ? new Date(sensor.last_data.datetime)
-                .toLocaleString("en-GB", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })
-                .replace(",", "")
+              .toLocaleString("en-GB", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })
+              .replace(",", "")
             : "-";
 
           let statusClass = "";
@@ -236,12 +236,17 @@ export default function Header() {
   return (
     <header className="bg-[#030616] border-b-[1.35px] border-[#374151] py-3 px-6 shrink-0">
       <div className="flex items-center justify-between">
-        <div className="flex-1 flex items-center gap-2">
+        <div className="flex-1 flex items-center gap-3">
           <span className="text-lg 2xl:text-2xl font-medium text-white">
             TBKK-Surazense
           </span>
           <span className="text-gray-400 2xl:text-xl">/</span>
           <span className="text-gray-300 text-sm 2xl:text-lg">{pageTitle}</span>
+          {user?.role && (
+            <Badge className="bg-[#4c1d95] hover:bg-[#4c1d95] text-[#ddd6fe] border-[#5b21b6] rounded-full px-3 py-0.5 text-xs 2xl:text-base font-semibold capitalize">
+              {user.role}
+            </Badge>
+          )}
         </div>
 
         <div className="flex items-center space-x-4">
@@ -364,11 +369,11 @@ export default function Header() {
                   <AvatarFallback className="bg-gray-600 text-gray-300 text-xs font-medium">
                     {user?.name
                       ? user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                          .slice(0, 2)
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
                       : "U"}
                   </AvatarFallback>
                 </Avatar>

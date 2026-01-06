@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/auth/AuthProvider";
 import type { Sensor } from "../../lib/types";
 import {
   Edit,
@@ -42,6 +43,7 @@ export default function SensorActions({ sensor }: SensorActionsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -113,14 +115,19 @@ export default function SensorActions({ sensor }: SensorActionsProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Sensor Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleEdit}>
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Sensor
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleScheduleMaintenance}>
-            <Wrench className="h-4 w-4 mr-2" />
-            Schedule Maintenance
-          </DropdownMenuItem>
+          {(user?.role?.toLowerCase() === "admin" ||
+            user?.role?.toLowerCase() === "editor") && (
+              <>
+                <DropdownMenuItem onClick={handleEdit}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Sensor
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleScheduleMaintenance}>
+                  <Wrench className="h-4 w-4 mr-2" />
+                  Schedule Maintenance
+                </DropdownMenuItem>
+              </>
+            )}
           <DropdownMenuItem onClick={handleExportData}>
             <Download className="h-4 w-4 mr-2" />
             Export Data
@@ -129,23 +136,30 @@ export default function SensorActions({ sensor }: SensorActionsProps) {
             {sensor.status === "ok" ? (
               <>
                 <PowerOff className="h-4 w-4 mr-2" />
-                Deactivate Sensor
+                {user?.role?.toLowerCase() === "viewer"
+                  ? "View Power Status"
+                  : "Deactivate Sensor"}
               </>
             ) : (
               <>
                 <Power className="h-4 w-4 mr-2" />
-                Activate Sensor
+                {user?.role?.toLowerCase() === "viewer"
+                  ? "View Power Status"
+                  : "Activate Sensor"}
               </>
             )}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => setShowDeleteDialog(true)}
-            className="text-red-600 dark:text-red-400"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete Sensor
-          </DropdownMenuItem>
+          {(user?.role?.toLowerCase() === "admin" ||
+            user?.role?.toLowerCase() === "editor") && (
+              <DropdownMenuItem
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-red-600 dark:text-red-400"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Sensor
+              </DropdownMenuItem>
+            )}
         </DropdownMenuContent>
       </DropdownMenu>
 

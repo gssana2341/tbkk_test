@@ -52,6 +52,7 @@ import {
 } from "@/lib/utils/vibrationUtils";
 import type { Sensor } from "@/lib/types";
 import { deleteSensor } from "@/lib/data/sensors";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 ChartJS.register(
   zoomPlugin,
@@ -388,9 +389,9 @@ function prepareChartData(
       ? rmsOverride
       : processedData.length > 0
         ? Math.sqrt(
-            processedData.reduce((sum, val) => sum + val * val, 0) /
-              processedData.length
-          )
+          processedData.reduce((sum, val) => sum + val * val, 0) /
+          processedData.length
+        )
         : 0;
   const peak = Math.max(...processedData.map(Math.abs));
 
@@ -583,6 +584,7 @@ export default function SensorDetailPage() {
   const [history, setHistory] = useState<any[]>([]);
   const [isPrinting, setIsPrinting] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   // Fetch sensor history
   const fetchSensorHistory = async (sensorId: string) => {
@@ -1305,7 +1307,7 @@ export default function SensorDetailPage() {
               : prev.thresholdMin || "",
           thresholdMedium:
             sensorLastData.threshold_medium &&
-            sensorLastData.threshold_medium > 0
+              sensorLastData.threshold_medium > 0
               ? sensorLastData.threshold_medium.toString()
               : prev.thresholdMedium || "",
           thresholdMax:
@@ -2081,17 +2083,20 @@ export default function SensorDetailPage() {
               align="end"
               className="bg-[#030616] border-[1.35px] border-[#374151]"
             >
-              <DropdownMenuItem
-                className="text-white"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  router.push("/register");
-                }}
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                Configure Sensor
-              </DropdownMenuItem>
+              {(user?.role?.toLowerCase() === "admin" ||
+                user?.role?.toLowerCase() === "editor") && (
+                  <DropdownMenuItem
+                    className="text-white"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push("/register");
+                    }}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Configure Sensor
+                  </DropdownMenuItem>
+                )}
               <DropdownMenuItem
                 className="text-white cursor-pointer"
                 onClick={handleExportCSV}
@@ -2117,34 +2122,37 @@ export default function SensorDetailPage() {
               >
                 Share
               </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-red-500 cursor-pointer"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  console.log("Delete selected for sensor:", params.id);
+              {(user?.role?.toLowerCase() === "admin" ||
+                user?.role?.toLowerCase() === "editor") && (
+                  <DropdownMenuItem
+                    className="text-red-500 cursor-pointer"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      console.log("Delete selected for sensor:", params.id);
 
-                  setTimeout(async () => {
-                    if (
-                      confirm(
-                        "Are you sure you want to delete this sensor? This action cannot be undone."
-                      )
-                    ) {
-                      console.log("User confirmed delete");
-                      const success = await deleteSensor(params.id);
-                      console.log("Delete result:", success);
-                      if (success) {
-                        router.push("/");
-                      } else {
-                        alert("Failed to delete sensor");
-                      }
-                    } else {
-                      console.log("User cancelled delete");
-                    }
-                  }, 0);
-                }}
-              >
-                Delete
-              </DropdownMenuItem>
+                      setTimeout(async () => {
+                        if (
+                          confirm(
+                            "Are you sure you want to delete this sensor? This action cannot be undone."
+                          )
+                        ) {
+                          console.log("User confirmed delete");
+                          const success = await deleteSensor(params.id);
+                          console.log("Delete result:", success);
+                          if (success) {
+                            router.push("/");
+                          } else {
+                            alert("Failed to delete sensor");
+                          }
+                        } else {
+                          console.log("User cancelled delete");
+                        }
+                      }, 0);
+                    }}
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -2183,15 +2191,18 @@ export default function SensorDetailPage() {
                     <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
                       Sensor Information
                     </h2>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
-                      onClick={() => router.push(`/register?id=${params.id}`)}
-                    >
-                      <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
-                      Edit
-                    </Button>
+                    {(user?.role?.toLowerCase() === "admin" ||
+                      user?.role?.toLowerCase() === "editor") && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
+                          onClick={() => router.push(`/register?id=${params.id}`)}
+                        >
+                          <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
+                          Edit
+                        </Button>
+                      )}
                   </div>
 
                   <div className="grid grid-cols-[150px_1fr] 2xl:grid-cols-[200px_1fr] gap-x-8 gap-y-3 text-base 2xl:text-xl">
@@ -2212,35 +2223,32 @@ export default function SensorDetailPage() {
 
                     <span className="text-gray-400">Machine Number</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${
-                        configData.machineNumber
-                          ? "text-white"
-                          : "text-gray-500"
-                      }`}
+                      className={`text-lg 2xl:text-2xl ${configData.machineNumber
+                        ? "text-white"
+                        : "text-gray-500"
+                        }`}
                     >
                       {configData.machineNumber || "Not Set"}
                     </span>
 
                     <span className="text-gray-400">Installation Point</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${
-                        configData.installationPoint
-                          ? "text-white"
-                          : "text-gray-500"
-                      }`}
+                      className={`text-lg 2xl:text-2xl ${configData.installationPoint
+                        ? "text-white"
+                        : "text-gray-500"
+                        }`}
                     >
                       {configData.installationPoint || "Not Set"}
                     </span>
 
                     <span className="text-gray-400">Machine Class</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${
-                        configData.machineClass ? "text-white" : "text-gray-500"
-                      }`}
+                      className={`text-lg 2xl:text-2xl ${configData.machineClass ? "text-white" : "text-gray-500"
+                        }`}
                     >
                       {configData.machineClass
                         ? configData.machineClass.charAt(0).toUpperCase() +
-                          configData.machineClass.slice(1)
+                        configData.machineClass.slice(1)
                         : "Not Set"}
                     </span>
 
@@ -2369,8 +2377,8 @@ export default function SensorDetailPage() {
                     <span className="text-lg 2xl:text-2xl text-white">
                       {sensor.installationDate
                         ? formatDate(
-                            new Date(sensor.installationDate).toISOString()
-                          )
+                          new Date(sensor.installationDate).toISOString()
+                        )
                         : formatDate("2025-04-26")}
                     </span>
 
@@ -2397,11 +2405,10 @@ export default function SensorDetailPage() {
                         {sortedDatetimes.map((datetime) => (
                           <li key={datetime}>
                             <button
-                              className={`w-full text-left px-2 py-1 rounded hover:bg-[#374151]/50 text-white ${
-                                selectedDatetime === datetime
-                                  ? "bg-blue-600"
-                                  : ""
-                              }`}
+                              className={`w-full text-left px-2 py-1 rounded hover:bg-[#374151]/50 text-white ${selectedDatetime === datetime
+                                ? "bg-blue-600"
+                                : ""
+                                }`}
                               onClick={async () => {
                                 setSelectedDatetime(datetime);
                                 try {
@@ -2471,7 +2478,7 @@ export default function SensorDetailPage() {
                     style={{
                       color:
                         safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                        safeTemp <= (configData?.alarm_ths || 35)
+                          safeTemp <= (configData?.alarm_ths || 35)
                           ? "#1f2937"
                           : "#ffffff",
                     }}
@@ -2485,7 +2492,7 @@ export default function SensorDetailPage() {
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                          safeTemp <= (configData?.alarm_ths || 35)
+                            safeTemp <= (configData?.alarm_ths || 35)
                             ? "#1f2937"
                             : "#ffffff",
                       }}
@@ -2497,7 +2504,7 @@ export default function SensorDetailPage() {
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                          safeTemp <= (configData?.alarm_ths || 35)
+                            safeTemp <= (configData?.alarm_ths || 35)
                             ? "#1f2937"
                             : "#ffffff",
                       }}
@@ -2516,7 +2523,7 @@ export default function SensorDetailPage() {
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                          safeTemp <= (configData?.alarm_ths || 35)
+                            safeTemp <= (configData?.alarm_ths || 35)
                             ? "#4b5563"
                             : "#d1d5db", // gray-300 for dark bg
                       }}
@@ -2528,7 +2535,7 @@ export default function SensorDetailPage() {
                       style={{
                         color:
                           safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                          safeTemp <= (configData?.alarm_ths || 35)
+                            safeTemp <= (configData?.alarm_ths || 35)
                             ? "#4b5563"
                             : "#d1d5db",
                       }}
@@ -2548,13 +2555,12 @@ export default function SensorDetailPage() {
               >
                 <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${
-                      shouldTextBeWhite(
-                        getDetailCardColor(parseFloat(xStats.velocityTopPeak))
-                      )
-                        ? "!text-white"
-                        : "!text-black"
-                    }`}
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(xStats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                      }`}
                   >
                     Horizontal (H)
                   </h3>
@@ -2630,15 +2636,14 @@ export default function SensorDetailPage() {
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${
-                          shouldTextBeWhite(
-                            getCardBackgroundColorCallback(
-                              parseFloat(xStats.velocityTopPeak)
-                            )
+                        className={`text-right ${shouldTextBeWhite(
+                          getCardBackgroundColorCallback(
+                            parseFloat(xStats.velocityTopPeak)
                           )
-                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
-                            : "!text-black text-sm md:text-base 2xl:text-2xl"
-                        }`}
+                        )
+                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                          : "!text-black text-sm md:text-base 2xl:text-2xl"
+                          }`}
                       >
                         {xStats.velocityTopPeak} mm/s
                       </span>
@@ -2657,13 +2662,12 @@ export default function SensorDetailPage() {
                 {/* {getDetailCardColor(parseFloat(yStats.velocityTopPeak))} */}
                 <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${
-                      shouldTextBeWhite(
-                        getDetailCardColor(parseFloat(yStats.velocityTopPeak))
-                      )
-                        ? "!text-white"
-                        : "!text-black"
-                    }`}
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(yStats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                      }`}
                   >
                     Vertical (V)
                   </h3>
@@ -2739,15 +2743,14 @@ export default function SensorDetailPage() {
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${
-                          shouldTextBeWhite(
-                            getCardBackgroundColorCallback(
-                              parseFloat(yStats.velocityTopPeak)
-                            )
+                        className={`text-right ${shouldTextBeWhite(
+                          getCardBackgroundColorCallback(
+                            parseFloat(yStats.velocityTopPeak)
                           )
-                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
-                            : "!text-black text-sm md:text-base 2xl:text-2xl"
-                        }`}
+                        )
+                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                          : "!text-black text-sm md:text-base 2xl:text-2xl"
+                          }`}
                       >
                         {yStats.velocityTopPeak} mm/s
                       </span>
@@ -2764,13 +2767,12 @@ export default function SensorDetailPage() {
               >
                 <CardContent className="p-4 2xl:p-6">
                   <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${
-                      shouldTextBeWhite(
-                        getDetailCardColor(parseFloat(zStats.velocityTopPeak))
-                      )
-                        ? "!text-white"
-                        : "!text-black"
-                    }`}
+                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(zStats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                      }`}
                   >
                     Axial (A)
                   </h3>
@@ -2846,15 +2848,14 @@ export default function SensorDetailPage() {
                         Velocity (RMS)
                       </span>
                       <span
-                        className={`text-right ${
-                          shouldTextBeWhite(
-                            getCardBackgroundColorCallback(
-                              parseFloat(zStats.velocityTopPeak)
-                            )
+                        className={`text-right ${shouldTextBeWhite(
+                          getCardBackgroundColorCallback(
+                            parseFloat(zStats.velocityTopPeak)
                           )
-                            ? "!text-white text-sm md:text-base 2xl:text-2xl"
-                            : "!text-black text-sm md:text-base 2xl:text-2xl"
-                        }`}
+                        )
+                          ? "!text-white text-sm md:text-base 2xl:text-2xl"
+                          : "!text-black text-sm md:text-base 2xl:text-2xl"
+                          }`}
                       >
                         {zStats.velocityTopPeak} mm/s
                       </span>
