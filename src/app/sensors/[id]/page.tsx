@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft, MoreVertical, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +19,9 @@ import {
   getSignalStrength,
   getSignalStrengthLabel,
 } from "@/lib/utils";
+import { exportToCSV, exportToExcel } from "@/lib/exportUtils";
+import * as htmlToImage from "html-to-image";
+import jsPDF from "jspdf";
 import dynamic from "next/dynamic";
 const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
 import {
@@ -407,8 +410,8 @@ function prepareChartData(
       {
         label: yAxisLabel,
         data: processedData,
-        borderColor: "rgb(75, 192, 192)",
-        backgroundColor: "rgba(75, 192, 192, 0.1)",
+        borderColor: "#3b82f6",
+        backgroundColor: "rgba(59, 130, 246, 0.1)",
         tension: 0.1,
         pointRadius: 0,
       },
@@ -484,8 +487,8 @@ function prepareChartData(
       {
         label: `${yAxisLabel} Magnitude`,
         data: freqMagnitude,
-        borderColor: "rgb(75, 192, 192)",
-        backgroundColor: "rgba(75, 192, 192, 0.1)",
+        borderColor: "#3b82f6",
+        backgroundColor: "rgba(59, 130, 246, 0.1)",
         tension: 0.1,
         pointRadius: 0, // Reduce radius for dense data
         pointBackgroundColor: pointBackgroundColor,
@@ -578,6 +581,8 @@ export default function SensorDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [sensorImage, setSensorImage] = useState<string | null>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [isPrinting, setIsPrinting] = useState(false);
+  const printRef = useRef<HTMLDivElement>(null);
 
   // Fetch sensor history
   const fetchSensorHistory = async (sensorId: string) => {
@@ -1830,6 +1835,172 @@ export default function SensorDetailPage() {
     }
   };
 
+  const handleExportCSV = () => {
+    const data = vibrationData;
+    if (!data.hasData) return;
+
+    const exportData = prepareSensorDetailExport();
+    exportToCSV(
+      exportData,
+      `sensor_data_${params.id}_${new Date().toISOString().split("T")[0]}.csv`
+    );
+  };
+
+  const handleExportExcel = () => {
+    const data = vibrationData;
+    if (!data.hasData) return;
+
+    const exportData = prepareSensorDetailExport();
+    exportToExcel(
+      exportData,
+      `sensor_data_${params.id}_${new Date().toISOString().split("T")[0]}.xlsx`
+    );
+  };
+
+  const prepareSensorDetailExport = () => {
+    const data = vibrationData;
+    const exportData: any[] = [];
+
+    // 1. Summary Header
+    exportData.push({
+      Section: "Summary Information",
+      Field: "Sensor Name",
+      Value: sensorLastData?.name || "",
+    });
+    exportData.push({
+      Section: "",
+      Field: "Datetime",
+      Value: currentData.datetime,
+    });
+    exportData.push({
+      Section: "",
+      Field: "Selected Axis",
+      Value: selectedAxis,
+    });
+    exportData.push({
+      Section: "",
+      Field: "Selected Unit",
+      Value: selectedUnit,
+    });
+    exportData.push({
+      Section: "",
+      Field: "Temperature",
+      Value: `${safeTemp.toFixed(1)}°C`,
+    });
+    exportData.push({
+      Section: "",
+      Field: "Battery",
+      Value: `${safeBattery.toFixed(1)}%`,
+    });
+    exportData.push({
+      Section: "",
+      Field: "RMS Value",
+      Value: data.rmsValue || "",
+    });
+    exportData.push({
+      Section: "",
+      Field: "Peak Value",
+      Value: data.peakValue || "",
+    });
+    exportData.push({});
+
+    // 2. Frequency Domain (Top Peaks)
+    if (data.topPeaks && data.topPeaks.length > 0) {
+      exportData.push({
+        Section: "Top 5 Peaks",
+        Field: "Frequency (Hz)",
+        Value: "Magnitude",
+      });
+      data.topPeaks.forEach((p) => {
+        exportData.push({ Section: "", Field: p.frequency, Value: p.rms });
+      });
+      exportData.push({});
+    }
+
+    // 3. Raw Data
+    // We'll create a side-by-side export for Time and Frequency domains
+    const timeLabels = data.timeData?.labels || [];
+    const timeValues = data.timeData?.datasets[0].data || [];
+    const freqLabels = data.freqData?.labels || [];
+    const freqValues = data.freqData?.datasets[0].data || [];
+
+    const maxLen = Math.max(timeLabels.length, freqLabels.length);
+
+    exportData.push({
+      Section: "RAW DATA",
+      Field: "Time (s)",
+      Value: `Magnitude (${selectedUnit})`,
+      Frequency_Hz: "Frequency (Hz)",
+      Magnitude: `Magnitude (${selectedUnit})`,
+    });
+
+    for (let i = 0; i < maxLen; i++) {
+      exportData.push({
+        Section: "",
+        Field: timeLabels[i] || "",
+        Value: timeValues[i] != null ? timeValues[i] : "",
+        Frequency_Hz: freqLabels[i] || "",
+        Magnitude: freqValues[i] != null ? freqValues[i] : "",
+      });
+    }
+
+    return exportData;
+  };
+
+  const handlePrintReport = async () => {
+    if (!printRef.current) return;
+    setIsPrinting(true);
+    toast({
+      title: "Generating PDF",
+      description: "Please wait while we prepare your report...",
+    });
+
+    try {
+      // Small delay to ensure all charts are rendered
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      const dataUrl = await htmlToImage.toPng(printRef.current, {
+        quality: 1.0,
+        pixelRatio: 2,
+        backgroundColor: "#030616",
+        style: {
+          borderRadius: "0",
+        },
+      });
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(
+        `sensor_report_${params.id}_${new Date().toISOString().split("T")[0]}.pdf`
+      );
+
+      toast({
+        title: "PDF Generated",
+        description: "Your report has been downloaded.",
+      });
+    } catch (err) {
+      console.error("PDF Generation failed:", err);
+      toast({
+        title: "Report Failed",
+        description:
+          "Could not generate PDF report. " +
+          (err instanceof Error ? err.message : ""),
+        variant: "destructive",
+      });
+    } finally {
+      setIsPrinting(false);
+    }
+  };
+
   if (!mounted || loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#030616]">
@@ -1921,11 +2092,24 @@ export default function SensorDetailPage() {
                 <Settings className="mr-2 h-4 w-4" />
                 Configure Sensor
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-white">
-                Export Data
+              <DropdownMenuItem
+                className="text-white cursor-pointer"
+                onClick={handleExportCSV}
+              >
+                Export CSV
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-white">
-                Print Report
+              <DropdownMenuItem
+                className="text-white cursor-pointer"
+                onClick={handleExportExcel}
+              >
+                Export Excel
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-white cursor-pointer"
+                onClick={handlePrintReport}
+                disabled={isPrinting}
+              >
+                {isPrinting ? "Generating..." : "Print Report"}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-white cursor-pointer"
@@ -1967,7 +2151,7 @@ export default function SensorDetailPage() {
       </div>
 
       {/* Main content */}
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4" ref={printRef}>
         {error && (
           <div className="bg-red-900 border border-red-700 text-red-100 px-4 py-2 rounded-md mb-4">
             {error}. Using fallback data.
@@ -1978,7 +2162,7 @@ export default function SensorDetailPage() {
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-12">
               <div className="shrink-0 flex justify-center">
-                <div className="w-72 h-96 bg-gray-700 rounded-md flex items-center justify-center overflow-hidden relative">
+                <div className="w-72 h-96 bg-[#030616] border-[1.35px] border-[#374151] rounded-md flex items-center justify-center overflow-hidden relative">
                   {sensorImage || configData.image_url ? (
                     <Image
                       src={sensorImage || configData.image_url || ""}
@@ -2198,7 +2382,7 @@ export default function SensorDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex-[1_1_200px] border border-gray-700 rounded-xl p-4 2xl:p-6">
+                <div className="flex-[1_1_200px] border-[1.35px] border-[#374151] rounded-xl p-4 2xl:p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
                       Select Date & Time
@@ -2467,7 +2651,7 @@ export default function SensorDetailPage() {
             {/* Conditionally show V-axis card */}
             {configData.vAxisEnabled && (
               <Card
-                className={`border-gray-800
+                className={`border-[1.35px] border-[#374151]
               ${getDetailCardColor(parseFloat(yStats.velocityTopPeak))}`}
               >
                 {/* {getDetailCardColor(parseFloat(yStats.velocityTopPeak))} */}
@@ -2699,7 +2883,7 @@ export default function SensorDetailPage() {
                         type="checkbox"
                         checked={selectedAxis === "H-axis"}
                         onChange={() => setSelectedAxis("H-axis")}
-                        className="w-5 h-5 accent-gray-900"
+                        className="w-5 h-5 accent-blue-600"
                       />
                       <span className="text-sm font-medium text-white">
                         H (Horizontal)
@@ -2712,7 +2896,7 @@ export default function SensorDetailPage() {
                         type="checkbox"
                         checked={selectedAxis === "V-axis"}
                         onChange={() => setSelectedAxis("V-axis")}
-                        className="w-5 h-5 accent-gray-900"
+                        className="w-5 h-5 accent-blue-600"
                       />
                       <span className="text-sm font-medium text-white">
                         V (Vertical)
@@ -2725,7 +2909,7 @@ export default function SensorDetailPage() {
                         type="checkbox"
                         checked={selectedAxis === "A-axis"}
                         onChange={() => setSelectedAxis("A-axis")}
-                        className="w-5 h-5 accent-gray-900"
+                        className="w-5 h-5 accent-blue-600"
                       />
                       <span className="text-sm font-medium text-white">
                         A (Axial)
@@ -2741,7 +2925,7 @@ export default function SensorDetailPage() {
                       type="checkbox"
                       checked={selectedUnit === "Acceleration (G)"}
                       onChange={() => setSelectedUnit("Acceleration (G)")}
-                      className="w-5 h-5 accent-gray-900"
+                      className="w-5 h-5 accent-blue-600"
                     />
                     <span className="text-sm font-medium text-white">
                       Acceleration(G)
@@ -2752,7 +2936,7 @@ export default function SensorDetailPage() {
                       type="checkbox"
                       checked={selectedUnit === "Acceleration (mm/s²)"}
                       onChange={() => setSelectedUnit("Acceleration (mm/s²)")}
-                      className="w-5 h-5 accent-gray-900"
+                      className="w-5 h-5 accent-blue-600"
                     />
                     <span className="text-sm font-medium text-white">
                       Acceleration(mm/s²)
@@ -2763,7 +2947,7 @@ export default function SensorDetailPage() {
                       type="checkbox"
                       checked={selectedUnit === "Velocity (mm/s)"}
                       onChange={() => setSelectedUnit("Velocity (mm/s)")}
-                      className="w-5 h-5 accent-gray-900"
+                      className="w-5 h-5 accent-blue-600"
                     />
                     <span className="text-sm font-medium text-white">
                       Velocity(mm/s)
@@ -2780,7 +2964,7 @@ export default function SensorDetailPage() {
                     {/* RMS Overall + Top 5 Peaks & Short Trend Section */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       {/* Left Column: RMS Overall + Top 5 Peaks */}
-                      <div className="bg-[#232e3c] border border-gray-700 rounded-lg p-6">
+                      <div className="bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-6">
                         <div className="flex items-center justify-between mb-8">
                           <div className="flex items-center gap-4">
                             <h4 className="text-xl font-bold text-white">
@@ -2800,7 +2984,7 @@ export default function SensorDetailPage() {
                             Top 5 Peaks
                           </h5>
                           <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-6 pb-3 border-b-2 border-gray-700">
+                            <div className="grid grid-cols-2 gap-6 pb-3 border-b-2 border-[#374151]">
                               <div className="text-base font-bold text-white">
                                 RMS :
                               </div>
@@ -2829,14 +3013,14 @@ export default function SensorDetailPage() {
                       </div>
 
                       {/* Right Column: Short Trend */}
-                      <div className="bg-[#232e3c] border border-gray-700 rounded-lg p-6">
+                      <div className="bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-6">
                         <h4 className="text-xl font-bold text-white mb-8">
                           Short Trend
                         </h4>
                         <div className="overflow-x-auto max-h-80 overflow-y-auto">
                           <table className="min-w-full text-base">
-                            <thead className="sticky top-0 bg-[#232e3c]">
-                              <tr className="border-b-2 border-gray-700">
+                            <thead className="sticky top-0 bg-[#030616]">
+                              <tr className="border-b-2 border-[#374151]">
                                 <th className="text-left px-3 py-3 font-bold text-white">
                                   Date & Time
                                 </th>
@@ -2913,11 +3097,11 @@ export default function SensorDetailPage() {
                           Time Domain
                         </span>
                       </h3>
-                      <div className="h-80 bg-[#232e3c] border border-gray-700 rounded-lg p-4">
+                      <div className="h-80 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4">
                         {hasData && vibrationData.timeData ? (
                           <ReactECharts
                             option={{
-                              backgroundColor: "#232e3c",
+                              backgroundColor: "#030616",
                               grid: {
                                 left: 60,
                                 right: 30,
@@ -3024,11 +3208,11 @@ export default function SensorDetailPage() {
                           Frequency Domain
                         </span>
                       </h3>
-                      <div className="h-80 bg-[#232e3c] border border-gray-700 rounded-lg p-4">
+                      <div className="h-80 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4">
                         {hasData && vibrationData.freqData ? (
                           <ReactECharts
                             option={{
-                              backgroundColor: "#232e3c",
+                              backgroundColor: "#030616",
                               grid: {
                                 left: 60,
                                 right: 30,

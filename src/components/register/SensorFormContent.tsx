@@ -407,7 +407,7 @@ export function SensorFormContent({
               />
             </div>
 
-            <div className="p-3 border border-gray-700 rounded-lg bg-[#1F2937]">
+            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.concernThreshold`}
@@ -432,7 +432,7 @@ export function SensorFormContent({
               />
             </div>
 
-            <div className="p-3 border border-gray-700 rounded-lg bg-[#1F2937]">
+            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.damageThreshold`}
@@ -561,7 +561,7 @@ export function SensorFormContent({
               />
             </div>
 
-            <div className="p-3 border border-gray-700 rounded-lg bg-[#1F2937]">
+            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.namePlaceConcernThreshold`}
@@ -586,7 +586,7 @@ export function SensorFormContent({
               />
             </div>
 
-            <div className="p-3 border border-gray-700 rounded-lg bg-[#1F2937]">
+            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.namePlaceDamageThreshold`}

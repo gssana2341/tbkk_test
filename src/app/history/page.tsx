@@ -20,53 +20,60 @@ export default function NotificationHistoryPage() {
       const response = await getNotificationLogs({ limit: 10000 });
 
       // Transform NotificationLog to NotificationEntry format
-      const notificationEntries: NotificationEntry[] = response.data.map((log: NotificationLog) => {
-        // Status mapping (API returns lowercase, component expects Title Case)
-        const statusMap: Record<string, NotificationEntry["status"]> = {
-          critical: "Critical",
-          concern: "Concern",
-          warning: "Warning",
-          normal: "Normal",
-          ok: "Normal"
-        };
+      const notificationEntries: NotificationEntry[] = response.data.map(
+        (log: NotificationLog) => {
+          // Status mapping (API returns lowercase, component expects Title Case)
+          const statusMap: Record<string, NotificationEntry["status"]> = {
+            critical: "Critical",
+            concern: "Concern",
+            warning: "Warning",
+            normal: "Normal",
+            ok: "Normal",
+          };
 
-        const finalStatus = statusMap[log.status.toLowerCase()] || "Normal";
+          const finalStatus = statusMap[log.status.toLowerCase()] || "Normal";
 
-        // Format datetime from log
-        const dateObj = new Date(log.datetime);
-        const datetime = dateObj.toLocaleString("en-GB", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        })
-          .replace(",", " |");
+          // Format datetime from log
+          const dateObj = new Date(log.datetime);
+          const datetime = dateObj
+            .toLocaleString("en-GB", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })
+            .replace(",", " |");
 
-        return {
-          id: log.id,
-          sensorName: log.sensor_name || "-",
-          area: log.area || "-",
-          machine: log.machine || "-",
-          status: finalStatus,
-          datetime,
-          timestamp: dateObj.getTime(),
-          hVrms: log.h_vrms,
-          vVrms: log.v_vrms,
-          aVrms: log.a_vrms,
-          temperature: log.temperature ? `${log.temperature.toFixed(0)}°C` : null,
-          battery: log.battery ? `${Math.round(log.battery)}%` : null,
-          config: {
-            thresholdMin: log.threshold_min ?? 2.0,
-            thresholdMedium: log.threshold_medium ?? 2.5,
-            thresholdMax: log.threshold_max ?? 3.0,
-          },
-        };
-      });
+          return {
+            id: log.id,
+            sensorName: log.sensor_name || "-",
+            area: log.area || "-",
+            machine: log.machine || "-",
+            status: finalStatus,
+            datetime,
+            timestamp: dateObj.getTime(),
+            hVrms: log.h_vrms,
+            vVrms: log.v_vrms,
+            aVrms: log.a_vrms,
+            temperature: log.temperature
+              ? `${log.temperature.toFixed(0)}°C`
+              : null,
+            battery: log.battery ? `${Math.round(log.battery)}%` : null,
+            config: {
+              thresholdMin: log.threshold_min ?? 2.0,
+              thresholdMedium: log.threshold_medium ?? 2.5,
+              thresholdMax: log.threshold_max ?? 3.0,
+            },
+          };
+        }
+      );
 
       // Sort by timestamp descending (Latest First) as requested
-      const sortedEntries = notificationEntries.sort((a, b) => b.timestamp - a.timestamp);
+      const sortedEntries = notificationEntries.sort(
+        (a, b) => b.timestamp - a.timestamp
+      );
 
       setEntries(sortedEntries);
     } catch (error) {

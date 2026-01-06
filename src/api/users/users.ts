@@ -9,6 +9,7 @@ import type {
   UserSecuritySettings,
 } from "@/lib/types";
 import { getToken } from "@/lib/auth";
+import { toBase64 } from "@/lib/utils";
 
 const API_BASE_URL = "/api";
 
@@ -123,20 +124,35 @@ export async function disableTwoFactor(
 export async function uploadAvatar(
   file: File
 ): Promise<{ avatar_url: string; message?: string }> {
-  try {
-    const axiosInstance = getAxiosInstance();
-    const formData = new FormData();
-    formData.append("avatar", file);
+  const base64Image = await toBase64(file);
+  const contentType = file.type || "image/jpeg";
+  const token = getToken();
 
-    const response = await axiosInstance.post<{
-      avatar_url: string;
-      message?: string;
-    }>("/users/avatar", formData, {
+  const url = `${API_BASE_URL}/users/avatar`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
+      body: JSON.stringify({
+        image_base64: base64Image,
+        content_type: contentType,
+      }),
     });
-    return response.data;
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Avatar upload failed:", response.status, errorText);
+      throw new Error(
+        `Upload failed with status ${response.status}: ${errorText}`
+      );
+    }
+
+    return await response.json();
   } catch (error) {
     console.error("Error uploading avatar:", error);
     throw error;

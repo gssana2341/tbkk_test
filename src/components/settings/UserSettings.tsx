@@ -355,21 +355,22 @@ export default function UserSettings() {
 
     try {
       setSaving(true);
-      // Create a local URL for the selected image (Caching locally)
-      const localUrl = URL.createObjectURL(file);
-      setAvatarUrl(localUrl);
 
-      toast({
-        title: "Avatar Updated (Cached)",
-        description: "Your avatar has been updated locally.",
-      });
+      // Upload the file to the server using the Base64 logic (same as registration)
+      const response = await uploadAvatar(file);
 
-      // Note: We are not calling uploadAvatar(file) as requested to save to DB
+      if (response.avatar_url) {
+        setAvatarUrl(response.avatar_url);
+        toast({
+          title: "Avatar Updated",
+          description: "Your profile picture has been updated successfully.",
+        });
+      }
     } catch (err) {
       console.error("Error updating avatar:", err);
       toast({
         title: "Update Failed",
-        description: "Failed to update avatar locally.",
+        description: "Failed to upload avatar to the server. Please try again.",
         variant: "destructive",
       });
     } finally {

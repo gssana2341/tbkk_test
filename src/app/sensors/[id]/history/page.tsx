@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import dynamic from "next/dynamic";
+import { exportToCSV, exportToExcel } from "@/lib/exportUtils";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
 
@@ -45,6 +46,8 @@ export default function SensorHistoryPage() {
     "all"
   );
   const [selectedUnit, setSelectedUnit] = useState("Velocity (mm/s)");
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
 
   useEffect(() => {
     async function fetchHistory() {
@@ -52,7 +55,11 @@ export default function SensorHistoryPage() {
       setError(null);
       try {
         const token = localStorage.getItem("auth_token");
-        const url = `/api/sensors/${params.id}/history?limit=32`;
+        let url = `/api/sensors/${params.id}/history?limit=100`; // Increased limit for export/analysis
+
+        if (dateStart) url += `&start_date=${dateStart}`;
+        if (dateEnd) url += `&end_date=${dateEnd}`;
+
         console.log("Fetching History from:", url);
 
         const response = await fetch(url, {
@@ -277,6 +284,64 @@ export default function SensorHistoryPage() {
     };
   }, [history, selectedAxis, selectedUnit, sensorName]);
 
+  const handleExportCSV = () => {
+    if (history.length === 0) return;
+    const exportData = prepareExportData();
+    exportToCSV(
+      exportData,
+      `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.csv`
+    );
+  };
+
+  const handleExportExcel = () => {
+    if (history.length === 0) return;
+    const exportData = prepareExportData();
+    exportToExcel(
+      exportData,
+      `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.xlsx`
+    );
+  };
+
+  const prepareExportData = () => {
+    return history.map((item) => {
+      const row: any = {
+        DateTime: item.datetime,
+      };
+
+      if (selectedAxis === "all" || selectedAxis === "h") {
+        row[`H-axis (${selectedUnit})`] = getAxisVal(item, "h").toFixed(3);
+      }
+      if (selectedAxis === "all" || selectedAxis === "v") {
+        row[`V-axis (${selectedUnit})`] = getAxisVal(item, "v").toFixed(3);
+      }
+      if (selectedAxis === "all" || selectedAxis === "a") {
+        row[`A-axis (${selectedUnit})`] = getAxisVal(item, "a").toFixed(3);
+      }
+
+      return row;
+    });
+  };
+
+  const getAxisVal = (item: HistoryItem, axis: "h" | "v" | "a") => {
+    if (selectedUnit === "Acceleration RMS (G)")
+      return axis === "h"
+        ? item.g_rms_h
+        : axis === "v"
+          ? item.g_rms_v
+          : item.g_rms_a;
+    if (selectedUnit === "Acceleration(mm/s²)")
+      return axis === "h"
+        ? item.a_rms_h
+        : axis === "v"
+          ? item.a_rms_v
+          : item.a_rms_a;
+    return axis === "h"
+      ? item.velo_rms_h
+      : axis === "v"
+        ? item.velo_rms_v
+        : item.velo_rms_a;
+  };
+
   return (
     <div className="min-h-screen bg-[#030616] text-white">
       <div className="bg-[#030616] px-6 py-4 flex items-center justify-between border-b-[1.35px] border-[#374151]">
@@ -336,12 +401,16 @@ export default function SensorHistoryPage() {
               <span className="text-sm font-medium text-gray-300">Date:</span>
               <input
                 type="date"
-                className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-blue-500"
+                value={dateStart}
+                onChange={(e) => setDateStart(e.target.value)}
               />
               <span className="text-gray-400">-</span>
               <input
                 type="date"
-                className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5"
+                className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-blue-500"
+                value={dateEnd}
+                onChange={(e) => setDateEnd(e.target.value)}
               />
             </div>
 
@@ -349,12 +418,16 @@ export default function SensorHistoryPage() {
               <Button
                 variant="outline"
                 className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                onClick={handleExportCSV}
+                disabled={history.length === 0}
               >
                 Export CSV
               </Button>
               <Button
                 variant="outline"
                 className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                onClick={handleExportExcel}
+                disabled={history.length === 0}
               >
                 Export Excel
               </Button>
