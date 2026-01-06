@@ -578,3 +578,37 @@ export interface UserAdminResponse {
   updated_at?: string;
   last_login?: string; // Added to match UI requirements
 }
+
+// Notification Logs types
+export interface NotificationLog {
+  id: string;
+  sensor_id: string;
+  organization_id: string | null;
+  status: string;
+  alert_type: string;
+  sensor_name: string;
+  area: string;
+  machine: string;
+  datetime: string;
+  h_vrms: number;
+  v_vrms: number;
+  a_vrms: number;
+  temperature: number;
+  battery: number;
+  threshold_min: number | null;
+  threshold_medium: number | null;
+  threshold_max: number | null;
+  is_read: boolean;
+  read_at: string | null;
+  read_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NotificationLogsResponse {
+  data: NotificationLog[];
+  total: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}

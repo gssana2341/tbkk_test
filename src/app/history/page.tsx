@@ -5,103 +5,70 @@ import {
   NotificationHistoryTable,
   NotificationEntry,
 } from "@/components/history/NotificationHistoryTable";
-import { getSensors } from "@/lib/data/sensors";
-import type { Sensor } from "@/lib/types";
-import {
-  getVibrationLevelFromConfig,
-  SensorConfig,
-} from "@/lib/utils/vibrationUtils";
+import { getNotificationLogs } from "@/lib/data/notifications";
+import type { NotificationLog } from "@/lib/types";
 
 export default function NotificationHistoryPage() {
   const [entries, setEntries] = useState<NotificationEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch sensors from API and filter for warning/concern/critical status
+  // Fetch from /notification-logs API
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      const { sensors } = await getSensors({ limit: 10000 });
+      // Fetch data from the new endpoint
+      const response = await getNotificationLogs({ limit: 10000 });
 
-      // Transform Sensor data to NotificationEntry format AND filter simultaneously
-      const notificationEntries: NotificationEntry[] = [];
+      // Transform NotificationLog to NotificationEntry format
+      const notificationEntries: NotificationEntry[] = response.data.map((log: NotificationLog) => {
+        // Status mapping (API returns lowercase, component expects Title Case)
+        const statusMap: Record<string, NotificationEntry["status"]> = {
+          critical: "Critical",
+          concern: "Concern",
+          warning: "Warning",
+          normal: "Normal",
+          ok: "Normal"
+        };
 
-      sensors.forEach((sensor: Sensor) => {
-        // Recalculate status using standard utility logic (handles 0 thresholds correctly)
-        // We check all axes
-        const hVal = sensor.last_data?.velo_rms_h || 0;
-        const vVal = sensor.last_data?.velo_rms_v || 0;
-        const aVal = sensor.last_data?.velo_rms_a || 0;
+        const finalStatus = statusMap[log.status.toLowerCase()] || "Normal";
 
-        // Cast to SensorConfig to ensure compatibility
-        const config = sensor as unknown as SensorConfig;
+        // Format datetime from log
+        const dateObj = new Date(log.datetime);
+        const datetime = dateObj.toLocaleString("en-GB", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+          .replace(",", " |");
 
-        const hStatus = getVibrationLevelFromConfig(hVal, config);
-        const vStatus = getVibrationLevelFromConfig(vVal, config);
-        const aStatus = getVibrationLevelFromConfig(aVal, config);
-
-        // Determine worst status
-        let finalStatus: NotificationEntry["status"] = "Normal";
-        const statuses = [hStatus, vStatus, aStatus];
-
-        if (statuses.includes("critical")) {
-          finalStatus = "Critical"; // Red
-        } else if (statuses.includes("concern")) {
-          finalStatus = "Concern"; // Orange
-        } else if (statuses.includes("warning")) {
-          finalStatus = "Warning"; // Yellow
-        }
-
-        // Filter: Only add if status is NOT Normal
-        if (finalStatus !== "Normal") {
-          // Format datetime from last_data
-          const datetime = sensor.last_data?.datetime
-            ? new Date(sensor.last_data.datetime)
-                .toLocaleString("en-GB", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })
-                .replace(",", " |")
-            : "-";
-
-          notificationEntries.push({
-            id: sensor.id,
-            sensorName: sensor.serialNumber || sensor.name,
-            area: sensor.installation_point || "-",
-            machine: sensor.machine_number || "-",
-            status: finalStatus,
-            datetime,
-            timestamp: sensor.last_data?.datetime
-              ? new Date(sensor.last_data.datetime).getTime()
-              : 0,
-            hVrms: sensor.last_data?.velo_rms_h ?? null,
-            vVrms: sensor.last_data?.velo_rms_v ?? null,
-            aVrms: sensor.last_data?.velo_rms_a ?? null,
-            temperature: sensor.last_data?.temperature
-              ? `${sensor.last_data.temperature.toFixed(0)}°C`
-              : null,
-            battery: sensor.last_data?.battery
-              ? `${Math.round(sensor.last_data.battery)}%`
-              : null,
-            config: {
-              thresholdMin: Number(
-                config.thresholdMin ?? config.threshold_min ?? 2.0
-              ),
-              thresholdMedium: Number(
-                config.thresholdMedium ?? config.threshold_medium ?? 2.5
-              ),
-              thresholdMax: Number(
-                config.thresholdMax ?? config.threshold_max ?? 3.0
-              ),
-            },
-          });
-        }
+        return {
+          id: log.id,
+          sensorName: log.sensor_name || "-",
+          area: log.area || "-",
+          machine: log.machine || "-",
+          status: finalStatus,
+          datetime,
+          timestamp: dateObj.getTime(),
+          hVrms: log.h_vrms,
+          vVrms: log.v_vrms,
+          aVrms: log.a_vrms,
+          temperature: log.temperature ? `${log.temperature.toFixed(0)}°C` : null,
+          battery: log.battery ? `${Math.round(log.battery)}%` : null,
+          config: {
+            thresholdMin: log.threshold_min ?? 2.0,
+            thresholdMedium: log.threshold_medium ?? 2.5,
+            thresholdMax: log.threshold_max ?? 3.0,
+          },
+        };
       });
 
-      setEntries(notificationEntries);
+      // Sort by timestamp descending (Latest First) as requested
+      const sortedEntries = notificationEntries.sort((a, b) => b.timestamp - a.timestamp);
+
+      setEntries(sortedEntries);
     } catch (error) {
       console.error("Error fetching notification history:", error);
       setEntries([]);
