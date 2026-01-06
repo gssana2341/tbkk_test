@@ -49,14 +49,21 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
         {/* Master and Satellite symbols */}
         <span title="Master" className="flex items-center gap-2 min-w-0">
           <span className="flex items-center min-w-0">
-            <span
-              className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold text-lg"
-              style={{
-                borderRadius: "50% 50% 15% 15%",
-              }}
-            >
-              M
-            </span>
+            <div className="w-8 h-8 relative flex items-center justify-center">
+              <svg
+                viewBox="0 0 100 110"
+                className="absolute inset-0 w-full h-full overflow-visible drop-shadow-sm"
+                preserveAspectRatio="xMidYMid meet"
+              >
+                <path
+                  d="M 50 2 C 20 2 2 20 2 50 L 10 108 L 90 108 L 98 50 C 98 20 80 2 50 2 Z"
+                  fill="#2563eb"
+                />
+              </svg>
+              <span className="relative z-10 text-white font-bold text-lg leading-none mb-1">
+                M
+              </span>
+            </div>
             <span className="ml-2 text-white text-base truncate block max-w-[80px]">
               : Master
             </span>

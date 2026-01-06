@@ -39,19 +39,19 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Use undefined for missing data to distinguish from 0 (which is valid data)
   const veloRmsH =
     sensor?.last_data?.velo_rms_h !== undefined &&
-    sensor?.last_data?.velo_rms_h !== null
+      sensor?.last_data?.velo_rms_h !== null
       ? Number(sensor.last_data.velo_rms_h)
       : undefined;
 
   const veloRmsV =
     sensor?.last_data?.velo_rms_v !== undefined &&
-    sensor?.last_data?.velo_rms_v !== null
+      sensor?.last_data?.velo_rms_v !== null
       ? Number(sensor.last_data.velo_rms_v)
       : undefined;
 
   const veloRmsA =
     sensor?.last_data?.velo_rms_a !== undefined &&
-    sensor?.last_data?.velo_rms_a !== null
+      sensor?.last_data?.velo_rms_a !== null
       ? Number(sensor.last_data.velo_rms_a)
       : undefined;
 
@@ -118,14 +118,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
   const lastUpdateText = lastUpdate
     ? lastUpdate.toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
     : "-";
 
   // Determine card background color based on sensor status
@@ -186,21 +186,30 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
         {/* Row 1: ID | Pills | Status */}
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
           <div className="flex items-center justify-center shrink-0 mr-1.5">
-            <div
-              className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 shadow-sm flex items-center justify-center shrink-0 ${deviceRole.toLowerCase() === "master" ? "bg-blue-600" : "bg-purple-600 rounded-full"}`}
-              style={
-                deviceRole.toLowerCase() === "master"
-                  ? {
-                      borderRadius: "50% 50% 15% 15%",
-                    }
-                  : undefined
-              }
-            >
-              <span
-                className={`text-white text-lg font-bold ${deviceRole.toLowerCase() !== "master" ? "" : ""}`}
-              >
-                {deviceRole.toLowerCase() === "master" ? "M" : "S"}
-              </span>
+            <div className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 relative flex items-center justify-center shrink-0`}>
+              {deviceRole.toLowerCase() === "master" ? (
+                <>
+                  <svg
+                    viewBox="0 0 100 110"
+                    className="absolute inset-0 w-full h-full overflow-visible drop-shadow-sm"
+                    preserveAspectRatio="xMidYMid meet"
+                  >
+                    <path
+                      d="M 50 2 C 20 2 2 20 2 50 L 10 108 L 90 108 L 98 50 C 98 20 80 2 50 2 Z"
+                      fill="#2563eb"
+                    />
+                  </svg>
+                  <span className="relative z-10 text-white font-bold text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base leading-none mb-1">
+                    M
+                  </span>
+                </>
+              ) : (
+                <div className="w-full h-full bg-purple-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base font-bold leading-none">
+                    S
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div className="min-w-0 flex-1 overflow-hidden">
