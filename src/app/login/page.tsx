@@ -62,6 +62,7 @@ export default function LoginPage() {
             data.user.created_at ||
             new Date().toISOString(),
           status: data.user.status,
+          role: data.user.role,
         };
         setAuth(user, data.token);
         router.push("/");

@@ -39,6 +39,7 @@ import {
   AlertTriangle,
   CheckCircle2,
 } from "lucide-react";
+import { useAuth } from "@/components/auth/AuthProvider";
 import type { Sensor } from "@/lib/types";
 
 interface SensorMaintenanceHistoryProps {
@@ -48,6 +49,7 @@ interface SensorMaintenanceHistoryProps {
 export default function SensorMaintenanceHistory({
   sensor,
 }: SensorMaintenanceHistoryProps) {
+  const { user } = useAuth();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const maintenanceHistory = sensor.maintenanceHistory || [];
 
@@ -141,71 +143,74 @@ export default function SensorMaintenanceHistory({
 
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Maintenance Records</h3>
-        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Maintenance Record
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Maintenance Record</DialogTitle>
-              <DialogDescription>
-                Record a new maintenance activity for this sensor.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="maintenance-date" className="text-right">
-                  Date
-                </Label>
-                <Input
-                  id="maintenance-date"
-                  type="date"
-                  defaultValue={new Date().toISOString().split("T")[0]}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="maintenance-type" className="text-right">
-                  Type
-                </Label>
-                <Select defaultValue="routine">
-                  <SelectTrigger className="col-span-3" id="maintenance-type">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="routine">Routine Maintenance</SelectItem>
-                    <SelectItem value="calibration">Calibration</SelectItem>
-                    <SelectItem value="repair">Repair</SelectItem>
-                    <SelectItem value="replacement">
-                      Part Replacement
-                    </SelectItem>
-                    <SelectItem value="inspection">Inspection</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="technician" className="text-right">
-                  Technician
-                </Label>
-                <Input id="technician" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <Textarea id="description" className="col-span-3" />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit" onClick={() => setShowAddDialog(false)}>
-                Save Record
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        {(user?.role?.toLowerCase() === "admin" ||
+          user?.role?.toLowerCase() === "editor") && (
+            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+              <DialogTrigger asChild>
+                <Button size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Maintenance Record
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Maintenance Record</DialogTitle>
+                  <DialogDescription>
+                    Record a new maintenance activity for this sensor.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="maintenance-date" className="text-right">
+                      Date
+                    </Label>
+                    <Input
+                      id="maintenance-date"
+                      type="date"
+                      defaultValue={new Date().toISOString().split("T")[0]}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="maintenance-type" className="text-right">
+                      Type
+                    </Label>
+                    <Select defaultValue="routine">
+                      <SelectTrigger className="col-span-3" id="maintenance-type">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="routine">Routine Maintenance</SelectItem>
+                        <SelectItem value="calibration">Calibration</SelectItem>
+                        <SelectItem value="repair">Repair</SelectItem>
+                        <SelectItem value="replacement">
+                          Part Replacement
+                        </SelectItem>
+                        <SelectItem value="inspection">Inspection</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="technician" className="text-right">
+                      Technician
+                    </Label>
+                    <Input id="technician" className="col-span-3" />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="description" className="text-right">
+                      Description
+                    </Label>
+                    <Textarea id="description" className="col-span-3" />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" onClick={() => setShowAddDialog(false)}>
+                    Save Record
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
       </div>
 
       {maintenanceHistory.length === 0 ? (
@@ -249,14 +254,19 @@ export default function SensorMaintenanceHistory({
                 <TableCell>{record.partsReplaced || "None"}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon">
-                      <FileEdit className="h-4 w-4" />
-                      <span className="sr-only">Edit</span>
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Delete</span>
-                    </Button>
+                    {(user?.role?.toLowerCase() === "admin" ||
+                      user?.role?.toLowerCase() === "editor") && (
+                        <>
+                          <Button variant="ghost" size="icon">
+                            <FileEdit className="h-4 w-4" />
+                            <span className="sr-only">Edit</span>
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete</span>
+                          </Button>
+                        </>
+                      )}
                   </div>
                 </TableCell>
               </TableRow>

@@ -36,6 +36,8 @@ interface SensorDetailInfoCardProps {
   onSelectDatetime?: (value: string) => void;
 }
 
+import { useAuth } from "@/components/auth/AuthProvider";
+
 const defaultSensorInfo: SensorInfo = {
   serialNumber: "D01",
   serialName: "Main Sensor",
@@ -74,6 +76,7 @@ export default function SensorDetailInfoCard({
   onEdit,
   onSelectDatetime,
 }: SensorDetailInfoCardProps) {
+  const { user } = useAuth();
   const s = { ...defaultSensorInfo, ...sensorInfo };
   // const k = { ...defaultKeyValues, ...keyValues }; // Removed unused variable 'k'
   const st = { ...defaultStatus, ...status };
@@ -108,13 +111,16 @@ export default function SensorDetailInfoCard({
               <h3 className="text-base font-semibold text-gray-900">
                 Sensor Information
               </h3>
-              <button
-                type="button"
-                onClick={onEdit}
-                className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-2.5 py-1 text-xs text-gray-700 hover:bg-gray-50"
-              >
-                <Edit3 className="h-3.5 w-3.5" /> Edit
-              </button>
+              {(user?.role?.toLowerCase() === "admin" ||
+                user?.role?.toLowerCase() === "editor") && (
+                  <button
+                    type="button"
+                    onClick={onEdit}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-2.5 py-1 text-xs text-gray-700 hover:bg-gray-50"
+                  >
+                    <Edit3 className="h-3.5 w-3.5" /> Edit
+                  </button>
+                )}
             </div>
 
             {/* Label-Value List */}
