@@ -2763,7 +2763,7 @@ export default function SensorDetailPage() {
             {/* Conditionally show A-axis card */}
             {configData.aAxisEnabled && (
               <Card
-                className={`border-[1.35px] border-[#374151]${getDetailCardColor(parseFloat(zStats.velocityTopPeak))}`}
+                className={`border-[1.35px] border-[#374151] ${getDetailCardColor(parseFloat(zStats.velocityTopPeak))}`}
               >
                 <CardContent className="p-4 2xl:p-6">
                   <h3
