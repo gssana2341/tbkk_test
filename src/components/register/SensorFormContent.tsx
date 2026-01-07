@@ -117,36 +117,6 @@ export function SensorFormContent({
         <div className="space-y-4">
           <FormField
             control={form.control}
-            name={`sensors.${index}.serialNumber`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2">
-                  Serial Number
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
-                        <p>Enter the serial number of the sensor</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter serial number"
-                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name={`sensors.${index}.area`}
             render={({ field }) => (
               <FormItem>
@@ -175,6 +145,78 @@ export function SensorFormContent({
                     suggestions={areaSuggestions}
                     placeholder="Enter area"
                     onStoreValue={storeArea}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name={`sensors.${index}.serialNumber`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2">
+                  Serial Number
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                        <p>Enter the serial number of the sensor</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter serial number"
+                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-4">
+          <FormField
+            control={form.control}
+            name={`sensors.${index}.machine`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2">
+                  Machine
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                        <p>Enter the machine name</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </FormLabel>
+                <FormControl>
+                  <AutocompleteInput
+                    value={field.value}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (value) {
+                        storeMachineName(value);
+                      }
+                    }}
+                    suggestions={machineNameSuggestions}
+                    placeholder="Enter machine name"
+                    onStoreValue={storeMachineName}
                   />
                 </FormControl>
                 <FormMessage />
@@ -215,87 +257,6 @@ export function SensorFormContent({
             )}
           />
         </div>
-
-        {/* Right Column */}
-        <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name={`sensors.${index}.sensorType`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2">
-                  Sensor Type
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
-                        <p>Select the type of sensor</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  disabled
-                >
-                  <FormControl>
-                    <SelectTrigger className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
-                      <SelectValue placeholder="Select sensor type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {sensorTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name={`sensors.${index}.machine`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2">
-                  Machine
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
-                        <p>Enter the machine name</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </FormLabel>
-                <FormControl>
-                  <AutocompleteInput
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      if (value) {
-                        storeMachineName(value);
-                      }
-                    }}
-                    suggestions={machineNameSuggestions}
-                    placeholder="Enter machine name"
-                    onStoreValue={storeMachineName}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
       </div>
 
       {/* Options - Machine Class and Name Place */}
@@ -308,7 +269,12 @@ export function SensorFormContent({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  onCheckedChange={field.onChange}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+                    if (checked) {
+                      form.setValue(`sensors.${index}.namePlaceEnabled`, false);
+                    }
+                  }}
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
@@ -326,7 +292,12 @@ export function SensorFormContent({
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  onCheckedChange={field.onChange}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+                    if (checked) {
+                      form.setValue(`sensors.${index}.machineClassEnabled`, false);
+                    }
+                  }}
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
@@ -469,7 +440,7 @@ export function SensorFormContent({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-2">
-                    Motor Power
+                    Motor Power (kW)
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
