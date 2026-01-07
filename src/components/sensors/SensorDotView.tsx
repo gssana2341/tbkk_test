@@ -56,40 +56,7 @@ export default function SensorDotView({
   const endIndex = startIndex + itemsPerPage;
   const currentSensors = sensors.slice(startIndex, endIndex);
 
-  // Group sensors by Area (machine_class) -> Machine (machine_number)
-  const groupedSensors = useMemo(() => {
-    const groups: Record<string, Record<string, Sensor[]>> = {};
-
-    currentSensors.forEach((sensor) => {
-      // Use machine_class as Area if available, otherwise fallback to location, then "Unknown Area"
-      const area = sensor.machine_class || sensor.location || "Unknown Area";
-      // Use machine_number as Machine name, fallback to machineName
-      const machine = sensor.machine_number || sensor.machineName || "Unknown Machine";
-
-      if (!groups[area]) {
-        groups[area] = {};
-      }
-      if (!groups[area][machine]) {
-        groups[area][machine] = [];
-      }
-      groups[area][machine].push(sensor);
-    });
-
-    // Sort sensors within each machine: Master first
-    Object.keys(groups).forEach((area) => {
-      Object.keys(groups[area]).forEach((machine) => {
-        groups[area][machine].sort((a, b) => {
-          const roleA = (a.sensor_type || "Satellite").toLowerCase();
-          const roleB = (b.sensor_type || "Satellite").toLowerCase();
-          if (roleA === "master" && roleB !== "master") return -1;
-          if (roleA !== "master" && roleB === "master") return 1;
-          return 0;
-        });
-      });
-    });
-
-    return groups;
-  }, [currentSensors]);
+  // Determine status color code for sorting/display if needed, but mainly we just iterate.
 
   const handleSensorClick = (sensorId: string) => {
     router.push(`/sensors/${sensorId}`);
@@ -109,7 +76,10 @@ export default function SensorDotView({
   }
 
   // Helper to render a single sensor node
-  const renderSensorNode = (sensor: Sensor, isMaster: boolean) => {
+  const renderSensorNode = (sensor: Sensor) => {
+    const role = (sensor.sensor_type || "Satellite").toLowerCase();
+    const isMaster = role === 'master';
+
     // Get temperature value
     const temperature = sensor.last_data?.temperature || 0;
 
@@ -183,12 +153,6 @@ export default function SensorDotView({
               // Satellite: Bread Loaf shape (Hexagon-ish/Helmet)
               <div
                 className={`${sizeClass} flex flex-col items-center justify-center overflow-hidden`}
-                style={{
-                  // Custom clip-path for bread shape if preferred, or use the SVG consistency
-                  // Using SVG here for consistency with Master if desired, 
-                  // but User specifically asked for 'bread' which the SVG provided in previous turn was.
-                  // Let's use the SVG approach for both for best visual control.
-                }}
               >
                 <svg
                   viewBox="0 0 100 110"
@@ -314,94 +278,12 @@ export default function SensorDotView({
     );
   };
 
-
-  // Determine Priority: Red(0) > Orange(1) > Yellow(2) > Green(3) > Standby(4) > Lost(5)
-  const getSensorPriority = (sensor: Sensor): number => {
-    if (sensor.connectivity === "offline" && sensor.operationalStatus !== "standby") return 5; // Lost
-
-    // Normalize values to ensure valid numbers
-    const veloRmsH = Number(sensor.last_data?.velo_rms_h || 0);
-    const veloRmsV = Number(sensor.last_data?.velo_rms_v || 0);
-    const veloRmsA = Number(sensor.last_data?.velo_rms_a || 0);
-    const maxRms = Math.max(veloRmsH, veloRmsV, veloRmsA);
-
-    const sensorConfig: SensorConfig = {
-      thresholdMin: Number(sensor.threshold_min || 0.1),
-      thresholdMedium: Number(sensor.threshold_medium || 0.125),
-      thresholdMax: Number(sensor.threshold_max || 0.15),
-      machineClass: sensor.machine_class || undefined,
-    };
-
-    const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
-
-    if (colorClass.includes("bg-[#ff2b05]")) return 0; // Red
-    if (colorClass.includes("bg-[#ff9900]")) return 1; // Orange
-    if (colorClass.includes("bg-[#ffff00]")) return 2; // Yellow
-    if (sensor.operationalStatus === "standby") return 4; // Standby
-    return 3; // Green
-  };
-
-  const getMachinePriority = (sensors: Sensor[]): number => {
-    if (!sensors.length) return 5;
-    return Math.min(...sensors.map(getSensorPriority));
-  };
-
-  const getAreaPriority = (machines: Record<string, Sensor[]>): number => {
-    const priorities = Object.values(machines).map(getMachinePriority);
-    if (!priorities.length) return 5;
-    return Math.min(...priorities);
-  };
-
-  // Sort Areas
-  const sortedAreas = Object.entries(groupedSensors).sort((a, b) => {
-    const priorityA = getAreaPriority(a[1]);
-    const priorityB = getAreaPriority(b[1]);
-    if (priorityA !== priorityB) {
-      return priorityA - priorityB;
-    }
-    return a[0].localeCompare(b[0]);
-  });
-
   return (
     <div className="w-full transition-all duration-300">
       <TooltipProvider>
-        {/* Horizontal Flex Layout with Grow to fill gaps */}
+        {/* Simple Flex Layout (Removed grouping and frames) */}
         <div className="flex flex-wrap gap-2">
-          {sortedAreas.map(([area, machines]) => {
-            // Sort Machines within Area
-            const sortedMachines = Object.entries(machines).sort((a, b) => {
-              const priorityA = getMachinePriority(a[1]);
-              const priorityB = getMachinePriority(b[1]);
-              if (priorityA !== priorityB) {
-                return priorityA - priorityB;
-              }
-              return a[0].localeCompare(b[0]);
-            });
-
-            return (
-              <div key={area} className="flex-auto border border-gray-700 rounded-lg p-2 bg-gray-900/30 h-fit">
-                <h3 className="text-gray-400 font-semibold mb-1 text-xs uppercase tracking-wider">
-                  {area}
-                </h3>
-                <div className="flex flex-wrap gap-1">
-                  {sortedMachines.map(([machineName, machineSensors]) => (
-                    <div
-                      key={machineName}
-                      className="border border-gray-600 rounded-md p-1 flex flex-col items-center bg-gray-800/50 min-w-[fit-content] max-w-full"
-                    >
-                      <div className="flex flex-wrap justify-center gap-1">
-                        {machineSensors.map((sensor) => {
-                          const role = (sensor.sensor_type || "Satellite").toLowerCase();
-                          const isMaster = role === 'master';
-                          return renderSensorNode(sensor, isMaster);
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+          {currentSensors.map((sensor) => renderSensorNode(sensor))}
         </div>
 
         {/* Pagination */}
