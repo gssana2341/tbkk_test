@@ -2029,7 +2029,7 @@ export default function SensorDetailPage() {
   return (
     <div className="min-h-screen bg-[#030616] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b-[1.35px] border-[#374151]">
+      <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
           <Button
             variant="outline"
@@ -2168,9 +2168,9 @@ export default function SensorDetailPage() {
         {/* Horizontal Sensor Information */}
         <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
           <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-12">
+            <div className="flex flex-col md:flex-row gap-6">
               <div className="shrink-0 flex justify-center">
-                <div className="w-72 h-96 bg-[#030616] border-[1.35px] border-[#374151] rounded-md flex items-center justify-center overflow-hidden relative">
+                <div className="w-60 h-full min-h-[320px] bg-[#030616] border-[1.35px] border-[#374151] rounded-md flex items-center justify-center overflow-hidden relative">
                   {sensorImage || configData.image_url ? (
                     <Image
                       src={sensorImage || configData.image_url || ""}
@@ -2186,10 +2186,10 @@ export default function SensorDetailPage() {
               </div>
 
               <div className="grow flex flex-wrap gap-4 items-stretch">
-                <div className="flex-[3_1_300px] border-[1.35px] border-[#374151] rounded-xl p-4 2xl:p-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-6">
+                <div className="flex-1 rounded-xl p-3 2xl:p-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-4">
                     <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
-                      Sensor Information
+                      Machine Information
                     </h2>
                     {(user?.role?.toLowerCase() === "admin" ||
                       user?.role?.toLowerCase() === "editor") && (
@@ -2205,25 +2205,23 @@ export default function SensorDetailPage() {
                       )}
                   </div>
 
-                  <div className="grid grid-cols-[150px_1fr] 2xl:grid-cols-[200px_1fr] gap-x-8 gap-y-3 text-base 2xl:text-xl">
-                    {(() => {
-                      console.log("=== Rendering Sensor Information ===");
-                      return null;
-                    })()}
-
-                    <span className="text-gray-400">Serial Number</span>
-                    <span className="text-lg 2xl:text-2xl text-white">
-                      {configData.serialNumber || "S-JBK7"}
+                  <div className="grid grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] gap-x-8 gap-y-1 text-base 2xl:text-xl">
+                    {/* Area Operation */}
+                    <span className="text-gray-400">Area Operation</span>
+                    <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+                      {sensor?.location || "Not Set"}
                     </span>
 
-                    <span className="text-gray-400">Sensor Name</span>
-                    <span className="text-lg 2xl:text-2xl text-white">
-                      {configData.sensorName || "Unnamed Sensor"}
+                    {/* Machine Name */}
+                    <span className="text-gray-400">Machine Name</span>
+                    <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+                      {sensor?.machineName || "Not Set"}
                     </span>
 
+                    {/* Machine Number */}
                     <span className="text-gray-400">Machine Number</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${configData.machineNumber
+                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${configData.machineNumber
                         ? "text-white"
                         : "text-gray-500"
                         }`}
@@ -2231,9 +2229,10 @@ export default function SensorDetailPage() {
                       {configData.machineNumber || "Not Set"}
                     </span>
 
+                    {/* Installation Point */}
                     <span className="text-gray-400">Installation Point</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${configData.installationPoint
+                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${configData.installationPoint
                         ? "text-white"
                         : "text-gray-500"
                         }`}
@@ -2241,9 +2240,10 @@ export default function SensorDetailPage() {
                       {configData.installationPoint || "Not Set"}
                     </span>
 
+                    {/* Machine Class */}
                     <span className="text-gray-400">Machine Class</span>
                     <span
-                      className={`text-lg 2xl:text-2xl ${configData.machineClass ? "text-white" : "text-gray-500"
+                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${configData.machineClass ? "text-white" : "text-gray-500"
                         }`}
                     >
                       {configData.machineClass
@@ -2252,20 +2252,44 @@ export default function SensorDetailPage() {
                         : "Not Set"}
                     </span>
 
-                    <span className="text-gray-400">Note</span>
-                    <span
-                      className={`max-w-[200px] 2xl:max-w-xs truncate text-lg 2xl:text-2xl ${configData.notes ? "text-white" : "text-gray-500"}`}
-                      title={configData.notes || "No notes"}
-                    >
-                      {configData.notes || "No notes"}
+                    {/* Machine Installation Date */}
+                    <span className="text-gray-400">Machine Installation Date</span>
+                    <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+                      {sensor?.installationDate
+                        ? formatDate(
+                          new Date(sensor.installationDate).toISOString()
+                        )
+                        : "Not Set"}
+                    </span>
+
+                    {/* Machine Age */}
+                    <span className="text-gray-400">Machine Age</span>
+                    <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+                      {(() => {
+                        if (!sensor?.installationDate) return "Unknown";
+                        const start = new Date(sensor.installationDate);
+                        const now = new Date();
+                        let years = now.getFullYear() - start.getFullYear();
+                        let months = now.getMonth() - start.getMonth();
+                        if (months < 0 || (months === 0 && now.getDate() < start.getDate())) {
+                          years--;
+                          months += 12;
+                        }
+                        const parts = [];
+                        if (years > 0) parts.push(`${years} Year${years > 1 ? "s" : ""}`);
+                        if (months > 0) parts.push(`${months} Month${months > 1 ? "s" : ""}`);
+                        return parts.length > 0 ? parts.join(" ") : "Less than 1 Month";
+                      })()}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex-[3_1_300px] border-[1.35px] border-[#374151] rounded-xl p-4 2xl:p-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-6">
+                <div className="hidden xl:block w-[1px] bg-[#374151] my-4 opacity-50"></div>
+
+                <div className="flex-1 max-w-xl rounded-xl p-3 2xl:p-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] items-center mb-4">
                     <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
-                      Status
+                      Sensor Status
                     </h2>
                     <div className="flex items-center">
                       {(() => {
@@ -2347,19 +2371,10 @@ export default function SensorDetailPage() {
                       })()}
                     </div>
                   </div>
-                  <div className="grid grid-cols-[150px_1fr] 2xl:grid-cols-[200px_1fr] gap-x-8 gap-y-3 text-base 2xl:text-xl">
-                    <span className="text-gray-400">Temperature</span>
-                    <span className="text-lg 2xl:text-2xl text-white">
-                      {safeTemp.toFixed(1)}°C
-                    </span>
-
-                    <span className="text-gray-400">Battery</span>
-                    <span className="text-lg 2xl:text-2xl text-white">
-                      {safeBattery.toFixed(1)}%
-                    </span>
-
+                  <div className="grid grid-cols-[160px_1fr] 2xl:grid-cols-[200px_1fr] gap-x-4 gap-y-1 text-base 2xl:text-xl">
+                    {/* Signal Strength */}
                     <span className="text-gray-400">Signal Strength</span>
-                    <span className="flex items-center gap-1 text-white">
+                    <span className="flex items-center gap-1 text-white whitespace-nowrap">
                       <span className="text-lg 2xl:text-2xl">
                         {getSignalStrength(currentData.rssi || 0)}
                       </span>
@@ -2368,37 +2383,50 @@ export default function SensorDetailPage() {
                       </span>
                     </span>
 
-                    <span className="text-gray-400">Last Updated</span>
-                    <span className="text-lg 2xl:text-2xl text-white">
-                      {formatThaiDate(String(currentData.datetime))}
+                    {/* Battery */}
+                    <span className="text-gray-400">Battery</span>
+                    <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+                      {safeBattery.toFixed(1)}%
                     </span>
 
-                    <span className="text-gray-400">Installation Date</span>
-                    <span className="text-lg 2xl:text-2xl text-white">
-                      {sensor.installationDate
+                    {/* Sensor Installation Date */}
+                    <span className="text-gray-400">Sensor Installation Date</span>
+                    <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+                      {sensor?.installationDate
                         ? formatDate(
                           new Date(sensor.installationDate).toISOString()
                         )
                         : formatDate("2025-04-26")}
                     </span>
 
-                    {/* Temporary Debug Info */}
-                    <span className="text-gray-400">API Config (Debug)</span>
-                    <span className="text-yellow-400 font-mono text-base 2xl:text-xl">
-                      Fmax: {configData.fmax}, LOR: {configData.lor}
+                    {/* Last Updated */}
+                    <span className="text-gray-400">Last Updated</span>
+                    <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+                      {formatThaiDate(String(currentData.datetime))}
+                    </span>
+
+                    {/* Note */}
+                    <span className="text-gray-400">Note</span>
+                    <span
+                      className={`max-w-[200px] 2xl:max-w-xs truncate text-lg 2xl:text-2xl ${configData.notes ? "text-white" : "text-gray-500"}`}
+                      title={configData.notes || "No notes"}
+                    >
+                      {configData.notes || "No notes"}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex-[1_1_200px] border-[1.35px] border-[#374151] rounded-xl p-4 2xl:p-6">
-                  <div className="flex items-center justify-between mb-6">
+                <div className="hidden xl:block w-[1px] bg-[#374151] my-4 opacity-50"></div>
+
+                <div className="flex-1 max-w-xl rounded-xl p-3 2xl:p-4">
+                  <div className="flex items-center justify-between mb-4">
                     <h2 className="text-2xl 2xl:text-4xl font-semibold text-white">
-                      Select Date & Time
+                      Select Date
                     </h2>
                   </div>
                   <div
-                    className="bg-[#030616] border-[1.35px] border-[#374151] rounded-md p-2 overflow-y-auto"
-                    style={{ maxHeight: "200px" }}
+                    className="bg-[#030616] rounded-md p-2 overflow-y-auto custom-scrollbar"
+                    style={{ maxHeight: "280px" }}
                   >
                     {sortedDatetimes.length > 0 ? (
                       <ul className="space-y-1 text-base 2xl:text-xl">
@@ -3018,10 +3046,10 @@ export default function SensorDetailPage() {
                         <h4 className="text-xl font-bold text-white mb-8">
                           Short Trend
                         </h4>
-                        <div className="overflow-x-auto max-h-80 overflow-y-auto">
+                        <div className="overflow-x-auto max-h-80 overflow-y-auto custom-scrollbar">
                           <table className="min-w-full text-base">
                             <thead className="sticky top-0 bg-[#030616]">
-                              <tr className="border-b-2 border-[#374151]">
+                              <tr className="">
                                 <th className="text-left px-3 py-3 font-bold text-white">
                                   Date & Time
                                 </th>
@@ -3064,7 +3092,7 @@ export default function SensorDetailPage() {
                                   return (
                                     <tr
                                       key={i}
-                                      className="border-b border-gray-700 hover:bg-gray-800 transition-colors"
+                                      className="hover:bg-gray-800 transition-colors"
                                     >
                                       <td className="px-3 py-3 text-lg font-medium text-white">
                                         {formatDateTimeDayFirst(item.datetime)}
