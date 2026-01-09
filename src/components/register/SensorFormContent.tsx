@@ -78,6 +78,11 @@ export function SensorFormContent({
     "Integrated driver Motor pump Flexible Installed",
   ];
 
+  // Time Interval options (5 to 60, step 5)
+  const timeIntervalOptions = Array.from({ length: 12 }, (_, i) =>
+    ((i + 1) * 5).toString()
+  );
+
   // Watch machine class to auto-update thresholds
   const watchedMachineClass = form.watch(`sensors.${index}.machineClass`);
   const watchedMachineClassEnabled = form.watch(
@@ -108,6 +113,23 @@ export function SensorFormContent({
       }
     }
   }, [watchedMachineClass, watchedMachineClassEnabled, form, index]);
+
+  // Watch temperature threshold max to update min
+  const watchedTempMax = form.watch(`sensors.${index}.temperatureThresholdMax`);
+
+  useEffect(() => {
+    if (watchedTempMax) {
+      const maxVal = parseFloat(watchedTempMax);
+      if (!isNaN(maxVal)) {
+        form.setValue(
+          `sensors.${index}.temperatureThresholdMin`,
+          (maxVal - 2).toString()
+        );
+      }
+    } else {
+      form.setValue(`sensors.${index}.temperatureThresholdMin`, "");
+    }
+  }, [watchedTempMax, form, index]);
 
   return (
     <div className="space-y-6 py-4">
@@ -761,15 +783,20 @@ export function SensorFormContent({
                   </Tooltip>
                 </TooltipProvider>
               </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="60"
-                  min="1"
-                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
-                  {...field}
-                />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="bg-[#080808] border-[1px] border-[#4B5563] text-white">
+                    <SelectValue placeholder="Select interval" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {timeIntervalOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -921,7 +948,8 @@ export function SensorFormContent({
                   type="number"
                   step="0.1"
                   placeholder="0.0"
-                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
+                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white opacity-70"
+                  readOnly
                   {...field}
                 />
               </FormControl>

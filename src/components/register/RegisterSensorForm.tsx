@@ -303,7 +303,7 @@ export default function RegisterSensorForm() {
     alarmThreshold: "",
     gScale: "16",
     temperatureThresholdMin: "",
-    timeInterval: "2",
+    timeInterval: "5",
     lor: "6400",
     frequencyMax: "10000",
     temperatureThresholdMax: "",
@@ -375,7 +375,7 @@ export default function RegisterSensorForm() {
             gScale: data.g_scale?.toString() || "16",
             temperatureThresholdMin:
               data.temperature_threshold_min?.toString() || "",
-            timeInterval: data.time_interval?.toString() || "120",
+            timeInterval: data.time_interval?.toString() || "60",
             lor: data.lor?.toString() || "5600",
             frequencyMax: data.fmax?.toString() || "9000",
             temperatureThresholdMax:
@@ -448,7 +448,7 @@ export default function RegisterSensorForm() {
                       gScale: sat.g_scale?.toString() || "16",
                       temperatureThresholdMin:
                         sat.temperature_threshold_min?.toString() || "",
-                      timeInterval: sat.time_interval?.toString() || "120",
+                      timeInterval: sat.time_interval?.toString() || "60",
                       lor: sat.lor?.toString() || "5600",
                       frequencyMax: sat.fmax?.toString() || "9000",
                       temperatureThresholdMax:
