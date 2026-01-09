@@ -142,6 +142,14 @@ export default function SensorDotView({
       backgroundColor: statusColorCode,
     };
 
+    // Map dotSize to pixel values for Circle font size
+    const circleFontSizeMap: Record<number, string> = {
+      1: "16px",
+      2: "19px",
+      3: "23px",
+      4: "28px",
+    };
+
     return (
       <Tooltip key={sensor.id}>
         <TooltipTrigger asChild>
@@ -149,8 +157,8 @@ export default function SensorDotView({
             className={`${sizeClass} cursor-pointer hover:opacity-80 transition-all duration-500 relative`}
             onClick={() => handleSensorClick(sensor.id)}
           >
-            {!isMaster ? (
-              // Satellite: Bread Loaf shape (Hexagon-ish/Helmet)
+            {isMaster ? (
+              // Master: Bread Loaf shape (Hexagon-ish/Helmet)
               <div
                 className={`${sizeClass} flex flex-col items-center justify-center overflow-hidden`}
               >
@@ -169,12 +177,12 @@ export default function SensorDotView({
                   />
                   <text
                     x="50"
-                    y="77"
+                    y="82"
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fill="#000"
-                    fontSize="32"
-                    fontWeight="900"
+                    fontSize="35"
+                    fontWeight="bold"
                     fontFamily="'Inter', sans-serif"
                     className="select-none"
                   >
@@ -183,7 +191,7 @@ export default function SensorDotView({
                 </svg>
               </div>
             ) : (
-              // Master: Circle Shape
+              // Satellite: Circle Shape
               <div
                 className="w-full h-full rounded-full flex flex-col items-center justify-center overflow-hidden relative"
                 style={{
@@ -198,8 +206,11 @@ export default function SensorDotView({
                 <div
                   className="absolute bottom-0 left-0 right-0 h-[50%] bg-white"
                 ></div>
-                <div className="absolute bottom-0 left-0 right-0 h-[50%] z-10 flex items-center justify-center">
-                  <span className={`font-bold ${textSizeClass} text-gray-900 leading-none`}>
+                <div className="absolute bottom-0 left-0 right-0 h-[50%] z-10 flex items-center justify-center pb-1">
+                  <span
+                    className="font-bold text-gray-900 leading-none"
+                    style={{ fontSize: circleFontSizeMap[dotSize] || "18px" }}
+                  >
                     {Math.round(temperature)}°
                   </span>
                 </div>

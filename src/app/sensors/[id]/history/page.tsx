@@ -7,6 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import dynamic from "next/dynamic";
 import { exportToCSV, exportToExcel } from "@/lib/exportUtils";
+import { MoreHorizontal, ArrowLeft } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
 
@@ -344,23 +351,17 @@ export default function SensorHistoryPage() {
 
   return (
     <div className="min-h-screen bg-[#030616] text-white">
-      <div className="bg-[#030616] px-6 py-4 flex items-center justify-between border-b-[1.35px] border-[#374151]">
+      <div className="bg-[#030616] px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
-            variant="ghost"
-            className="text-gray-300 hover:text-white"
+            variant="outline"
+            className="flex items-center gap-2 bg-transparent text-white border-gray-600 hover:bg-gray-800 hover:text-white transition-colors"
             onClick={() => router.push(`/sensors/${params.id}`)}
           >
-            <Image
-              src="/Group (2).png"
-              alt="Back"
-              width={20}
-              height={20}
-              className="mr-2 invert"
-            />
-            Back
+            <ArrowLeft className="h-4 w-4" />
+            Back to Sensor
           </Button>
-          <h1 className="text-lg font-semibold">History Analysis</h1>
+
         </div>
       </div>
 
@@ -374,8 +375,8 @@ export default function SensorHistoryPage() {
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
                   className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-[#030616] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-[#030616] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
                     }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
@@ -414,25 +415,30 @@ export default function SensorHistoryPage() {
             </div>
 
             <div className="flex gap-2 ml-auto">
-              <Button
-                className="bg-black text-white border border-gray-600 hover:bg-gray-900"
-                onClick={handleExportCSV}
-                disabled={history.length === 0}
-              >
-                Export CSV
-              </Button>
-              <Button
-                className="bg-black text-white border border-gray-600 hover:bg-gray-900"
-                onClick={handleExportExcel}
-                disabled={history.length === 0}
-              >
-                Export Excel
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 p-0 text-white hover:bg-[#374151]"
+                    disabled={history.length === 0}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-[#030616] border-[#374151] text-white">
+                  <DropdownMenuItem onClick={handleExportCSV} className="hover:bg-[#374151] cursor-pointer">
+                    Export CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExportExcel} className="hover:bg-[#374151] cursor-pointer">
+                    Export Excel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </CardContent>
-        </Card>
-
-        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
+          <div className="w-full h-[1px] bg-[#374151]" />
           <CardContent className="p-6">
             {loading && (
               <div className="text-center h-[400px] flex items-center justify-center">

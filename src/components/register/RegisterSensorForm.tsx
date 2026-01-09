@@ -799,7 +799,7 @@ export default function RegisterSensorForm() {
             ? `Edit Sensor : ${form.watch("sensors.0.serialNumber") || "Loading..."}`
             : "Register New Device"}
         </h1>
-        <Card className="flex-1 flex flex-col border-[1.35px] border-[#374151] bg-[#030616] text-white">
+        <Card className="flex-1 flex flex-col border-[1px] border-[#4B5563] bg-[#111827] text-white">
           <CardHeader className="p-0">
             {(!editId || form.watch("sensors.0.sensorType") === "Master") && (
               <TabsList className="flex w-full justify-start bg-transparent p-0">
