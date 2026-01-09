@@ -185,7 +185,8 @@ export default function SensorsPage() {
             s.serialNumber.toLowerCase().includes(lowerQuery)) ||
           (s.name && s.name.toLowerCase().includes(lowerQuery)) ||
           (s.machineName && s.machineName.toLowerCase().includes(lowerQuery)) ||
-          (s.sensor_name && s.sensor_name.toLowerCase().includes(lowerQuery))
+          (s.sensor_name && s.sensor_name.toLowerCase().includes(lowerQuery)) ||
+          (s.location && s.location.toLowerCase().includes(lowerQuery))
       );
     }
 

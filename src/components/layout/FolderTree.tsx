@@ -47,14 +47,14 @@ function buildTreeFromSensors(sensors: Sensor[]): TreeItemData[] {
   areaMap.forEach((machineMap, areaName) => {
     const machineItems: TreeItemData[] = [];
     const sortedMachines = Array.from(machineMap.entries()).sort((a, b) =>
-      a[0].localeCompare(b[0], "th")
+      a[0].localeCompare(b[0], "th", { numeric: true })
     );
 
     sortedMachines.forEach(([machineName, sensorList]) => {
       const sortedSensors = [...sensorList].sort((a, b) => {
         const nameA = a.sensor_name || a.name || a.serialNumber || a.id || "";
         const nameB = b.sensor_name || b.name || b.serialNumber || b.id || "";
-        return nameA.localeCompare(nameB, "th");
+        return nameA.localeCompare(nameB, "th", { numeric: true });
       });
 
       const sensorItems: TreeItemData[] = sortedSensors.map((sensor) => ({
@@ -91,7 +91,7 @@ function buildTreeFromSensors(sensors: Sensor[]): TreeItemData[] {
     });
   });
 
-  areaItems.sort((a, b) => a.label.localeCompare(b.label, "th"));
+  areaItems.sort((a, b) => a.label.localeCompare(b.label, "th", { numeric: true }));
 
   return [
     {

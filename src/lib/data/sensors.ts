@@ -391,7 +391,8 @@ export async function getSensors(
       (sensor) =>
         sensor.serialNumber.toLowerCase().includes(searchLower) ||
         sensor.machineName.toLowerCase().includes(searchLower) ||
-        sensor.name.toLowerCase().includes(searchLower)
+        sensor.name.toLowerCase().includes(searchLower) ||
+        (sensor.location && sensor.location.toLowerCase().includes(searchLower))
     );
   }
 
