@@ -735,6 +735,9 @@ export default function RegisterSensorForm() {
           temperature_threshold_max: sensorData.temperatureThresholdMax
             ? Number(sensorData.temperatureThresholdMax)
             : null,
+          alarm_ths: sensorData.alarmThreshold
+            ? Number(sensorData.alarmThreshold)
+            : null,
         };
       });
 
@@ -797,7 +800,7 @@ export default function RegisterSensorForm() {
             : "Register New Device"}
         </h1>
         <Card className="flex-1 flex flex-col border-[1.35px] border-[#374151] bg-[#030616] text-white">
-          <CardHeader className="p-0 border-b-[1.35px] border-[#374151]">
+          <CardHeader className="p-0">
             {(!editId || form.watch("sensors.0.sensorType") === "Master") && (
               <TabsList className="flex w-full justify-start bg-transparent p-0">
                 <TabsTrigger
@@ -828,6 +831,14 @@ export default function RegisterSensorForm() {
             )}
           </CardHeader>
           <CardContent className="pt-6">
+            <div className="mb-6 space-y-1">
+              <h2 className="text-3xl font-semibold text-white">
+                Register New {activeTab === "master" ? "Master" : activeTab === "sat1" ? "Satellite 1" : activeTab === "sat2" ? "Satellite 2" : "Satellite 3"} Sensor
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Add new sensors to the monitoring system.
+              </p>
+            </div>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit, (errors) => {

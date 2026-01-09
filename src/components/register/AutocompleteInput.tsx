@@ -98,17 +98,17 @@ export function AutocompleteInput({
             }}
             placeholder={placeholder}
             disabled={disabled}
-            className="w-full pr-10 bg-[#030616] border-[1.35px] border-[#374151] text-white"
+            className="w-full pr-10 bg-[#080808] border-[1px] border-[#4B5563] text-white"
           />
           <ChevronsUpDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[var(--radix-popover-trigger-width)] p-0 bg-[#030616] border-[1.35px] border-[#374151] text-white"
+        className="w-[var(--radix-popover-trigger-width)] p-0 bg-[#080808] border-[1px] border-[#4B5563] text-white"
         align="start"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <Command shouldFilter={false} className="bg-[#030616]">
+        <Command shouldFilter={false} className="bg-[#080808]">
           <CommandInput
             placeholder="Search..."
             value={value}

@@ -127,7 +127,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
                         <p>Enter the area where the sensor is installed</p>
                       </TooltipContent>
                     </Tooltip>
@@ -164,7 +164,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
                         <p>Enter the serial number of the sensor</p>
                       </TooltipContent>
                     </Tooltip>
@@ -173,7 +173,7 @@ export function SensorFormContent({
                 <FormControl>
                   <Input
                     placeholder="Enter serial number"
-                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                    className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                     {...field}
                   />
                 </FormControl>
@@ -199,7 +199,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
                         <p>Enter the machine name</p>
                       </TooltipContent>
                     </Tooltip>
@@ -236,7 +236,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
                         <p>Select the motor start date and time</p>
                       </TooltipContent>
                     </Tooltip>
@@ -249,7 +249,7 @@ export function SensorFormContent({
                       field.onChange(date);
                     }}
                     label=""
-                    className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                    className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                   />
                 </FormControl>
                 <FormMessage />
@@ -268,6 +268,7 @@ export function SensorFormContent({
             <FormItem className="flex flex-row items-start space-x-3 space-y-0">
               <FormControl>
                 <Checkbox
+                  className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 border-[#374151] bg-transparent"
                   checked={field.value}
                   onCheckedChange={(checked) => {
                     field.onChange(checked);
@@ -291,6 +292,7 @@ export function SensorFormContent({
             <FormItem className="flex flex-row items-start space-x-3 space-y-0">
               <FormControl>
                 <Checkbox
+                  className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 border-[#374151] bg-transparent"
                   checked={field.value}
                   onCheckedChange={(checked) => {
                     field.onChange(checked);
@@ -300,8 +302,30 @@ export function SensorFormContent({
                   }}
                 />
               </FormControl>
-              <div className="space-y-1 leading-none">
+              <div className="space-y-1 leading-none flex items-center gap-2">
                 <FormLabel>Name Place</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none p-4 max-w-sm">
+                      <div className="space-y-2">
+                        <p className="font-semibold text-lg">You can choose between:</p>
+                        <ul className="list-disc pl-4 space-y-1 text-sm">
+                          <li>
+                            <span className="font-semibold">Machine Class (ISO10816-3)</span> | Use
+                            standard values based on machine type
+                          </li>
+                          <li>
+                            <span className="font-semibold">Name Plate</span> | Enter values according to
+                            the motor&apos;s specification
+                          </li>
+                        </ul>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </FormItem>
           )}
@@ -323,7 +347,7 @@ export function SensorFormContent({
                       <TooltipTrigger asChild>
                         <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
                         <p>Select machine class to auto-fill thresholds</p>
                       </TooltipContent>
                     </Tooltip>
@@ -334,7 +358,7 @@ export function SensorFormContent({
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-[#11171F] border-[#4B5563] text-white">
+                    <SelectTrigger className="bg-[#080808] border-[1px] border-[#4B5563] text-white">
                       <SelectValue placeholder="Select machine class" />
                     </SelectTrigger>
                   </FormControl>
@@ -352,76 +376,106 @@ export function SensorFormContent({
           />
 
           {/* Thresholds - Three Boxes */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 md:px-12">
+            <div className="p-4 border border-[#374151] rounded-lg bg-[#0B1121]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.warningThreshold`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
+                  <FormItem className="flex flex-col items-center space-y-4">
+                    <FormLabel className="text-base font-medium text-center flex items-center justify-center gap-1">
                       Warning Threshold
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                            <p>Warning threshold level</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.1"
-                        placeholder="0.0"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        placeholder=""
+                        className="bg-[#080808] border-[1px] border-[#4B5563] text-white w-32 text-center h-10 text-xl"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="text-xs">mm/s</FormDescription>
+                    <div className="text-sm text-muted-foreground">mm/s</div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
+            <div className="p-4 border border-[#374151] rounded-lg bg-[#0B1121]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.concernThreshold`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
+                  <FormItem className="flex flex-col items-center space-y-4">
+                    <FormLabel className="text-base font-medium text-center flex items-center justify-center gap-1">
                       Concern Threshold
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                            <p>Concern threshold level</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.1"
-                        placeholder="0.0"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        placeholder=""
+                        className="bg-[#080808] border-[1px] border-[#4B5563] text-white w-32 text-center h-10 text-xl"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="text-xs">mm/s</FormDescription>
+                    <div className="text-sm text-muted-foreground">mm/s</div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
+            <div className="p-4 border border-[#374151] rounded-lg bg-[#0B1121]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.damageThreshold`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
+                  <FormItem className="flex flex-col items-center space-y-4">
+                    <FormLabel className="text-base font-medium text-center flex items-center justify-center gap-1">
                       Damage Threshold
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                            <p>Damage threshold level</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.1"
-                        placeholder="0.0"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        placeholder=""
+                        className="bg-[#080808] border-[1px] border-[#4B5563] text-white w-32 text-center h-10 text-xl"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="text-xs">mm/s</FormDescription>
+                    <div className="text-sm text-muted-foreground">mm/s</div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -432,7 +486,7 @@ export function SensorFormContent({
       )}
 
       {watchedNamePlaceEnabled && (
-        <div className="p-4 border-[1.35px] border-[#374151] rounded-lg bg-[#030616] space-y-4">
+        <div className="p-6 border-[1.35px] border-[#374151] rounded-xl bg-[#030616] space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -446,7 +500,7 @@ export function SensorFormContent({
                         <TooltipTrigger asChild>
                           <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                         </TooltipTrigger>
-                        <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                        <TooltipContent className="bg-[#3B82F6] text-white border-none">
                           <p>Specify the motor power for this sensor</p>
                         </TooltipContent>
                       </Tooltip>
@@ -455,7 +509,7 @@ export function SensorFormContent({
                   <FormControl>
                     <Input
                       placeholder="Enter motor power"
-                      className="bg-[#11171F] border-[#4B5563] text-white"
+                      className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                       {...field}
                     />
                   </FormControl>
@@ -476,7 +530,7 @@ export function SensorFormContent({
                         <TooltipTrigger asChild>
                           <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                         </TooltipTrigger>
-                        <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                        <TooltipContent className="bg-[#3B82F6] text-white border-none">
                           <p>Select the motor type</p>
                         </TooltipContent>
                       </Tooltip>
@@ -487,7 +541,7 @@ export function SensorFormContent({
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="bg-[#11171F] border-[#4B5563] text-white">
+                      <SelectTrigger className="bg-[#080808] border-[1px] border-[#4B5563] text-white">
                         <SelectValue placeholder="Select motor type" />
                       </SelectTrigger>
                     </FormControl>
@@ -506,76 +560,106 @@ export function SensorFormContent({
           </div>
 
           {/* Thresholds - Three Boxes (UI only) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 md:px-12">
+            <div className="p-6 border border-[#374151] rounded-lg bg-[#0B1121]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.namePlaceWarningThreshold`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
+                  <FormItem className="flex flex-col items-center space-y-4">
+                    <FormLabel className="text-base font-medium text-center flex items-center justify-center gap-2">
                       Warning Threshold
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                            <p>Warning threshold level</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.1"
-                        placeholder="0.0"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        placeholder=""
+                        className="bg-[#080808] border-[1px] border-[#4B5563] text-white w-32 text-center h-10 text-xl"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="text-xs">mm/s</FormDescription>
+                    <div className="text-sm text-muted-foreground">mm/s</div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
+            <div className="p-6 border border-[#374151] rounded-lg bg-[#0B1121]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.namePlaceConcernThreshold`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
+                  <FormItem className="flex flex-col items-center space-y-4">
+                    <FormLabel className="text-base font-medium text-center flex items-center justify-center gap-2">
                       Concern Threshold
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                            <p>Concern threshold level</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.1"
-                        placeholder="0.0"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        placeholder=""
+                        className="bg-[#080808] border-[1px] border-[#4B5563] text-white w-32 text-center h-10 text-xl"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="text-xs">mm/s</FormDescription>
+                    <div className="text-sm text-muted-foreground">mm/s</div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="p-3 border-[1.35px] border-[#374151] rounded-lg bg-[#030616]">
+            <div className="p-6 border border-[#374151] rounded-lg bg-[#0B1121]">
               <FormField
                 control={form.control}
                 name={`sensors.${index}.namePlaceDamageThreshold`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
+                  <FormItem className="flex flex-col items-center space-y-4">
+                    <FormLabel className="text-base font-medium text-center flex items-center justify-center gap-2">
                       Damage Threshold
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                            <p>Damage threshold level</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.1"
-                        placeholder="0.0"
-                        className="bg-[#11171F] border-[#4B5563] text-white"
+                        placeholder=""
+                        className="bg-[#080808] border-[1px] border-[#4B5563] text-white w-32 text-center h-10 text-xl"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription className="text-xs">mm/s</FormDescription>
+                    <div className="text-sm text-muted-foreground">mm/s</div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -586,8 +670,13 @@ export function SensorFormContent({
       )}
 
       {/* Additional Settings */}
-      {/* Row 1: Two columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-2 gap-4">
+      {/* Row 1: Columns depend on Name Place being enabled */}
+      <div
+        className={`grid grid-cols-1 gap-4 ${watchedNamePlaceEnabled
+          ? "md:grid-cols-2 2xl:grid-cols-2"
+          : "md:grid-cols-3 2xl:grid-cols-3"
+          }`}
+      >
         <FormField
           control={form.control}
           name={`sensors.${index}.highPass`}
@@ -600,7 +689,7 @@ export function SensorFormContent({
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
                       <p>High pass filter value in Hz</p>
                     </TooltipContent>
                   </Tooltip>
@@ -611,7 +700,7 @@ export function SensorFormContent({
                   type="number"
                   step="0.1"
                   placeholder="10"
-                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                   {...field}
                 />
               </FormControl>
@@ -619,6 +708,40 @@ export function SensorFormContent({
             </FormItem>
           )}
         />
+
+        {!watchedNamePlaceEnabled && (
+          <FormField
+            control={form.control}
+            name={`sensors.${index}.alarmThreshold`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2">
+                  Alarm Threshold
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                        <p>Minimum G-force that activates the sensor.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    placeholder="0.0"
+                    className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
@@ -632,7 +755,7 @@ export function SensorFormContent({
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
                       <p>Time interval between readings in minutes</p>
                     </TooltipContent>
                   </Tooltip>
@@ -643,7 +766,7 @@ export function SensorFormContent({
                   type="number"
                   placeholder="60"
                   min="1"
-                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                   {...field}
                 />
               </FormControl>
@@ -667,7 +790,7 @@ export function SensorFormContent({
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
                       <p>
                         Acceleration range in G units. Determines the maximum
                         measurable acceleration.
@@ -678,7 +801,7 @@ export function SensorFormContent({
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                  <SelectTrigger className="bg-[#080808] border-[1px] border-[#4B5563] text-white">
                     <SelectValue placeholder="Select G-scale" />
                   </SelectTrigger>
                 </FormControl>
@@ -707,7 +830,7 @@ export function SensorFormContent({
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
                       <p>
                         Lines of Resolution - Determines frequency resolution in
                         FFT analysis
@@ -718,7 +841,7 @@ export function SensorFormContent({
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger className="bg-[#11171F] border-[#4B5563] text-white">
+                  <SelectTrigger className="bg-[#080808] border-[1px] border-[#4B5563] text-white">
                     <SelectValue placeholder="Select LOR" />
                   </SelectTrigger>
                 </FormControl>
@@ -747,7 +870,7 @@ export function SensorFormContent({
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
                       <p>Maximum frequency in Hz</p>
                     </TooltipContent>
                   </Tooltip>
@@ -755,7 +878,7 @@ export function SensorFormContent({
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger className="bg-[#11171F] border-[#4B5563] text-white">
+                  <SelectTrigger className="bg-[#080808] border-[1px] border-[#4B5563] text-white">
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
                 </FormControl>
@@ -787,7 +910,7 @@ export function SensorFormContent({
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
                       <p>Minimum temperature threshold</p>
                     </TooltipContent>
                   </Tooltip>
@@ -798,7 +921,7 @@ export function SensorFormContent({
                   type="number"
                   step="0.1"
                   placeholder="0.0"
-                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                   {...field}
                 />
               </FormControl>
@@ -819,7 +942,7 @@ export function SensorFormContent({
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
                       <p>Maximum temperature threshold</p>
                     </TooltipContent>
                   </Tooltip>
@@ -830,7 +953,7 @@ export function SensorFormContent({
                   type="number"
                   step="0.1"
                   placeholder="0.0"
-                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                   {...field}
                 />
               </FormControl>
@@ -853,7 +976,7 @@ export function SensorFormContent({
                   <TooltipTrigger asChild>
                     <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
-                  <TooltipContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+                  <TooltipContent className="bg-[#3B82F6] text-white border-none">
                     <p>Add any additional notes or comments</p>
                   </TooltipContent>
                 </Tooltip>
@@ -862,7 +985,7 @@ export function SensorFormContent({
             <FormControl>
               <Textarea
                 placeholder="Enter any additional notes..."
-                className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                 {...field}
                 rows={4}
               />
