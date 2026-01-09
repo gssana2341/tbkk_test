@@ -792,7 +792,7 @@ export function SensorFormContent({
                 <SelectContent>
                   {timeIntervalOptions.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option}
+                      {option} min.
                     </SelectItem>
                   ))}
                 </SelectContent>
