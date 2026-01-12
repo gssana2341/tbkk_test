@@ -6,6 +6,8 @@ import {
   getCardBackgroundColor,
   type SensorConfig,
 } from "@/lib/utils/vibrationUtils";
+import { cn, getSignalStrength, getSignalStrengthLabel } from "@/lib/utils";
+import { Wifi, WifiOff, WifiHigh, WifiLow, WifiZero } from "lucide-react";
 
 interface SensorCardProps {
   sensor: Sensor;
@@ -324,76 +326,51 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
             </svg>
             {Math.max(0, Math.min(100, Number(battery) || 0)).toFixed(0)}%
           </span>
-          <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap">
-            {/* WiFi SVG icon with color by connectivity */}
-            <div className="mr-1 flex items-center justify-center">
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 22 22"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-4.5 lg:h-4.5 2xl:w-5 2xl:h-5"
-              >
-                <defs>
-                  <filter
-                    id="glow"
-                    x="-50%"
-                    y="-50%"
-                    width="200%"
-                    height="200%"
-                  >
-                    <feGaussianBlur stdDeviation="1.1" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                  <linearGradient
-                    id="wifi-neon"
-                    x1="4"
-                    y1="7"
-                    x2="18"
-                    y2="17"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop stopColor="#22FF88" />
-                    <stop offset="1" stopColor="#22C55E" />
-                  </linearGradient>
-                </defs>
-                <g
-                  filter={connectivity === "online" ? "url(#glow)" : undefined}
-                >
-                  <path
-                    d="M4.5 10.5C8.5 7 13.5 7 17.5 10.5"
-                    stroke={
-                      connectivity === "online" ? "url(#wifi-neon)" : "#9CA3AF"
-                    }
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                  <path
-                    d="M7.5 13.5C9.5 12 12.5 12 14.5 13.5"
-                    stroke={
-                      connectivity === "online" ? "url(#wifi-neon)" : "#9CA3AF"
-                    }
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                  <circle
-                    cx="11"
-                    cy="16.5"
-                    r="1.3"
-                    fill={connectivity === "online" ? "#22FF88" : "#9CA3AF"}
-                    filter={
-                      connectivity === "online" ? "url(#glow)" : undefined
-                    }
-                  />
-                </g>
-              </svg>
-            </div>
+          <span className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap">
+            {/* Tiered WiFi icon based on actual signal strength */}
+            {(() => {
+              const rssi = sensor?.last_data?.rssi || 0;
+              const level = getSignalStrength(rssi);
+              const iconProps = { className: "w-4 h-4 sm:w-4.5 sm:h-4.5 2xl:w-5 2xl:h-5" };
+
+              let icon;
+              let colorClass = "";
+
+              switch (level) {
+                case 0:
+                  icon = <WifiOff {...iconProps} />;
+                  colorClass = "text-gray-400";
+                  break;
+                case 1:
+                  icon = <WifiZero {...iconProps} />;
+                  colorClass = "text-yellow-400";
+                  break;
+                case 2:
+                  icon = <WifiLow {...iconProps} />;
+                  colorClass = "text-yellow-400";
+                  break;
+                case 3:
+                  icon = <WifiHigh {...iconProps} />;
+                  colorClass = "text-[#00E200]";
+                  break;
+                case 4:
+                  icon = <Wifi {...iconProps} />;
+                  colorClass = "text-[#00E200]";
+                  break;
+                default:
+                  icon = <WifiOff {...iconProps} />;
+                  colorClass = "text-gray-400";
+              }
+
+              return (
+                <span className={colorClass}>
+                  {icon}
+                </span>
+              );
+            })()}
+            <span className="text-[0.625rem] sm:text-xs text-gray-400">
+              {getSignalStrengthLabel(sensor?.last_data?.rssi || 0)}
+            </span>
           </span>
           <span className="text-[0.5rem] sm:text-[0.563rem] lg:text-xs 2xl:text-sm text-gray-300 shrink truncate min-w-0">
             {lastUpdateText}

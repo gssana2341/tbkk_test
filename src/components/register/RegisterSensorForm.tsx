@@ -805,25 +805,25 @@ export default function RegisterSensorForm() {
               <TabsList className="flex w-full justify-start bg-transparent p-0">
                 <TabsTrigger
                   value="master"
-                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  className="rounded-none border-b-2 border-transparent px-6 py-3 text-xl font-bold data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                 >
                   Master
                 </TabsTrigger>
                 <TabsTrigger
                   value="sat1"
-                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  className="rounded-none border-b-2 border-transparent px-6 py-3 text-xl font-bold data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                 >
                   Satellite 1
                 </TabsTrigger>
                 <TabsTrigger
                   value="sat2"
-                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  className="rounded-none border-b-2 border-transparent px-6 py-3 text-xl font-bold data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                 >
                   Satellite 2
                 </TabsTrigger>
                 <TabsTrigger
                   value="sat3"
-                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  className="rounded-none border-b-2 border-transparent px-6 py-3 text-xl font-bold data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                 >
                   Satellite 3
                 </TabsTrigger>
@@ -935,7 +935,7 @@ export default function RegisterSensorForm() {
                               "All fields have been reset to default values.",
                           });
                         }}
-                        className="bg-[#E35D5D] text-white hover:bg-red-600 w-24"
+                        className="bg-[#E35D5D] text-white hover:bg-red-600 w-32 h-12 text-xl font-bold"
                       >
                         Reset
                       </Button>
@@ -953,14 +953,14 @@ export default function RegisterSensorForm() {
                             : handleBack();
                       }}
                       disabled={isSubmitting}
-                      className="bg-[#FFFEFF] text-black hover:bg-gray-100 w-24"
+                      className="bg-[#FFFEFF] text-black hover:bg-gray-100 w-32 h-12 text-xl font-bold"
                     >
                       {editId || activeTab === "master" ? "Cancel" : "Back"}
                     </Button>
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="bg-[#2186F3] text-white hover:bg-blue-600 w-24"
+                      className="bg-[#2186F3] text-white hover:bg-blue-600 w-32 h-12 text-xl font-bold"
                     >
                       {isSubmitting && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -974,7 +974,7 @@ export default function RegisterSensorForm() {
                         type="button"
                         onClick={handleNext}
                         disabled={isSubmitting}
-                        className="bg-[#2186F3] text-white hover:bg-blue-600 w-24"
+                        className="bg-[#2186F3] text-white hover:bg-blue-600 w-32 h-12 text-xl font-bold"
                       >
                         Next
                       </Button>

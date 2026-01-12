@@ -2,7 +2,16 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, MoreVertical, Settings } from "lucide-react";
+import {
+  ArrowLeft,
+  MoreVertical,
+  Settings,
+  Wifi,
+  WifiOff,
+  WifiHigh,
+  WifiLow,
+  WifiZero,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -14,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  cn,
   formatThaiDate,
   formatDate,
   getSignalStrength,
@@ -2368,10 +2378,26 @@ export default function SensorDetailPage() {
                   <div className="grid grid-cols-[160px_1fr] 2xl:grid-cols-[200px_1fr] gap-x-4 gap-y-1 text-base 2xl:text-xl">
                     {/* Signal Strength */}
                     <span className="text-gray-400">Signal Strength</span>
-                    <span className="flex items-center gap-1 text-white whitespace-nowrap">
-                      <span className="text-lg 2xl:text-2xl">
-                        {getSignalStrength(currentData.rssi || 0)}
-                      </span>
+                    <span className="flex items-center gap-2 text-white whitespace-nowrap">
+                      {(() => {
+                        const level = getSignalStrength(currentData.rssi || 0);
+                        const iconProps = { className: "h-5 w-5" };
+
+                        switch (level) {
+                          case 0:
+                            return <WifiOff {...iconProps} className={cn(iconProps.className, "text-gray-400")} />;
+                          case 1:
+                            return <WifiZero {...iconProps} className={cn(iconProps.className, "text-yellow-400")} />;
+                          case 2:
+                            return <WifiLow {...iconProps} className={cn(iconProps.className, "text-yellow-400")} />;
+                          case 3:
+                            return <WifiHigh {...iconProps} className={cn(iconProps.className, "text-[#00E200]")} />;
+                          case 4:
+                            return <Wifi {...iconProps} className={cn(iconProps.className, "text-[#00E200]")} />;
+                          default:
+                            return <WifiOff {...iconProps} className={cn(iconProps.className, "text-gray-400")} />;
+                        }
+                      })()}
                       <span className="text-sm 2xl:text-lg text-gray-500">
                         ({getSignalStrengthLabel(currentData.rssi || 0)})
                       </span>
