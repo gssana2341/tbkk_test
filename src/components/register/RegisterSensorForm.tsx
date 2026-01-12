@@ -286,28 +286,28 @@ export default function RegisterSensorForm() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeTab]);
 
-  const defaultMotorStartTime = new Date(2025, 8, 26, 1, 0, 0);
+  const defaultMotorStartTime = new Date();
 
   const defaultSensorValues = {
     serialNumber: "",
-    area: "Line-2",
+    area: "",
     motorStartTime: defaultMotorStartTime,
-    machine: "M-02",
+    machine: "",
     machineClassEnabled: true,
     namePlaceEnabled: false,
-    machineClass: "mediumFlexible",
+    machineClass: "",
     namePlace: "",
-    warningThreshold: "2.5",
-    concernThreshold: "5.0",
-    damageThreshold: "10.0",
+    warningThreshold: "",
+    concernThreshold: "",
+    damageThreshold: "",
     alarmThreshold: "",
-    gScale: "16",
+    gScale: "",
     temperatureThresholdMin: "",
-    timeInterval: "5",
-    lor: "6400",
-    frequencyMax: "10000",
+    timeInterval: "",
+    lor: "",
+    frequencyMax: "",
     temperatureThresholdMax: "",
-    highPass: "10",
+    highPass: "",
     motorType: "",
     namePlaceWarningThreshold: "",
     namePlaceConcernThreshold: "",
