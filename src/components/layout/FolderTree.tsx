@@ -91,7 +91,9 @@ function buildTreeFromSensors(sensors: Sensor[]): TreeItemData[] {
     });
   });
 
-  areaItems.sort((a, b) => a.label.localeCompare(b.label, "th", { numeric: true }));
+  areaItems.sort((a, b) =>
+    a.label.localeCompare(b.label, "th", { numeric: true })
+  );
 
   return [
     {

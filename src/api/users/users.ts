@@ -246,7 +246,9 @@ export async function deleteUser(userId: string): Promise<{ message: string }> {
 }
 
 // Approve user (Admin only)
-export async function approveUser(userId: string): Promise<{ message: string }> {
+export async function approveUser(
+  userId: string
+): Promise<{ message: string }> {
   try {
     const axiosInstance = getAxiosInstance();
     const response = await axiosInstance.put<{ message: string }>(

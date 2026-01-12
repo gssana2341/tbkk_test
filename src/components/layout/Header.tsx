@@ -124,15 +124,15 @@ export default function Header() {
 
           const datetime = sensor.last_data?.datetime
             ? new Date(sensor.last_data.datetime)
-              .toLocaleString("en-GB", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
-              .replace(",", "")
+                .toLocaleString("en-GB", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })
+                .replace(",", "")
             : "-";
 
           let statusClass = "";
@@ -369,11 +369,11 @@ export default function Header() {
                   <AvatarFallback className="bg-gray-600 text-gray-300 text-xs font-medium">
                     {user?.name
                       ? user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()
-                        .slice(0, 2)
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2)
                       : "U"}
                   </AvatarFallback>
                 </Avatar>

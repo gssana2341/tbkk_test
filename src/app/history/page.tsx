@@ -55,12 +55,13 @@ export default function NotificationHistoryPage() {
           }
 
           // Status mapping (Component expects Title Case)
-          const statusMap: Record<VibrationLevel, NotificationEntry["status"]> = {
-            critical: "Critical",
-            concern: "Concern",
-            warning: "Warning",
-            normal: "Normal",
-          };
+          const statusMap: Record<VibrationLevel, NotificationEntry["status"]> =
+            {
+              critical: "Critical",
+              concern: "Concern",
+              warning: "Warning",
+              normal: "Normal",
+            };
 
           const finalStatus = statusMap[calculatedLevel];
 

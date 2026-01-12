@@ -113,14 +113,14 @@ export default function SensorDetailInfoCard({
               </h3>
               {(user?.role?.toLowerCase() === "admin" ||
                 user?.role?.toLowerCase() === "editor") && (
-                  <button
-                    type="button"
-                    onClick={onEdit}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-2.5 py-1 text-xs text-gray-700 hover:bg-gray-50"
-                  >
-                    <Edit3 className="h-3.5 w-3.5" /> Edit
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={onEdit}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-2.5 py-1 text-xs text-gray-700 hover:bg-gray-50"
+                >
+                  <Edit3 className="h-3.5 w-3.5" /> Edit
+                </button>
+              )}
             </div>
 
             {/* Label-Value List */}

@@ -225,14 +225,6 @@ export function NotificationHistoryTable({
               ))}
             </div>
           </div>
-          <Button
-            variant="outline"
-            className="text-sm px-6 h-10 2xl:h-12 2xl:text-lg bg-[#374151] text-white border border-gray-600 hover:bg-gray-700 rounded-md font-semibold"
-            onClick={() => setData([])}
-            disabled={data.length === 0}
-          >
-            Clear All
-          </Button>
         </div>
 
         {/* Search & Date Filter */}

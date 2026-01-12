@@ -833,7 +833,15 @@ export default function RegisterSensorForm() {
           <CardContent className="pt-6">
             <div className="mb-6 space-y-1">
               <h2 className="text-3xl font-semibold text-white">
-                Register New {activeTab === "master" ? "Master" : activeTab === "sat1" ? "Satellite 1" : activeTab === "sat2" ? "Satellite 2" : "Satellite 3"} Sensor
+                Register New{" "}
+                {activeTab === "master"
+                  ? "Master"
+                  : activeTab === "sat1"
+                    ? "Satellite 1"
+                    : activeTab === "sat2"
+                      ? "Satellite 2"
+                      : "Satellite 3"}{" "}
+                Sensor
               </h2>
               <p className="text-lg text-muted-foreground">
                 Add new sensors to the monitoring system.

@@ -361,7 +361,6 @@ export default function SensorHistoryPage() {
             <ArrowLeft className="h-4 w-4" />
             Back to Sensor
           </Button>
-
         </div>
       </div>
 
@@ -374,10 +373,11 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
-                    ? "bg-blue-600 border-blue-500 text-white"
-                    : "bg-[#030616] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                    }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
+                    selectedAxis === axis
+                      ? "bg-blue-600 border-blue-500 text-white"
+                      : "bg-[#030616] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                  }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
@@ -427,11 +427,20 @@ export default function SensorHistoryPage() {
                     <span className="sr-only">Open menu</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-[#030616] border-[#374151] text-white">
-                  <DropdownMenuItem onClick={handleExportCSV} className="hover:bg-[#374151] cursor-pointer">
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-[#030616] border-[#374151] text-white"
+                >
+                  <DropdownMenuItem
+                    onClick={handleExportCSV}
+                    className="hover:bg-[#374151] cursor-pointer"
+                  >
                     Export CSV
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleExportExcel} className="hover:bg-[#374151] cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={handleExportExcel}
+                    className="hover:bg-[#374151] cursor-pointer"
+                  >
                     Export Excel
                   </DropdownMenuItem>
                 </DropdownMenuContent>

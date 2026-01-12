@@ -41,19 +41,19 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Use undefined for missing data to distinguish from 0 (which is valid data)
   const veloRmsH =
     sensor?.last_data?.velo_rms_h !== undefined &&
-      sensor?.last_data?.velo_rms_h !== null
+    sensor?.last_data?.velo_rms_h !== null
       ? Number(sensor.last_data.velo_rms_h)
       : undefined;
 
   const veloRmsV =
     sensor?.last_data?.velo_rms_v !== undefined &&
-      sensor?.last_data?.velo_rms_v !== null
+    sensor?.last_data?.velo_rms_v !== null
       ? Number(sensor.last_data.velo_rms_v)
       : undefined;
 
   const veloRmsA =
     sensor?.last_data?.velo_rms_a !== undefined &&
-      sensor?.last_data?.velo_rms_a !== null
+    sensor?.last_data?.velo_rms_a !== null
       ? Number(sensor.last_data.velo_rms_a)
       : undefined;
 
@@ -120,14 +120,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
   const lastUpdateText = lastUpdate
     ? lastUpdate.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
     : "-";
 
   // Determine card background color based on sensor status
@@ -188,7 +188,9 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
         {/* Row 1: ID | Pills | Status */}
         <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
           <div className="flex items-center justify-center shrink-0 mr-1.5">
-            <div className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 relative flex items-center justify-center shrink-0`}>
+            <div
+              className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 relative flex items-center justify-center shrink-0`}
+            >
               {deviceRole.toLowerCase() === "master" ? (
                 <>
                   <svg
@@ -331,7 +333,9 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
             {(() => {
               const rssi = sensor?.last_data?.rssi || 0;
               const level = getSignalStrength(rssi);
-              const iconProps = { className: "w-4 h-4 sm:w-4.5 sm:h-4.5 2xl:w-5 2xl:h-5" };
+              const iconProps = {
+                className: "w-4 h-4 sm:w-4.5 sm:h-4.5 2xl:w-5 2xl:h-5",
+              };
 
               let icon;
               let colorClass = "";
@@ -362,15 +366,8 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                   colorClass = "text-gray-400";
               }
 
-              return (
-                <span className={colorClass}>
-                  {icon}
-                </span>
-              );
+              return <span className={colorClass}>{icon}</span>;
             })()}
-            <span className="text-[0.625rem] sm:text-xs text-gray-400">
-              {getSignalStrengthLabel(sensor?.last_data?.rssi || 0)}
-            </span>
           </span>
           <span className="text-[0.5rem] sm:text-[0.563rem] lg:text-xs 2xl:text-sm text-gray-300 shrink truncate min-w-0">
             {lastUpdateText}

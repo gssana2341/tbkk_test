@@ -203,8 +203,6 @@ export function SensorFormContent({
               </FormItem>
             )}
           />
-
-
         </div>
 
         {/* Right Column */}
@@ -301,7 +299,9 @@ export function SensorFormContent({
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel className="text-lg 2xl:text-xl font-bold">Machine Class</FormLabel>
+                <FormLabel className="text-lg 2xl:text-xl font-bold">
+                  Machine Class
+                </FormLabel>
               </div>
             </FormItem>
           )}
@@ -319,13 +319,18 @@ export function SensorFormContent({
                   onCheckedChange={(checked) => {
                     field.onChange(checked);
                     if (checked) {
-                      form.setValue(`sensors.${index}.machineClassEnabled`, false);
+                      form.setValue(
+                        `sensors.${index}.machineClassEnabled`,
+                        false
+                      );
                     }
                   }}
                 />
               </FormControl>
               <div className="space-y-1 leading-none flex items-center gap-2">
-                <FormLabel className="text-lg 2xl:text-xl font-bold">Name Place</FormLabel>
+                <FormLabel className="text-lg 2xl:text-xl font-bold">
+                  Name Place
+                </FormLabel>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -333,15 +338,20 @@ export function SensorFormContent({
                     </TooltipTrigger>
                     <TooltipContent className="bg-[#3B82F6] text-white border-none p-4 max-w-sm">
                       <div className="space-y-2">
-                        <p className="font-semibold text-lg">You can choose between:</p>
+                        <p className="font-semibold text-lg">
+                          You can choose between:
+                        </p>
                         <ul className="list-disc pl-4 space-y-1 text-sm">
                           <li>
-                            <span className="font-semibold">Machine Class (ISO10816-3)</span> | Use
-                            standard values based on machine type
+                            <span className="font-semibold">
+                              Machine Class (ISO10816-3)
+                            </span>{" "}
+                            | Use standard values based on machine type
                           </li>
                           <li>
-                            <span className="font-semibold">Name Plate</span> | Enter values according to
-                            the motor&apos;s specification
+                            <span className="font-semibold">Name Plate</span> |
+                            Enter values according to the motor&apos;s
+                            specification
                           </li>
                         </ul>
                       </div>
@@ -694,10 +704,11 @@ export function SensorFormContent({
       {/* Additional Settings */}
       {/* Row 1: Columns depend on Name Place being enabled */}
       <div
-        className={`grid grid-cols-1 gap-4 ${watchedNamePlaceEnabled
-          ? "md:grid-cols-2 2xl:grid-cols-2"
-          : "md:grid-cols-3 2xl:grid-cols-3"
-          }`}
+        className={`grid grid-cols-1 gap-4 ${
+          watchedNamePlaceEnabled
+            ? "md:grid-cols-2 2xl:grid-cols-2"
+            : "md:grid-cols-3 2xl:grid-cols-3"
+        }`}
       >
         <FormField
           control={form.control}
@@ -1025,7 +1036,9 @@ export function SensorFormContent({
 
       {/* Image Upload */}
       <div className="space-y-2">
-        <FormLabel className="text-lg 2xl:text-xl font-bold">Sensor Image (Optional)</FormLabel>
+        <FormLabel className="text-lg 2xl:text-xl font-bold">
+          Sensor Image (Optional)
+        </FormLabel>
         <div className="flex items-center gap-4">
           <label
             htmlFor={`sensor-image-${index}`}

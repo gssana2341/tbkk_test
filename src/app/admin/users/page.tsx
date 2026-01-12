@@ -393,7 +393,10 @@ export default function UserManagementPage() {
                           <SelectValue placeholder="Action" />
                         </SelectTrigger>
                         <SelectContent className="bg-[#1e293b] border-gray-700 text-white">
-                          <SelectItem value="ACTIVE" className="text-base 2xl:text-xl">
+                          <SelectItem
+                            value="ACTIVE"
+                            className="text-base 2xl:text-xl"
+                          >
                             Approve
                           </SelectItem>
                         </SelectContent>
@@ -470,10 +473,11 @@ export default function UserManagementPage() {
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${isActive
-                    ? "bg-[#3758F9] text-white shadow"
-                    : "border border-gray-700 bg-[#1F2937] text-white hover:bg-[#232e3c]"
-                    }`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-[#3758F9] text-white shadow"
+                      : "border border-gray-700 bg-[#1F2937] text-white hover:bg-[#232e3c]"
+                  }`}
                 >
                   {page}
                 </button>

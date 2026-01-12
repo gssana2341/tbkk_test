@@ -117,17 +117,17 @@ export default function SensorActions({ sensor }: SensorActionsProps) {
           <DropdownMenuSeparator />
           {(user?.role?.toLowerCase() === "admin" ||
             user?.role?.toLowerCase() === "editor") && (
-              <>
-                <DropdownMenuItem onClick={handleEdit}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Sensor
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleScheduleMaintenance}>
-                  <Wrench className="h-4 w-4 mr-2" />
-                  Schedule Maintenance
-                </DropdownMenuItem>
-              </>
-            )}
+            <>
+              <DropdownMenuItem onClick={handleEdit}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Sensor
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleScheduleMaintenance}>
+                <Wrench className="h-4 w-4 mr-2" />
+                Schedule Maintenance
+              </DropdownMenuItem>
+            </>
+          )}
           <DropdownMenuItem onClick={handleExportData}>
             <Download className="h-4 w-4 mr-2" />
             Export Data
@@ -152,14 +152,14 @@ export default function SensorActions({ sensor }: SensorActionsProps) {
           <DropdownMenuSeparator />
           {(user?.role?.toLowerCase() === "admin" ||
             user?.role?.toLowerCase() === "editor") && (
-              <DropdownMenuItem
-                onClick={() => setShowDeleteDialog(true)}
-                className="text-red-600 dark:text-red-400"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Sensor
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem
+              onClick={() => setShowDeleteDialog(true)}
+              className="text-red-600 dark:text-red-400"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Sensor
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

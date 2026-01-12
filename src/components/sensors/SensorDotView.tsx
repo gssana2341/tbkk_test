@@ -78,7 +78,7 @@ export default function SensorDotView({
   // Helper to render a single sensor node
   const renderSensorNode = (sensor: Sensor) => {
     const role = (sensor.sensor_type || "Satellite").toLowerCase();
-    const isMaster = role === 'master';
+    const isMaster = role === "master";
 
     // Get temperature value
     const temperature = sensor.last_data?.temperature || 0;
@@ -99,15 +99,11 @@ export default function SensorDotView({
     const maxRms = Math.max(veloRmsH, veloRmsV, veloRmsA);
 
     const sensorConfig: SensorConfig = {
-      thresholdMin: sensor.threshold_min
-        ? Number(sensor.threshold_min)
-        : 0.1,
+      thresholdMin: sensor.threshold_min ? Number(sensor.threshold_min) : 0.1,
       thresholdMedium: sensor.threshold_medium
         ? Number(sensor.threshold_medium)
         : 0.125,
-      thresholdMax: sensor.threshold_max
-        ? Number(sensor.threshold_max)
-        : 0.15,
+      thresholdMax: sensor.threshold_max ? Number(sensor.threshold_max) : 0.15,
       machineClass: sensor.machine_class || undefined,
     };
 
@@ -171,10 +167,7 @@ export default function SensorDotView({
                     d="M 50 2 C 20 2 2 20 2 50 L 10 108 L 90 108 L 98 50 C 98 20 80 2 50 2 Z"
                     fill={statusColorCode}
                   />
-                  <path
-                    d="M 8 52 L 92 52 L 85 102 L 15 102 Z"
-                    fill="white"
-                  />
+                  <path d="M 8 52 L 92 52 L 85 102 L 15 102 Z" fill="white" />
                   <text
                     x="50"
                     y="82"
@@ -203,9 +196,7 @@ export default function SensorDotView({
                   className="absolute top-0 left-0 right-0 h-[50%]"
                   style={topSectionStyle}
                 ></div>
-                <div
-                  className="absolute bottom-0 left-0 right-0 h-[50%] bg-white"
-                ></div>
+                <div className="absolute bottom-0 left-0 right-0 h-[50%] bg-white"></div>
                 <div className="absolute bottom-0 left-0 right-0 h-[50%] z-10 flex items-center justify-center pb-1">
                   <span
                     className="font-bold text-gray-900 leading-none"
@@ -230,7 +221,8 @@ export default function SensorDotView({
               {sensor.model || `Model-${sensor.id.substring(0, 8)}`}
             </div>
             <div className="text-gray-400">
-              {sensor.machineName || "Unknown Machine"}: {isMaster ? "Master" : "Satellite"}
+              {sensor.machineName || "Unknown Machine"}:{" "}
+              {isMaster ? "Master" : "Satellite"}
             </div>
             <div className="flex items-center space-x-2">
               <span>Temp: {temperature.toFixed(0)}°C</span>
@@ -245,10 +237,11 @@ export default function SensorDotView({
             <div className="flex items-center space-x-1">
               <span>Status:</span>
               <div
-                className={`w-2 h-2 rounded-full ${sensor.connectivity === "online"
-                  ? "bg-green-500"
-                  : "bg-gray-500"
-                  }`}
+                className={`w-2 h-2 rounded-full ${
+                  sensor.connectivity === "online"
+                    ? "bg-green-500"
+                    : "bg-gray-500"
+                }`}
               />
               <span className="text-xs">
                 {sensor.connectivity || "offline"}
@@ -258,28 +251,25 @@ export default function SensorDotView({
               <span>Vibration:</span>
               <div className="flex space-x-0.5">
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(
-                    sensor.h_stats?.velocityTopPeak || "0"
-                  ) > 0
-                    ? "bg-green-500"
-                    : "bg-gray-500"
-                    }`}
+                  className={`w-1 h-1 rounded-full ${
+                    parseFloat(sensor.h_stats?.velocityTopPeak || "0") > 0
+                      ? "bg-green-500"
+                      : "bg-gray-500"
+                  }`}
                 />
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(
-                    sensor.v_stats?.velocityTopPeak || "0"
-                  ) > 0
-                    ? "bg-green-500"
-                    : "bg-gray-500"
-                    }`}
+                  className={`w-1 h-1 rounded-full ${
+                    parseFloat(sensor.v_stats?.velocityTopPeak || "0") > 0
+                      ? "bg-green-500"
+                      : "bg-gray-500"
+                  }`}
                 />
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(
-                    sensor.a_stats?.velocityTopPeak || "0"
-                  ) > 0
-                    ? "bg-green-500"
-                    : "bg-gray-500"
-                    }`}
+                  className={`w-1 h-1 rounded-full ${
+                    parseFloat(sensor.a_stats?.velocityTopPeak || "0") > 0
+                      ? "bg-green-500"
+                      : "bg-gray-500"
+                  }`}
                 />
               </div>
             </div>
