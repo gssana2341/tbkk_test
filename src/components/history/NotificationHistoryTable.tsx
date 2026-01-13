@@ -21,6 +21,9 @@ export interface NotificationEntry {
   hVrms?: number | null;
   vVrms?: number | null;
   aVrms?: number | null;
+  hColor?: number;
+  vColor?: number;
+  aColor?: number;
   temperature?: string | null;
   battery?: string | null;
   config?: {
@@ -80,6 +83,14 @@ const axisColors = {
   critical: "bg-[#ff4d4d]",
 };
 
+function getAxisColorCode(code: number | undefined) {
+  if (code === 1) return axisColors.normal;
+  if (code === 2) return axisColors.warning;
+  if (code === 3) return axisColors.concern;
+  if (code === 4) return axisColors.critical;
+  return "bg-gray-400";
+}
+
 function getAxisColor(
   value: number | null | undefined,
   config?: {
@@ -90,16 +101,9 @@ function getAxisColor(
 ) {
   if (value == null) return "bg-gray-400";
 
-  // Default hardcoded logic if no config provided (fallback)
-  const min = config?.thresholdMin ?? 2;
-  const medium = config?.thresholdMedium ?? 2.5;
-  const max = config?.thresholdMax ?? 3;
-
-  // Logic matches vibrationUtils.ts:
-  // < min -> Normal (Green)
-  // >= min && < medium -> Warning (Yellow)
-  // >= medium && < max -> Concern (Orange)
-  // >= max -> Critical (Red)
+  const min = config?.thresholdMin ?? 2.5;
+  const medium = config?.thresholdMedium ?? 4.5;
+  const max = config?.thresholdMax ?? 9.0;
 
   if (value < min) return axisColors.normal;
   if (value < medium) return axisColors.warning;
@@ -371,21 +375,29 @@ export function NotificationHistoryTable({
                     <td className="py-4 px-4 text-gray-400">
                       {entry.datetime}
                     </td>
-                    {(["hVrms", "vVrms", "aVrms"] as const).map((axis) => (
-                      <td key={axis} className="py-4 px-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <span
-                            className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${getAxisColor(
-                              entry[axis],
-                              entry.config
-                            )}`}
-                          />
-                          <span className="font-medium text-gray-300">
-                            {entry[axis] != null ? entry[axis].toFixed(2) : "-"}
-                          </span>
-                        </div>
-                      </td>
-                    ))}
+                    {(["hVrms", "vVrms", "aVrms"] as const).map((axis) => {
+                      const colorField = (axis.charAt(0) +
+                        "Color") as keyof NotificationEntry;
+                      const colorCode = entry[colorField] as number | undefined;
+
+                      return (
+                        <td key={axis} className="py-4 px-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <span
+                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${colorCode !== undefined
+                                  ? getAxisColorCode(colorCode)
+                                  : getAxisColor(entry[axis], entry.config)
+                                }`}
+                            />
+                            <span className="font-medium text-gray-300">
+                              {entry[axis] != null
+                                ? entry[axis].toFixed(2)
+                                : "-"}
+                            </span>
+                          </div>
+                        </td>
+                      );
+                    })}
                     <td className="py-4 px-4 text-gray-300">
                       {entry.temperature ?? "-"}
                     </td>

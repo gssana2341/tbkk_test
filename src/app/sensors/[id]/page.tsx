@@ -364,7 +364,7 @@ function prepareChartData(
     };
   }
 
-  // เธชเธฃเนเธฒเธเธเนเธฒเธขเน€เธงเธฅเธฒเธชเธณเธซเธฃเธฑเธเธเธฃเธฒเธ
+
   const n = effectiveAccData.length;
   // Calculate theoretical total time based on config (e.g. 1600/400 = 4.0s)
   const theoreticalTotalTime = configData.lor / configData.fmax;
@@ -375,7 +375,7 @@ function prepareChartData(
     return ((i * theoreticalTotalTime) / (n - 1)).toFixed(4);
   });
 
-  // เธเธฃเธฐเธกเธงเธฅเธเธฅเธเนเธญเธกเธนเธฅเธ•เธฒเธกเธซเธเนเธงเธขเธ—เธตเนเน€เธฅเธทเธญเธ
+
   let processedData: number[];
   let yAxisLabel: string;
 
@@ -411,7 +411,7 @@ function prepareChartData(
   const peakValue = peak.toFixed(2);
   const peakToPeakValue = peakToPeak.toFixed(2);
 
-  // เธชเธฃเนเธฒเธเธเนเธญเธกเธนเธฅเธชเธณเธซเธฃเธฑเธเธเธฃเธฒเธเนเธ”เน€เธกเธเน€เธงเธฅเธฒ
+
   const timeChartData = {
     labels: timeLabels,
     rmsValue,
@@ -683,9 +683,9 @@ export default function SensorDetailPage() {
     g_scale: 16,
     time_interval: 3,
     alarm_ths: 5.0,
-    thresholdMin: "",
-    thresholdMedium: "",
-    thresholdMax: "",
+    thresholdMin: "2.0",
+    thresholdMedium: "4.5",
+    thresholdMax: "9.0",
     notes: "",
     image_url: "",
     // Add axis direction configuration
@@ -2175,6 +2175,233 @@ export default function SensorDetailPage() {
             {error}. Using fallback data.
           </div>
         )}
+        {/* Statistics and Analysis */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4 2xl:gap-8">
+          <Card
+            className="border-[1.35px] border-[#374151] overflow-hidden"
+            style={{
+              backgroundColor:
+                safeTemp > (configData?.alarm_ths || 35)
+                  ? "#7f1d1d" // red-900
+                  : safeTemp > (configData?.alarm_ths || 35) * 0.7
+                    ? "#fae739" // custom yellow
+                    : "#14532d", // green-900
+            }}
+          >
+            <CardContent className="p-4 2xl:p-6">
+              <div className="flex flex-col w-full h-full">
+                <h3
+                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${safeTemp > (configData?.alarm_ths || 35) * 0.7 && safeTemp <= (configData?.alarm_ths || 35)
+                    ? "text-gray-900"
+                    : "text-white"
+                    }`}
+                >
+                  Temperature
+                </h3>
+
+                <div className="flex justify-between items-center mb-1">
+                  <div
+                    className={`text-2xl md:text-4xl 2xl:text-6xl font-extrabold ${safeTemp > (configData?.alarm_ths || 35) * 0.7 && safeTemp <= (configData?.alarm_ths || 35)
+                      ? "text-gray-900"
+                      : "text-white"
+                      }`}
+                  >
+                    {safeTemp.toFixed(0)}°C
+                  </div>
+                  <div
+                    className={`text-xl 2xl:text-4xl font-bold ${safeTemp > (configData?.alarm_ths || 35) * 0.7 && safeTemp <= (configData?.alarm_ths || 35)
+                      ? "text-gray-900"
+                      : "text-white"
+                      }`}
+                  >
+                    {safeTemp > (configData?.alarm_ths || 35)
+                      ? "Critical"
+                      : safeTemp > (configData?.alarm_ths || 35) * 0.7
+                        ? "Warning"
+                        : "Normal"}
+                  </div>
+                </div>
+
+                <div
+                  className={`mt-auto text-sm 2xl:text-xl font-medium ${safeTemp > (configData?.alarm_ths || 35) * 0.7 && safeTemp <= (configData?.alarm_ths || 35)
+                    ? "text-gray-700"
+                    : "text-gray-300"
+                    }`}
+                >
+                  Threshold max: {configData?.thresholdMax ?? 2.5} °C
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {configData.hAxisEnabled && (
+            <Card
+              className={`border-[1.35px] border-[#374151] ${getDetailCardColor(parseFloat(xStats.velocityTopPeak))}`}
+            >
+              <CardContent className="p-4 2xl:p-6">
+                <h3
+                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
+                    ? "!text-white"
+                    : "!text-black"
+                    }`}
+                >
+                  Horizontal (H)
+                </h3>
+                <div className="space-y-0">
+                  <div className="flex justify-between items-end">
+                    <span
+                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      Acceleration
+                    </span>
+                    <span
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      {xStats.accelTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">G</span>
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <span
+                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      Velocity
+                    </span>
+                    <span
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      {xStats.velocityTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">mm/s</span>
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Conditionally show V-axis card */}
+          {configData.vAxisEnabled && (
+            <Card
+              className={`border-[1.35px] border-[#374151] ${getDetailCardColor(parseFloat(yStats.velocityTopPeak))}`}
+            >
+              <CardContent className="p-4 2xl:p-6">
+                <h3
+                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
+                    ? "!text-white"
+                    : "!text-black"
+                    }`}
+                >
+                  Vertical (V)
+                </h3>
+                <div className="space-y-0">
+                  <div className="flex justify-between items-end">
+                    <span
+                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      Acceleration
+                    </span>
+                    <span
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      {yStats.accelTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">G</span>
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <span
+                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      Velocity
+                    </span>
+                    <span
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      {yStats.velocityTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">mm/s</span>
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Conditionally show A-axis card */}
+          {configData.aAxisEnabled && (
+            <Card
+              className={`border-[1.35px] border-[#374151] ${getDetailCardColor(parseFloat(zStats.velocityTopPeak))}`}
+            >
+              <CardContent className="p-4 2xl:p-6">
+                <h3
+                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
+                    ? "!text-white"
+                    : "!text-black"
+                    }`}
+                >
+                  Axial (A)
+                </h3>
+                <div className="space-y-0">
+                  <div className="flex justify-between items-end">
+                    <span
+                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      Acceleration
+                    </span>
+                    <span
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      {zStats.accelTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">G</span>
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <span
+                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      Velocity
+                    </span>
+                    <span
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
+                        ? "!text-white"
+                        : "!text-black"
+                        }`}
+                    >
+                      {zStats.velocityTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">mm/s</span>
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
         {/* Horizontal Sensor Information */}
         <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
           <CardContent className="p-4">
@@ -2549,788 +2776,463 @@ export default function SensorDetailPage() {
           </CardContent>
         </Card>
 
-        {/* Statistics and Analysis */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4 2xl:gap-8">
-            <Card
-              className="border-[1.35px] border-[#374151]"
-              style={{
-                backgroundColor:
-                  safeTemp > (configData?.alarm_ths || 35)
-                    ? "#7f1d1d" // red-900
-                    : safeTemp > (configData?.alarm_ths || 35) * 0.7
-                      ? "#fae739" // custom yellow
-                      : "#14532d", // green-900
-              }}
-            >
-              <CardContent className="p-4 2xl:p-6">
-                {(() => {
-                  console.log("=== Temperature Statistics ===");
-                  console.log("safeTemp:", safeTemp);
-                  console.log(
-                    "currentData.temperature:",
-                    currentData.temperature
-                  );
-                  console.log(
-                    "sensorLastData?.data.temperature:",
-                    sensorLastData?.data?.temperature
-                  );
-                  console.log("configData.alarm_ths:", configData?.alarm_ths);
-                  return null;
-                })()}
-                <div className="flex flex-col items-start justify-start text-left w-full">
-                  <h3
-                    className="mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl w-full"
-                    style={{
-                      color:
-                        safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                          safeTemp <= (configData?.alarm_ths || 35)
-                          ? "#1f2937"
-                          : "#ffffff",
-                    }}
-                  >
-                    Temperature Statistics
-                  </h3>
 
-                  <div className="flex justify-between items-baseline w-full mb-2">
-                    <div
-                      className="text-xl md:text-2xl lg:text-3xl 2xl:text-5xl font-extrabold"
-                      style={{
-                        color:
-                          safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                            safeTemp <= (configData?.alarm_ths || 35)
-                            ? "#1f2937"
-                            : "#ffffff",
-                      }}
-                    >
-                      {safeTemp.toFixed(0)}°C
-                    </div>
-                    <div
-                      className="text-lg md:text-xl lg:text-2xl 2xl:text-4xl font-bold mr-4"
-                      style={{
-                        color:
-                          safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                            safeTemp <= (configData?.alarm_ths || 35)
-                            ? "#1f2937"
-                            : "#ffffff",
-                      }}
-                    >
-                      {safeTemp > (configData?.alarm_ths || 35)
-                        ? "Critical"
-                        : safeTemp > (configData?.alarm_ths || 35) * 0.7
-                          ? "Warning"
-                          : "Normal"}
-                    </div>
-                  </div>
+        {/* Vibration Analysis Section */}
+        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
+          <CardContent className="p-6">
+            <h2 className="text-lg md:text-xl lg:text-2xl font-extrabold mb-4 text-white">
+              Vibration Frequency Analysis
+            </h2>
 
-                  <div className="space-y-1 w-full">
-                    <div
-                      className="text-sm md:text-base 2xl:text-xl font-medium"
-                      style={{
-                        color:
-                          safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
-                            safeTemp <= (configData?.alarm_ths || 35)
-                            ? "#4b5563"
-                            : "#d1d5db",
-                      }}
-                    >
-                      Threshold max: {configData?.thresholdMax ?? 2.5} °C
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Conditionally show H-axis card */}
-            {configData.hAxisEnabled && (
-              <Card
-                className={`border-[1.35px] border-[#374151]
-              ${getDetailCardColor(parseFloat(xStats.velocityTopPeak))}`}
-              >
-                <CardContent className="p-4 2xl:p-6">
-                  <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(
-                      getDetailCardColor(parseFloat(xStats.velocityTopPeak))
-                    )
-                      ? "!text-white"
-                      : "!text-black"
-                      }`}
-                  >
-                    Horizontal (H)
-                  </h3>
-                  <div className="space-y-1 text-lg md:text-xl 2xl:text-2xl">
-                    <div className="flex justify-between">
-                      <span
-                        className={
-                          shouldTextBeWhite(
-                            getDetailCardColor(
-                              parseFloat(xStats.velocityTopPeak)
-                            )
-                          )
-                            ? "!text-white"
-                            : "!text-black"
-                        }
-                      >
-                        Acceleration
-                      </span>
-                      <span
-                        className={`text-right ${shouldTextBeWhite(
-                          getCardBackgroundColorCallback(
-                            parseFloat(xStats.velocityTopPeak)
-                          )
-                        )
-                          ? "!text-white text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          : "!text-black text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          }`}
-                      >
-                        {xStats.accelTopPeak} G
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span
-                        className={
-                          shouldTextBeWhite(
-                            getCardBackgroundColorCallback(
-                              parseFloat(xStats.velocityTopPeak)
-                            )
-                          )
-                            ? "!text-white"
-                            : "!text-black"
-                        }
-                      >
-                        Velocity
-                      </span>
-                      <span
-                        className={`text-right ${shouldTextBeWhite(
-                          getCardBackgroundColorCallback(
-                            parseFloat(xStats.velocityTopPeak)
-                          )
-                        )
-                          ? "!text-white text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          : "!text-black text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          }`}
-                      >
-                        {xStats.velocityTopPeak} mm/s
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Conditionally show V-axis card */}
-            {configData.vAxisEnabled && (
-              <Card
-                className={`border-[1.35px] border-[#374151]
-              ${getDetailCardColor(parseFloat(yStats.velocityTopPeak))}`}
-              >
-                {/* {getDetailCardColor(parseFloat(yStats.velocityTopPeak))} */}
-                <CardContent className="p-4 2xl:p-6">
-                  <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(
-                      getDetailCardColor(parseFloat(yStats.velocityTopPeak))
-                    )
-                      ? "!text-white"
-                      : "!text-black"
-                      }`}
-                  >
-                    Vertical (V)
-                  </h3>
-                  <div className="space-y-1 text-lg md:text-xl 2xl:text-2xl">
-                    <div className="flex justify-between">
-                      <span
-                        className={
-                          shouldTextBeWhite(
-                            getCardBackgroundColorCallback(
-                              parseFloat(yStats.velocityTopPeak)
-                            )
-                          )
-                            ? "!text-white"
-                            : "!text-black"
-                        }
-                      >
-                        Acceleration
-                      </span>
-                      <span
-                        className={`text-right ${shouldTextBeWhite(
-                          getCardBackgroundColorCallback(
-                            parseFloat(yStats.velocityTopPeak)
-                          )
-                        )
-                          ? "!text-white text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          : "!text-black text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          }`}
-                      >
-                        {yStats.accelTopPeak} G
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span
-                        className={
-                          shouldTextBeWhite(
-                            getCardBackgroundColorCallback(
-                              parseFloat(yStats.velocityTopPeak)
-                            )
-                          )
-                            ? "!text-white"
-                            : "!text-black"
-                        }
-                      >
-                        Velocity
-                      </span>
-                      <span
-                        className={`text-right ${shouldTextBeWhite(
-                          getCardBackgroundColorCallback(
-                            parseFloat(yStats.velocityTopPeak)
-                          )
-                        )
-                          ? "!text-white text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          : "!text-black text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          }`}
-                      >
-                        {yStats.velocityTopPeak} mm/s
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Conditionally show A-axis card */}
-            {configData.aAxisEnabled && (
-              <Card
-                className={`border-[1.35px] border-[#374151] ${getDetailCardColor(parseFloat(zStats.velocityTopPeak))}`}
-              >
-                <CardContent className="p-4 2xl:p-6">
-                  <h3
-                    className={`mb-2 font-extrabold text-base md:text-lg lg:text-xl 2xl:text-3xl ${shouldTextBeWhite(
-                      getDetailCardColor(parseFloat(zStats.velocityTopPeak))
-                    )
-                      ? "!text-white"
-                      : "!text-black"
-                      }`}
-                  >
-                    Axial (A)
-                  </h3>
-                  <div className="space-y-1 text-lg md:text-xl 2xl:text-2xl">
-                    <div className="flex justify-between">
-                      <span
-                        className={
-                          shouldTextBeWhite(
-                            getCardBackgroundColorCallback(
-                              parseFloat(zStats.velocityTopPeak)
-                            )
-                          )
-                            ? "!text-white"
-                            : "!text-black"
-                        }
-                      >
-                        Acceleration
-                      </span>
-                      <span
-                        className={`text-right ${shouldTextBeWhite(
-                          getCardBackgroundColorCallback(
-                            parseFloat(zStats.velocityTopPeak)
-                          )
-                        )
-                          ? "!text-white text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          : "!text-black text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          }`}
-                      >
-                        {zStats.accelTopPeak} G
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span
-                        className={
-                          shouldTextBeWhite(
-                            getCardBackgroundColorCallback(
-                              parseFloat(zStats.velocityTopPeak)
-                            )
-                          )
-                            ? "!text-white"
-                            : "!text-black"
-                        }
-                      >
-                        Velocity
-                      </span>
-                      <span
-                        className={`text-right ${shouldTextBeWhite(
-                          getCardBackgroundColorCallback(
-                            parseFloat(zStats.velocityTopPeak)
-                          )
-                        )
-                          ? "!text-white text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          : "!text-black text-xl md:text-2xl 2xl:text-4xl font-bold"
-                          }`}
-                      >
-                        {zStats.velocityTopPeak} mm/s
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Vibration Analysis Section */}
-          <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
-            <CardContent className="p-6">
-              <h2 className="text-lg md:text-xl lg:text-2xl font-extrabold mb-4 text-white">
-                Vibration Frequency Analysis
-              </h2>
-
-              {/* Axis and Unit Selection with Checkboxes */}
-              {/* Axis and Unit Selection with Checkboxes */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                {/* Axis Selection */}
-                <div className="flex items-center gap-6">
-                  {configData.hAxisEnabled && (
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedAxis === "H-axis"}
-                        onChange={() => setSelectedAxis("H-axis")}
-                        className="w-5 h-5 accent-blue-600"
-                      />
-                      <span className="text-sm font-medium text-white">
-                        H (Horizontal)
-                      </span>
-                    </label>
-                  )}
-                  {configData.vAxisEnabled && (
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedAxis === "V-axis"}
-                        onChange={() => setSelectedAxis("V-axis")}
-                        className="w-5 h-5 accent-blue-600"
-                      />
-                      <span className="text-sm font-medium text-white">
-                        V (Vertical)
-                      </span>
-                    </label>
-                  )}
-                  {configData.aAxisEnabled && (
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedAxis === "A-axis"}
-                        onChange={() => setSelectedAxis("A-axis")}
-                        className="w-5 h-5 accent-blue-600"
-                      />
-                      <span className="text-sm font-medium text-white">
-                        A (Axial)
-                      </span>
-                    </label>
-                  )}
-                </div>
-
-                {/* Unit Selection */}
-                <div className="flex items-center gap-6">
+            {/* Axis and Unit Selection with Checkboxes */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              {/* Axis Selection */}
+              <div className="flex items-center gap-6">
+                {configData.hAxisEnabled && (
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={selectedUnit === "Acceleration (G)"}
-                      onChange={() => setSelectedUnit("Acceleration (G)")}
-                      className="w-5 h-5 accent-blue-600"
+                      checked={selectedAxis === "H-axis"}
+                      onChange={() => setSelectedAxis("H-axis")}
+                      className="w-4 h-4 accent-blue-600"
                     />
-                    <span className="text-sm font-medium text-white">
-                      Acceleration(G)
+                    <span className="text-xl font-bold text-white">
+                      H
                     </span>
                   </label>
+                )}
+                {configData.vAxisEnabled && (
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={selectedUnit === "Acceleration (mm/s²)"}
-                      onChange={() => setSelectedUnit("Acceleration (mm/s²)")}
-                      className="w-5 h-5 accent-blue-600"
+                      checked={selectedAxis === "V-axis"}
+                      onChange={() => setSelectedAxis("V-axis")}
+                      className="w-4 h-4 accent-blue-600"
                     />
-                    <span className="text-sm font-medium text-white">
-                      Acceleration(mm/s²)
+                    <span className="text-xl font-bold text-white">
+                      V
                     </span>
                   </label>
+                )}
+                {configData.aAxisEnabled && (
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={selectedUnit === "Velocity (mm/s)"}
-                      onChange={() => setSelectedUnit("Velocity (mm/s)")}
-                      className="w-5 h-5 accent-blue-600"
+                      checked={selectedAxis === "A-axis"}
+                      onChange={() => setSelectedAxis("A-axis")}
+                      className="w-4 h-4 accent-blue-600"
                     />
-                    <span className="text-sm font-medium text-white">
-                      Velocity(mm/s)
+                    <span className="text-xl font-bold text-white">
+                      A
                     </span>
                   </label>
-                </div>
+                )}
               </div>
 
-              {(() => {
-                const hasData = vibrationData.hasData;
+              {/* Unit Selection */}
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedUnit === "Acceleration (G)"}
+                    onChange={() => setSelectedUnit("Acceleration (G)")}
+                    className="w-4 h-4 accent-blue-600"
+                  />
+                  <span className="text-xl font-bold text-white">
+                    G
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedUnit === "Acceleration (mm/s²)"}
+                    onChange={() => setSelectedUnit("Acceleration (mm/s²)")}
+                    className="w-4 h-4 accent-blue-600"
+                  />
+                  <span className="text-xl font-bold text-white">
+                    mm/s²
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedUnit === "Velocity (mm/s)"}
+                    onChange={() => setSelectedUnit("Velocity (mm/s)")}
+                    className="w-4 h-4 accent-blue-600"
+                  />
+                  <span className="text-xl font-bold text-white">
+                    mm/s
+                  </span>
+                </label>
+              </div>
+            </div>
 
-                return (
-                  <div className="space-y-6">
-                    {/* RMS Overall + Top 5 Peaks & Short Trend Section */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      {/* Left Column: RMS Overall + Top 5 Peaks */}
-                      <div className="bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-6">
-                        <div className="flex items-center justify-between mb-8">
-                          <div className="flex items-center gap-4">
-                            <h4 className="text-xl font-bold text-white">
-                              RMS Overall :
-                            </h4>
-                            <span className="text-xl font-bold text-white">
-                              {hasData ? vibrationData.rmsValue : "-"}
-                            </span>
-                          </div>
+            {(() => {
+              const hasData = vibrationData.hasData;
+
+              return (
+                <div className="space-y-6">
+                  {/* RMS Overall + Top 5 Peaks & Short Trend Section */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Left Column: RMS Overall + Top 5 Peaks */}
+                    <div className="bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-6">
+                      <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-4">
+                          <h4 className="text-xl font-bold text-white">
+                            {selectedUnit.split(" ")[0]} RMS Overall :
+                          </h4>
                           <span className="text-xl font-bold text-white">
-                            {hasData ? selectedUnit.split(" ")[0] : ""}
+                            {hasData ? vibrationData.rmsValue : "-"}
                           </span>
                         </div>
+                        <span className="text-xl font-bold text-white">
+                          {hasData ? selectedUnit.match(/\(([^)]+)\)/)?.[1] : ""}
+                        </span>
+                      </div>
 
-                        <div className="mb-4">
-                          <h5 className="text-xl font-bold text-white mb-6">
-                            Top 5 Peaks
-                          </h5>
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-6 pb-3 border-b-2 border-[#374151]">
-                              <div className="text-base font-bold text-white">
-                                RMS :
-                              </div>
-                              <div className="text-base font-bold text-white text-right">
-                                Frequency
-                              </div>
+                      <div className="mb-4">
+                        <h5 className="text-xl font-bold text-white mb-6">
+                          Top 5 Peaks
+                        </h5>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-6 pb-3 border-b-2 border-[#374151]">
+                            <div className="text-base font-bold text-white">
+                              RMS :
                             </div>
-                            {hasData && vibrationData.topPeaks ? (
-                              vibrationData.topPeaks.map((row, i) => (
-                                <div key={i} className="grid grid-cols-2 gap-6">
-                                  <div className="text-lg font-medium text-white">
-                                    {row.rms}
-                                  </div>
-                                  <div className="text-lg font-medium text-white text-right">
-                                    {row.frequency} Hz
-                                  </div>
+                            <div className="text-base font-bold text-white text-right">
+                              Frequency
+                            </div>
+                          </div>
+                          {hasData && vibrationData.topPeaks ? (
+                            vibrationData.topPeaks.map((row, i) => (
+                              <div key={i} className="grid grid-cols-2 gap-6">
+                                <div className="text-lg font-medium text-white">
+                                  {row.rms}
                                 </div>
-                              ))
-                            ) : (
-                              <div className="py-8 text-center text-gray-300 text-base">
-                                No data available
+                                <div className="text-lg font-medium text-white text-right">
+                                  {row.frequency} Hz
+                                </div>
                               </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right Column: Short Trend */}
-                      <div className="bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-6">
-                        <h4 className="text-xl font-bold text-white mb-8">
-                          Short Trend
-                        </h4>
-                        <div className="overflow-x-auto max-h-80 overflow-y-auto custom-scrollbar">
-                          <table className="min-w-full text-base">
-                            <thead className="sticky top-0 bg-[#030616]">
-                              <tr className="">
-                                <th className="text-left px-3 py-3 font-bold text-white">
-                                  Date & Time
-                                </th>
-                                <th className="text-right px-3 py-3 font-bold text-white">
-                                  RMS Overall
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {hasData && history.length > 0 ? (
-                                history.slice(0, 10).map((item, i) => {
-                                  const axisKey =
-                                    selectedAxis === "H-axis"
-                                      ? "h"
-                                      : selectedAxis === "V-axis"
-                                        ? "v"
-                                        : "a";
-                                  let rmsValue = "-";
-                                  let unitShort = "";
-
-                                  if (selectedUnit === "Acceleration (G)") {
-                                    rmsValue = (
-                                      item[`g_rms_${axisKey}`] || 0
-                                    ).toFixed(3);
-                                    unitShort = "G";
-                                  } else if (
-                                    selectedUnit === "Acceleration (mm/s²)"
-                                  ) {
-                                    rmsValue = (
-                                      item[`a_rms_${axisKey}`] || 0
-                                    ).toFixed(2);
-                                    unitShort = "mm/s²";
-                                  } else {
-                                    rmsValue = (
-                                      item[`velo_rms_${axisKey}`] || 0
-                                    ).toFixed(3);
-                                    unitShort = "mm/s";
-                                  }
-
-                                  return (
-                                    <tr
-                                      key={i}
-                                      className="hover:bg-gray-800 transition-colors"
-                                    >
-                                      <td className="px-3 py-3 text-lg font-medium text-white">
-                                        {formatDateTimeDayFirst(item.datetime)}
-                                      </td>
-                                      <td className="px-3 py-3 text-lg font-medium text-right text-white">
-                                        {rmsValue} {unitShort}
-                                      </td>
-                                    </tr>
-                                  );
-                                })
-                              ) : (
-                                <tr>
-                                  <td
-                                    colSpan={2}
-                                    className="px-3 py-8 text-center text-gray-500 text-base"
-                                  >
-                                    No history data available
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Time Domain Section */}
-                    <div>
-                      <h3 className="text-base font-semibold mb-3 text-white">
-                        <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
-                          Time Domain
-                        </span>
-                      </h3>
-                      <div className="h-80 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4">
-                        {hasData && vibrationData.timeData ? (
-                          <ReactECharts
-                            option={{
-                              backgroundColor: "#030616",
-                              grid: {
-                                left: 60,
-                                right: 30,
-                                top: 30,
-                                bottom: 40,
-                              },
-                              tooltip: {
-                                trigger: "axis",
-                                axisPointer: { type: "line" },
-                                formatter: (params: any) => {
-                                  if (params && params.length > 0) {
-                                    const time = params[0].axisValue;
-                                    const value = params[0].value;
-                                    return `F(ts) ${time} s<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(4)}`;
-                                  }
-                                  return "";
-                                },
-                              },
-                              xAxis: {
-                                type: "category",
-                                data: vibrationData.timeData.labels,
-                                name: "Time (s)",
-                                nameTextStyle: {
-                                  color: "#fff",
-                                  fontWeight: 500,
-                                },
-                                axisLabel: { color: "#fff", fontWeight: 500 },
-                                axisLine: { lineStyle: { color: "#fff" } },
-                                splitLine: {
-                                  show: true,
-                                  lineStyle: {
-                                    color: "rgba(255,255,255,0.1)",
-                                    width: 1,
-                                    type: "solid",
-                                  },
-                                },
-                              },
-                              yAxis: {
-                                type: "value",
-                                name: vibrationData.yAxisLabel || selectedUnit,
-                                nameTextStyle: {
-                                  color: "#fff",
-                                  fontWeight: 500,
-                                },
-                                axisLabel: { color: "#fff", fontWeight: 500 },
-                                axisLine: { lineStyle: { color: "#fff" } },
-                                splitLine: {
-                                  show: true,
-                                  lineStyle: {
-                                    color: "rgba(255,255,255,0.1)",
-                                    width: 1,
-                                    type: "solid",
-                                  },
-                                },
-                              },
-                              dataZoom: [
-                                {
-                                  type: "inside",
-                                  xAxisIndex: 0,
-                                  filterMode: "none",
-                                },
-                              ],
-                              toolbox: {
-                                show: true,
-                                feature: {
-                                  restore: { show: true },
-                                  dataZoom: {
-                                    show: true,
-                                    title: { zoom: "Zoom", back: "Reset" },
-                                  },
-                                },
-                                right: 20,
-                              },
-                              series: [
-                                {
-                                  name:
-                                    vibrationData.yAxisLabel || selectedUnit,
-                                  type: "line",
-                                  data: vibrationData.timeData.datasets[0].data,
-                                  smooth: true,
-                                  symbol: "none",
-                                  lineStyle: { width: 2, color: "#2563eb" },
-                                  areaStyle: { color: "rgba(37,99,235,0.08)" },
-                                },
-                              ],
-                              legend: { show: false },
-                            }}
-                            style={{ height: "100%", width: "100%" }}
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <p className="text-sm text-gray-300">
+                            ))
+                          ) : (
+                            <div className="py-8 text-center text-gray-300 text-base">
                               No data available
-                            </p>
-                          </div>
-                        )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Frequency Domain Section */}
-                    <div>
-                      <h3 className="text-base font-semibold mb-3 text-white">
-                        <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
-                          Frequency Domain
-                        </span>
-                      </h3>
-                      <div className="h-80 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4">
-                        {hasData && vibrationData.freqData ? (
-                          <ReactECharts
-                            option={{
-                              backgroundColor: "#030616",
-                              grid: {
-                                left: 60,
-                                right: 30,
-                                top: 30,
-                                bottom: 40,
+                    {/* Right Column: Short Trend */}
+                    <div className="bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-6">
+                      <h4 className="text-xl font-bold text-white mb-8">
+                        Short Trend
+                      </h4>
+                      <div className="overflow-x-auto max-h-80 overflow-y-auto custom-scrollbar">
+                        <table className="min-w-full text-base">
+                          <thead className="sticky top-0 bg-[#030616]">
+                            <tr className="">
+                              <th className="text-left px-3 py-3 font-bold text-white">
+                                Date & Time
+                              </th>
+                              <th className="text-right px-3 py-3 font-bold text-white">
+                                RMS Overall
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {hasData && history.length > 0 ? (
+                              history.slice(0, 10).map((item, i) => {
+                                const axisKey =
+                                  selectedAxis === "H-axis"
+                                    ? "h"
+                                    : selectedAxis === "V-axis"
+                                      ? "v"
+                                      : "a";
+                                let rmsValue = "-";
+                                let unitShort = "";
+
+                                if (selectedUnit === "Acceleration (G)") {
+                                  rmsValue = (
+                                    item[`g_rms_${axisKey}`] || 0
+                                  ).toFixed(3);
+                                  unitShort = "G";
+                                } else if (
+                                  selectedUnit === "Acceleration (mm/s²)"
+                                ) {
+                                  rmsValue = (
+                                    item[`a_rms_${axisKey}`] || 0
+                                  ).toFixed(2);
+                                  unitShort = "mm/s²";
+                                } else {
+                                  rmsValue = (
+                                    item[`velo_rms_${axisKey}`] || 0
+                                  ).toFixed(3);
+                                  unitShort = "mm/s";
+                                }
+
+                                return (
+                                  <tr
+                                    key={i}
+                                    className="hover:bg-gray-800 transition-colors"
+                                  >
+                                    <td className="px-3 py-3 text-lg font-medium text-white">
+                                      {formatDateTimeDayFirst(item.datetime)}
+                                    </td>
+                                    <td className="px-3 py-3 text-lg font-medium text-right text-white">
+                                      {rmsValue} {unitShort}
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td
+                                  colSpan={2}
+                                  className="px-3 py-8 text-center text-gray-500 text-base"
+                                >
+                                  No history data available
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time Domain Section */}
+                  <div>
+                    <h3 className="text-base font-semibold mb-3 text-white">
+                      <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+                        Time Domain : {selectedAxis.split("-")[0]}
+                      </span>
+                    </h3>
+                    <div className="h-80 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4">
+                      {hasData && vibrationData.timeData ? (
+                        <ReactECharts
+                          option={{
+                            backgroundColor: "#030616",
+                            grid: {
+                              left: 60,
+                              right: 30,
+                              top: 30,
+                              bottom: 40,
+                            },
+                            tooltip: {
+                              trigger: "axis",
+                              axisPointer: { type: "line" },
+                              formatter: (params: any) => {
+                                if (params && params.length > 0) {
+                                  const time = params[0].axisValue;
+                                  const value = params[0].value;
+                                  return `F(ts) ${time} s<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(4)}`;
+                                }
+                                return "";
                               },
-                              tooltip: {
-                                trigger: "axis",
-                                axisPointer: { type: "line" },
-                                formatter: (params: any) => {
-                                  if (params && params.length > 0) {
-                                    const freq = params[0].axisValue;
-                                    const value = params[0].value;
-                                    return `F(Hz) ${freq} Hz<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(4)}`;
-                                  }
-                                  return "";
+                            },
+                            xAxis: {
+                              type: "category",
+                              data: vibrationData.timeData.labels,
+                              name: "Time (s)",
+                              nameTextStyle: {
+                                color: "#fff",
+                                fontWeight: 500,
+                              },
+                              axisLabel: { color: "#fff", fontWeight: 500 },
+                              axisLine: { lineStyle: { color: "#fff" } },
+                              splitLine: {
+                                show: true,
+                                lineStyle: {
+                                  color: "rgba(255,255,255,0.1)",
+                                  width: 1,
+                                  type: "solid",
                                 },
                               },
-                              xAxis: {
-                                type: "category",
-                                data: vibrationData.freqData.labels,
-                                name: "Frequency (Hz)",
-                                nameTextStyle: {
-                                  color: "#fff",
-                                  fontWeight: 500,
+                            },
+                            yAxis: {
+                              type: "value",
+                              name: vibrationData.yAxisLabel || selectedUnit,
+                              nameTextStyle: {
+                                color: "#fff",
+                                fontWeight: 500,
+                              },
+                              axisLabel: { color: "#fff", fontWeight: 500 },
+                              axisLine: { lineStyle: { color: "#fff" } },
+                              splitLine: {
+                                show: true,
+                                lineStyle: {
+                                  color: "rgba(255,255,255,0.1)",
+                                  width: 1,
+                                  type: "solid",
                                 },
-                                axisLabel: { color: "#fff", fontWeight: 500 },
-                                axisLine: { lineStyle: { color: "#fff" } },
-                                splitLine: {
+                              },
+                            },
+                            dataZoom: [
+                              {
+                                type: "inside",
+                                xAxisIndex: 0,
+                                filterMode: "none",
+                              },
+                            ],
+                            toolbox: {
+                              show: true,
+                              feature: {
+                                restore: { show: true },
+                                dataZoom: {
                                   show: true,
-                                  lineStyle: {
-                                    color: "rgba(255,255,255,0.025)",
-                                    width: 1,
-                                    type: "solid",
-                                  },
+                                  title: { zoom: "Zoom", back: "Reset" },
                                 },
                               },
-                              yAxis: {
-                                type: "value",
+                              right: 20,
+                            },
+                            series: [
+                              {
+                                name:
+                                  vibrationData.yAxisLabel || selectedUnit,
+                                type: "line",
+                                data: vibrationData.timeData.datasets[0].data,
+                                smooth: true,
+                                symbol: "none",
+                                lineStyle: { width: 2, color: "#2563eb" },
+                                areaStyle: { color: "rgba(37,99,235,0.08)" },
+                              },
+                            ],
+                            legend: { show: false },
+                          }}
+                          style={{ height: "100%", width: "100%" }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <p className="text-sm text-gray-300">
+                            No data available
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Frequency Domain Section */}
+                  <div>
+                    <h3 className="text-base font-semibold mb-3 text-white">
+                      <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+                        Frequency Domain : {selectedAxis.split("-")[0]}
+                      </span>
+                    </h3>
+                    <div className="h-80 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4">
+                      {hasData && vibrationData.freqData ? (
+                        <ReactECharts
+                          option={{
+                            backgroundColor: "#030616",
+                            grid: {
+                              left: 60,
+                              right: 30,
+                              top: 30,
+                              bottom: 40,
+                            },
+                            tooltip: {
+                              trigger: "axis",
+                              axisPointer: { type: "line" },
+                              formatter: (params: any) => {
+                                if (params && params.length > 0) {
+                                  const freq = params[0].axisValue;
+                                  const value = params[0].value;
+                                  return `F(Hz) ${freq} Hz<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(4)}`;
+                                }
+                                return "";
+                              },
+                            },
+                            xAxis: {
+                              type: "category",
+                              data: vibrationData.freqData.labels,
+                              name: "Frequency (Hz)",
+                              nameTextStyle: {
+                                color: "#fff",
+                                fontWeight: 500,
+                              },
+                              axisLabel: { color: "#fff", fontWeight: 500 },
+                              axisLine: { lineStyle: { color: "#fff" } },
+                              splitLine: {
+                                show: true,
+                                lineStyle: {
+                                  color: "rgba(255,255,255,0.025)",
+                                  width: 1,
+                                  type: "solid",
+                                },
+                              },
+                            },
+                            yAxis: {
+                              type: "value",
+                              name: vibrationData.yAxisLabel
+                                ? `${vibrationData.yAxisLabel} Magnitude`
+                                : "Magnitude",
+                              nameTextStyle: {
+                                color: "#fff",
+                                fontWeight: 500,
+                              },
+                              axisLabel: { color: "#fff", fontWeight: 500 },
+                              axisLine: { lineStyle: { color: "#fff" } },
+                              splitLine: {
+                                show: true,
+                                lineStyle: {
+                                  color: "rgba(255,255,255,0.025)",
+                                  width: 1,
+                                  type: "solid",
+                                },
+                              },
+                            },
+                            dataZoom: [
+                              {
+                                type: "inside",
+                                xAxisIndex: 0,
+                                filterMode: "none",
+                                zoomOnMouseWheel: true,
+                                moveOnMouseMove: true,
+                                moveOnMouseWheel: true,
+                              },
+                            ],
+                            toolbox: {
+                              show: true,
+                              feature: {
+                                restore: { show: true },
+                                dataZoom: {
+                                  show: true,
+                                  title: { zoom: "Zoom", back: "Reset" },
+                                },
+                              },
+                              right: 20,
+                            },
+                            series: [
+                              {
                                 name: vibrationData.yAxisLabel
                                   ? `${vibrationData.yAxisLabel} Magnitude`
                                   : "Magnitude",
-                                nameTextStyle: {
-                                  color: "#fff",
-                                  fontWeight: 500,
-                                },
-                                axisLabel: { color: "#fff", fontWeight: 500 },
-                                axisLine: { lineStyle: { color: "#fff" } },
-                                splitLine: {
-                                  show: true,
-                                  lineStyle: {
-                                    color: "rgba(255,255,255,0.025)",
-                                    width: 1,
-                                    type: "solid",
-                                  },
-                                },
+                                type: "line",
+                                data: vibrationData.freqData.datasets[0].data,
+                                smooth: true,
+                                symbol: "none",
+                                lineStyle: { width: 2, color: "#eab308" },
+                                areaStyle: { color: "rgba(234,179,8,0.08)" },
                               },
-                              dataZoom: [
-                                {
-                                  type: "inside",
-                                  xAxisIndex: 0,
-                                  filterMode: "none",
-                                  zoomOnMouseWheel: true,
-                                  moveOnMouseMove: true,
-                                  moveOnMouseWheel: true,
-                                },
-                              ],
-                              toolbox: {
-                                show: true,
-                                feature: {
-                                  restore: { show: true },
-                                  dataZoom: {
-                                    show: true,
-                                    title: { zoom: "Zoom", back: "Reset" },
-                                  },
-                                },
-                                right: 20,
-                              },
-                              series: [
-                                {
-                                  name: vibrationData.yAxisLabel
-                                    ? `${vibrationData.yAxisLabel} Magnitude`
-                                    : "Magnitude",
-                                  type: "line",
-                                  data: vibrationData.freqData.datasets[0].data,
-                                  smooth: true,
-                                  symbol: "none",
-                                  lineStyle: { width: 2, color: "#eab308" },
-                                  areaStyle: { color: "rgba(234,179,8,0.08)" },
-                                },
-                              ],
-                              legend: { show: false },
-                            }}
-                            style={{ height: "100%", width: "100%" }}
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <p className="text-sm text-gray-300">
-                              No data available
-                            </p>
-                          </div>
-                        )}
-                      </div>
+                            ],
+                            legend: { show: false },
+                          }}
+                          style={{ height: "100%", width: "100%" }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <p className="text-sm text-gray-300">
+                            No data available
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </div>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

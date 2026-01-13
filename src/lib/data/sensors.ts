@@ -237,20 +237,24 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
       } else {
         // Calculate status from Vibration RMS
         const maxRms = Math.max(veloRmsH, veloRmsV, veloRmsA);
-        const tMin = apiSensor.threshold_min ?? 0.1;
-        const tMed = apiSensor.threshold_medium ?? 0.125;
-        const tMax = apiSensor.threshold_max ?? 0.15;
-
-        if (maxRms >= tMax) {
-          status = "critical";
-        } else if (maxRms >= tMed) {
-          status = "concern";
-        } else if (maxRms >= tMin) {
-          status = "warning";
-        } else if (operationalStatus === "standby") {
-          status = "standby";
-        } else {
+        if (maxRms <= 0) {
           status = "ok";
+        } else {
+          const tMin = apiSensor.threshold_min !== undefined && apiSensor.threshold_min > 0 ? apiSensor.threshold_min : 2.0;
+          const tMed = apiSensor.threshold_medium !== undefined && apiSensor.threshold_medium > 0 ? apiSensor.threshold_medium : 4.5;
+          const tMax = apiSensor.threshold_max !== undefined && apiSensor.threshold_max > 0 ? apiSensor.threshold_max : 9.0;
+
+          if (maxRms >= tMax) {
+            status = "critical";
+          } else if (maxRms >= tMed) {
+            status = "concern";
+          } else if (maxRms >= tMin) {
+            status = "warning";
+          } else if (operationalStatus === "standby") {
+            status = "standby";
+          } else {
+            status = "ok";
+          }
         }
       }
 
@@ -282,26 +286,26 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         // Store raw API data for access by components
         last_data: apiSensor.last_data
           ? {
-              datetime: apiSensor.last_data.datetime,
-              acc_h: apiSensor.last_data.acc_h || [],
-              freq_h: apiSensor.last_data.freq_h || [],
-              acc_v: apiSensor.last_data.acc_v || [],
-              freq_v: apiSensor.last_data.freq_v || [],
-              acc_a: apiSensor.last_data.acc_a || [],
-              freq_a: apiSensor.last_data.freq_a || [],
-              velo_rms_h: apiSensor.last_data.velo_rms_h,
-              velo_rms_v: apiSensor.last_data.velo_rms_v,
-              velo_rms_a: apiSensor.last_data.velo_rms_a,
-              temperature: apiSensor.last_data.temperature,
-              battery: apiSensor.last_data.battery,
-              rssi: apiSensor.last_data.rssi,
-              level_vibration: apiSensor.last_data.level_vibration,
-              level_temperature: apiSensor.last_data.level_temperature,
-              // Also keep arrays for calculation
-              h: hData,
-              v: vData,
-              a: aData,
-            }
+            datetime: apiSensor.last_data.datetime,
+            acc_h: apiSensor.last_data.acc_h || [],
+            freq_h: apiSensor.last_data.freq_h || [],
+            acc_v: apiSensor.last_data.acc_v || [],
+            freq_v: apiSensor.last_data.freq_v || [],
+            acc_a: apiSensor.last_data.acc_a || [],
+            freq_a: apiSensor.last_data.freq_a || [],
+            velo_rms_h: apiSensor.last_data.velo_rms_h,
+            velo_rms_v: apiSensor.last_data.velo_rms_v,
+            velo_rms_a: apiSensor.last_data.velo_rms_a,
+            temperature: apiSensor.last_data.temperature,
+            battery: apiSensor.last_data.battery,
+            rssi: apiSensor.last_data.rssi,
+            level_vibration: apiSensor.last_data.level_vibration,
+            level_temperature: apiSensor.last_data.level_temperature,
+            // Also keep arrays for calculation
+            h: hData,
+            v: vData,
+            a: aData,
+          }
           : undefined,
         // Store calculated H, V, A statistics
         h_stats: hStats,

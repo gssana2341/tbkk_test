@@ -7,7 +7,10 @@ import {
 } from "@/components/history/NotificationHistoryTable";
 import { getNotificationLogs } from "@/lib/data/notifications";
 import type { NotificationLog } from "@/lib/types";
-
+import {
+  getVibrationLevelFromConfig,
+  VibrationLevel,
+} from "@/lib/utils/vibrationUtils";
 
 export default function NotificationHistoryPage() {
   const [entries, setEntries] = useState<NotificationEntry[]>([]);
@@ -23,20 +26,44 @@ export default function NotificationHistoryPage() {
       // Transform NotificationLog to NotificationEntry format
       const notificationEntries: NotificationEntry[] = response.data.map(
         (log: NotificationLog) => {
+          // 1. Recalculate true status using thresholds and axis values
+          const hVal = log.h_vrms || 0;
+          const vVal = log.v_vrms || 0;
+          const aVal = log.a_vrms || 0;
+
+          // Prepare config for threshold utility
+          const config = {
+            thresholdMin: log.threshold_min ?? 2.0,
+            thresholdMedium: log.threshold_medium ?? 2.5,
+            thresholdMax: log.threshold_max ?? 3.0,
+          };
+
+          const hStatus = getVibrationLevelFromConfig(hVal, config);
+          const vStatus = getVibrationLevelFromConfig(vVal, config);
+          const aStatus = getVibrationLevelFromConfig(aVal, config);
+
+          // Determine worst status among axes
+          let calculatedLevel: VibrationLevel = "normal";
+          const levels = [hStatus, vStatus, aStatus];
+
+          if (levels.includes("critical")) {
+            calculatedLevel = "critical";
+          } else if (levels.includes("concern")) {
+            calculatedLevel = "concern";
+          } else if (levels.includes("warning")) {
+            calculatedLevel = "warning";
+          }
+
           // Status mapping (Component expects Title Case)
-          const statusMap: Record<string, NotificationEntry["status"]> = {
+          const statusMap: Record<VibrationLevel, NotificationEntry["status"]> =
+          {
             critical: "Critical",
             concern: "Concern",
             warning: "Warning",
             normal: "Normal",
-            standby: "Standby",
-            lost: "Lost",
           };
 
-          const finalStatus =
-            statusMap[log.status?.toLowerCase()] ||
-            (log.status && log.status.charAt(0).toUpperCase() + log.status.slice(1) as NotificationEntry["status"]) ||
-            "Normal";
+          const finalStatus = statusMap[calculatedLevel];
 
           // Format datetime from log
           const dateObj = new Date(log.datetime);
@@ -62,14 +89,17 @@ export default function NotificationHistoryPage() {
             hVrms: log.h_vrms,
             vVrms: log.v_vrms,
             aVrms: log.a_vrms,
+            hColor: log.h_vrms_color,
+            vColor: log.v_vrms_color,
+            aColor: log.a_vrms_color,
             temperature: log.temperature
               ? `${log.temperature.toFixed(0)}°C`
               : null,
             battery: log.battery ? `${Math.round(log.battery)}%` : null,
             config: {
-              thresholdMin: log.threshold_min ?? 2.0,
-              thresholdMedium: log.threshold_medium ?? 2.5,
-              thresholdMax: log.threshold_max ?? 3.0,
+              thresholdMin: config.thresholdMin,
+              thresholdMedium: config.thresholdMedium,
+              thresholdMax: config.thresholdMax,
             },
           };
         }

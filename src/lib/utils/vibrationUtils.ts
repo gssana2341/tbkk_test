@@ -38,17 +38,27 @@ export function getVibrationLevel(
   velocityValue: number,
   thresholds?: VibrationThresholds
 ): VibrationLevel {
-  // Use more reasonable default thresholds that match typical sensor configurations (ISO 10816-ish)
-  // Aligned with NotificationHistoryTable visual logic (< 2 green, < 3 yellow, >= 3 red)
-  const minThreshold = thresholds?.min ?? 2.0; // 2.0 mm/s (Start of Warning)
-  const mediumThreshold = thresholds?.medium ?? 2.5; // 2.5 mm/s (Start of Concern)
-  const maxThreshold = thresholds?.max ?? 3.0; // 3.0 mm/s (Start of Critical)
+  // If value is 0 or negative, it's almost certainly "Normal" / "Off" / "Standby"
+  if (velocityValue <= 0) {
+    return "normal";
+  }
+
+  // Aligned with NotificationHistoryTable visual logic (< 2 green, < 4.5 yellow, >= 9 red)
+  // Ensure we don't treat 0 or invalid thresholds as "always trigger"
+  const minThreshold =
+    thresholds?.min !== undefined && thresholds.min > 0 ? thresholds.min : 2.0;
+  const mediumThreshold =
+    thresholds?.medium !== undefined && thresholds.medium > 0
+      ? thresholds.medium
+      : 4.5;
+  const maxThreshold =
+    thresholds?.max !== undefined && thresholds.max > 0 ? thresholds.max : 9.0;
 
   if (velocityValue < minThreshold) {
     return "normal";
-  } else if (velocityValue >= minThreshold && velocityValue < mediumThreshold) {
+  } else if (velocityValue < mediumThreshold) {
     return "warning";
-  } else if (velocityValue >= mediumThreshold && velocityValue < maxThreshold) {
+  } else if (velocityValue < maxThreshold) {
     return "concern";
   } else {
     return "critical";
@@ -326,7 +336,7 @@ export function getCardBackgroundColor(
 export function getDefaultThresholds(): VibrationThresholds {
   return {
     min: 2.0,
-    medium: 2.5,
-    max: 3.0,
+    medium: 4.5,
+    max: 9.0,
   };
 }

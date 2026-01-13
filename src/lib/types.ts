@@ -600,6 +600,9 @@ export interface NotificationLog {
   threshold_min: number | null;
   threshold_medium: number | null;
   threshold_max: number | null;
+  h_vrms_color: number;
+  v_vrms_color: number;
+  a_vrms_color: number;
   is_read: boolean;
   read_at: string | null;
   read_by: string | null;
