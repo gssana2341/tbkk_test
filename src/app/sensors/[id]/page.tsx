@@ -3017,7 +3017,7 @@ export default function SensorDetailPage() {
                               left: 60,
                               right: 30,
                               top: 30,
-                              bottom: 40,
+                              bottom: 60,
                             },
                             tooltip: {
                               trigger: "axis",
@@ -3034,11 +3034,6 @@ export default function SensorDetailPage() {
                             xAxis: {
                               type: "category",
                               data: vibrationData.timeData.labels,
-                              name: "Time (s)",
-                              nameTextStyle: {
-                                color: "#fff",
-                                fontWeight: 500,
-                              },
                               axisLabel: { color: "#fff", fontWeight: 500 },
                               axisLine: { lineStyle: { color: "#fff" } },
                               splitLine: {
@@ -3050,9 +3045,27 @@ export default function SensorDetailPage() {
                                 },
                               },
                             },
+                            graphic: [
+                              {
+                                type: "text",
+                                right: 10,
+                                bottom: 20,
+                                z: 10,
+                                style: {
+                                  text: "Time (s)",
+                                  fill: "#fff",
+                                  fontWeight: 500,
+                                  fontSize: 12,
+                                },
+                              },
+                            ],
                             yAxis: {
                               type: "value",
-                              name: vibrationData.yAxisLabel || selectedUnit,
+                              name: (vibrationData.yAxisLabel || selectedUnit)
+                                .replace("Acceleration ", "")
+                                .replace("Velocity ", "")
+                                .replace("(", "")
+                                .replace(")", ""),
                               nameTextStyle: {
                                 color: "#fff",
                                 fontWeight: 500,
@@ -3088,8 +3101,11 @@ export default function SensorDetailPage() {
                             },
                             series: [
                               {
-                                name:
-                                  vibrationData.yAxisLabel || selectedUnit,
+                                name: (vibrationData.yAxisLabel || selectedUnit)
+                                  .replace("Acceleration ", "")
+                                  .replace("Velocity ", "")
+                                  .replace("(", "")
+                                  .replace(")", ""),
                                 type: "line",
                                 data: vibrationData.timeData.datasets[0].data,
                                 smooth: true,
@@ -3164,8 +3180,8 @@ export default function SensorDetailPage() {
                             yAxis: {
                               type: "value",
                               name: vibrationData.yAxisLabel
-                                ? `${vibrationData.yAxisLabel} Magnitude`
-                                : "Magnitude",
+                                ? vibrationData.yAxisLabel.replace("Acceleration ", "").replace("Velocity ", "").replace("(", "").replace(")", "")
+                                : "",
                               nameTextStyle: {
                                 color: "#fff",
                                 fontWeight: 500,
@@ -3205,8 +3221,8 @@ export default function SensorDetailPage() {
                             series: [
                               {
                                 name: vibrationData.yAxisLabel
-                                  ? `${vibrationData.yAxisLabel} Magnitude`
-                                  : "Magnitude",
+                                  ? vibrationData.yAxisLabel.replace("Acceleration ", "").replace("Velocity ", "").replace("(", "").replace(")", "")
+                                  : "",
                                 type: "line",
                                 data: vibrationData.freqData.datasets[0].data,
                                 smooth: true,
