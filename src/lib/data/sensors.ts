@@ -237,24 +237,30 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
       } else {
         // Calculate status from Vibration RMS
         const maxRms = Math.max(veloRmsH, veloRmsV, veloRmsA);
-        if (maxRms <= 0) {
-          status = "ok";
-        } else {
-          const tMin = apiSensor.threshold_min !== undefined && apiSensor.threshold_min > 0 ? apiSensor.threshold_min : 2.0;
-          const tMed = apiSensor.threshold_medium !== undefined && apiSensor.threshold_medium > 0 ? apiSensor.threshold_medium : 4.5;
-          const tMax = apiSensor.threshold_max !== undefined && apiSensor.threshold_max > 0 ? apiSensor.threshold_max : 9.0;
+        const tMin =
+          apiSensor.threshold_min !== undefined && apiSensor.threshold_min > 0
+            ? apiSensor.threshold_min
+            : 2.0;
+        const tMed =
+          apiSensor.threshold_medium !== undefined &&
+            apiSensor.threshold_medium > 0
+            ? apiSensor.threshold_medium
+            : 4.5;
+        const tMax =
+          apiSensor.threshold_max !== undefined && apiSensor.threshold_max > 0
+            ? apiSensor.threshold_max
+            : 9.0;
 
-          if (maxRms >= tMax) {
-            status = "critical";
-          } else if (maxRms >= tMed) {
-            status = "concern";
-          } else if (maxRms >= tMin) {
-            status = "warning";
-          } else if (operationalStatus === "standby") {
-            status = "standby";
-          } else {
-            status = "ok";
-          }
+        if (maxRms >= tMax && maxRms > 0) {
+          status = "critical";
+        } else if (maxRms >= tMed && maxRms > 0) {
+          status = "concern";
+        } else if (maxRms >= tMin && maxRms > 0) {
+          status = "warning";
+        } else if (operationalStatus === "standby") {
+          status = "standby";
+        } else {
+          status = "ok";
         }
       }
 
