@@ -430,47 +430,60 @@ const FolderTree: React.FC<{
               return (
                 <div
                   key={node.id}
-                  className={`flex items-center group py-1 px-4 cursor-pointer hover:bg-white/5 transition-colors ${isSelected ? "bg-blue-500/10" : ""}`}
-                  style={{ paddingLeft: `${node.depth * 16 + 16}px` }}
+                  className={`flex items-center group py-1 px-4 cursor-pointer hover:bg-white/5 transition-colors relative ${isSelected ? "bg-[#161E28]" : ""}`}
                   onClick={() => handleItemClick(node.id, node.sensorId)}
                 >
-                  <div className="flex items-center gap-2 mr-2">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 rounded border-gray-600 bg-transparent text-blue-600 focus:ring-blue-500 cursor-pointer"
-                      checked={isSelected}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) =>
-                        handleToggleSelect(node.id, e.target.checked)
-                      }
+                  {/* Hierarchy Lines */}
+                  {Array.from({ length: node.depth }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-[1px] bg-gray-700 h-full top-0"
+                      style={{ left: `${i * 16 + 24}px` }}
                     />
-                  </div>
+                  ))}
 
-                  {node.type === "folder" ? (
-                    <button
-                      className="p-1 hover:bg-white/10 rounded transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const next = new Set(expandedIds);
-                        if (isExpanded) next.delete(node.id);
-                        else next.add(node.id);
-                        setExpandedIds(next);
-                      }}
-                    >
-                      {isExpanded ? (
-                        <ChevronDown size={16} className="text-white" />
-                      ) : (
-                        <ChevronRight size={16} className="text-white" />
-                      )}
-                    </button>
-                  ) : (
-                    <div className="w-5 mr-1" />
-                  )}
+                  <div
+                    className="flex items-center w-full"
+                    style={{ paddingLeft: `${node.depth * 16}px` }}
+                  >
+                    <div className="flex items-center gap-2 mr-2 shrink-0">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-gray-600 bg-transparent text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        checked={isSelected}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) =>
+                          handleToggleSelect(node.id, e.target.checked)
+                        }
+                      />
+                    </div>
 
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <span className="text-white text-sm truncate select-none">
-                      {node.label}
-                    </span>
+                    {node.type === "folder" ? (
+                      <button
+                        className="p-1 hover:bg-white/10 rounded transition-colors shrink-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const next = new Set(expandedIds);
+                          if (isExpanded) next.delete(node.id);
+                          else next.add(node.id);
+                          setExpandedIds(next);
+                        }}
+                      >
+                        {isExpanded ? (
+                          <ChevronDown size={14} className="text-white" />
+                        ) : (
+                          <ChevronRight size={14} className="text-white" />
+                        )}
+                      </button>
+                    ) : (
+                      <div className="w-6 mr-0 shrink-0" />
+                    )}
+
+                    <div className="flex items-center gap-2 overflow-hidden min-w-0">
+                      <span className="text-white text-sm truncate select-none">
+                        {node.label}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
@@ -480,26 +493,28 @@ const FolderTree: React.FC<{
       </div>
 
       {/* Summary Popover */}
-      {popover.id && (
-        <Popover
-          open={Boolean(popover.anchor)}
-          anchorEl={popover.anchor}
-          onClose={handlePopoverClose}
-          anchorOrigin={{ vertical: "center", horizontal: "right" }}
-          transformOrigin={{ vertical: "center", horizontal: "left" }}
-          sx={{ pointerEvents: "none" }}
-          PaperProps={{
-            sx: {
-              pointerEvents: "auto",
-              background: "transparent",
-              boxShadow: "none",
-            },
-          }}
-        >
-          {renderSummary(popover.id)}
-        </Popover>
-      )}
-    </div>
+      {
+        popover.id && (
+          <Popover
+            open={Boolean(popover.anchor)}
+            anchorEl={popover.anchor}
+            onClose={handlePopoverClose}
+            anchorOrigin={{ vertical: "center", horizontal: "right" }}
+            transformOrigin={{ vertical: "center", horizontal: "left" }}
+            sx={{ pointerEvents: "none" }}
+            PaperProps={{
+              sx: {
+                pointerEvents: "auto",
+                background: "transparent",
+                boxShadow: "none",
+              },
+            }}
+          >
+            {renderSummary(popover.id)}
+          </Popover>
+        )
+      }
+    </div >
   );
 };
 
