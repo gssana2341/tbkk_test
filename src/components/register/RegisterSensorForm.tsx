@@ -1005,7 +1005,7 @@ export default function RegisterSensorForm() {
         onCropComplete={handleCropComplete}
       />
       <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <AlertDialogContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+        <AlertDialogContent className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl">
               Confirm {editId ? "Update" : "Registration"}

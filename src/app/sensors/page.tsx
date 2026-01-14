@@ -197,9 +197,9 @@ function prepareChartData(
   const rms =
     processedData.length > 0
       ? Math.sqrt(
-          processedData.reduce((sum, val) => sum + val * val, 0) /
-            processedData.length
-        )
+        processedData.reduce((sum, val) => sum + val * val, 0) /
+        processedData.length
+      )
       : 0;
   const peak = Math.max(...processedData.map(Math.abs));
 
@@ -899,7 +899,7 @@ export default function SensorDetailPage() {
   // Early returns after all hooks
   if (!mounted || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#030616]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0B1121]">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
       </div>
     );
@@ -907,7 +907,7 @@ export default function SensorDetailPage() {
 
   if (!sensor) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#030616] px-4 py-8">
+      <div className="min-h-screen flex items-center justify-center bg-[#0B1121] px-4 py-8">
         <h2 className="text-2xl font-bold">Sensor not found</h2>
         <Button
           variant="outline"

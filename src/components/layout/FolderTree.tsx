@@ -369,7 +369,7 @@ const FolderTree: React.FC<{
 
   if (loading)
     return (
-      <div className="h-full bg-[#030616] border-r border-[#374151] flex flex-col items-center pt-4">
+      <div className="h-full bg-[#0B1121] border-r border-[#374151] flex flex-col items-center pt-4">
         <Menu className="text-white mb-4 animate-pulse" />
         {!collapsed && (
           <span className="text-gray-400 text-sm">Loading Tree...</span>
@@ -379,7 +379,7 @@ const FolderTree: React.FC<{
 
   return (
     <div
-      className={`h-full bg-[#030616] border-r border-[#374151] flex flex-col transition-all duration-300 ${collapsed ? "w-[52px]" : "w-64"}`}
+      className={`h-full bg-[#0B1121] border-r border-[#374151] flex flex-col transition-all duration-300 ${collapsed ? "w-[52px]" : "w-64"}`}
     >
       {/* Header / Toggle */}
       <div

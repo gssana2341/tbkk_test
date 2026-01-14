@@ -108,8 +108,8 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#030616] px-4 py-8">
-      <Card className="w-full max-w-md bg-[#030616] border-[1.35px] border-[#374151]">
+    <div className="min-h-screen flex items-center justify-center bg-[#0B1121] px-4 py-8">
+      <Card className="w-full max-w-md bg-[#0B1121] border-[1.35px] border-[#374151]">
         {!showNewPassword ? (
           <>
             <CardHeader className="space-y-1">
@@ -159,7 +159,7 @@ export default function ForgotPasswordPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
+                      className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
                     />
                   </div>
                   <Button
@@ -199,7 +199,7 @@ export default function ForgotPasswordPage() {
                         maxLength={1}
                         value={digit}
                         onChange={(e) => handleOtpChange(idx, e.target.value)}
-                        className="w-14 h-14 text-center text-2xl bg-[#030616] border-[1.35px] border-[#374151] focus:border-blue-500"
+                        className="w-14 h-14 text-center text-2xl bg-[#0B1121] border-[1.35px] border-[#374151] focus:border-blue-500"
                       />
                     ))}
                   </div>
@@ -256,7 +256,7 @@ export default function ForgotPasswordPage() {
                       type={showNewPasswordEye ? "text" : "password"}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="bg-[#030616] border-[1.35px] border-[#374151] text-white pr-10"
+                      className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white pr-10"
                     />
                     <button
                       type="button"
@@ -282,7 +282,7 @@ export default function ForgotPasswordPage() {
                       type={showConfirmPasswordEye ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="bg-[#030616] border-[1.35px] border-[#374151] text-white pr-10"
+                      className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white pr-10"
                     />
                     <button
                       type="button"

@@ -133,14 +133,15 @@ const DeviceToolbar: React.FC<DeviceToolbarProps> = ({
         {/* Conditional "Register Device" button based on role */}
         {(user?.role?.toLowerCase() === "admin" ||
           user?.role?.toLowerCase() === "editor") && (
-          <Button
-            size="sm"
-            onClick={onRegisterClick}
-            className="h-8 px-3 text-xs 2xl:h-10 2xl:px-5 2xl:text-base bg-[#3758F9] hover:bg-blue-700 text-white border-none shrink-0"
-          >
-            Register Device
-          </Button>
-        )}
+            <Button
+              size="sm"
+              onClick={onRegisterClick}
+              className="h-9 px-3 sm:h-10 sm:px-4 text-sm sm:text-base bg-[#030616] hover:bg-[#11171F] text-white border border-gray-700 rounded-md shrink-0 flex items-center gap-2 transition-all font-semibold"
+            >
+              <PlusCircle className="h-5 w-5" />
+              Register Device
+            </Button>
+          )}
       </div>
     </div>
   );

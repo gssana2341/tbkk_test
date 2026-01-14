@@ -78,9 +78,8 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`${
-        collapsed ? "w-16" : "w-64"
-      } bg-[#030616] border-[1.35px] border-[#374151] transition-all duration-300 ease-in-out h-full flex flex-col`}
+      className={`${collapsed ? "w-16" : "w-64"
+        } bg-[#0B1121] border-[1.35px] border-[#374151] transition-all duration-300 ease-in-out h-full flex flex-col`}
     >
       <div className="flex items-center justify-between p-4 border-b border-[#374151]">
         {!collapsed && (
@@ -128,11 +127,10 @@ export default function Sidebar() {
                   setFolderTreeCollapsed(true);
                   setCollapsed(true);
                 }}
-                className={`flex items-center transition-colors ${
-                  isActive
+                className={`flex items-center transition-colors ${isActive
                     ? "bg-blue-900 text-blue-200"
                     : "hover:bg-gray-700 text-gray-200"
-                }`}
+                  }`}
                 style={{
                   height: 40,
                   width: collapsed ? 40 : undefined,

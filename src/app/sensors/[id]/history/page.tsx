@@ -350,8 +350,8 @@ export default function SensorHistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030616] text-white">
-      <div className="bg-[#030616] px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#0B1121] text-white">
+      <div className="bg-[#0B1121] px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
@@ -365,7 +365,7 @@ export default function SensorHistoryPage() {
       </div>
 
       <div className="p-6 space-y-6">
-        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
+        <Card className="bg-[#0B1121] border-[1.35px] border-[#374151]">
           <CardContent className="p-4 flex flex-wrap gap-6 items-center">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-300">Axis:</span>
@@ -373,11 +373,10 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
-                    selectedAxis === axis
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-[#030616] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                    }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
@@ -387,7 +386,7 @@ export default function SensorHistoryPage() {
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-300">Unit:</span>
               <select
-                className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none"
+                className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none"
                 value={selectedUnit}
                 onChange={(e) => setSelectedUnit(e.target.value)}
               >
@@ -401,14 +400,14 @@ export default function SensorHistoryPage() {
               <span className="text-sm font-medium text-gray-300">Date:</span>
               <input
                 type="date"
-                className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-blue-500"
+                className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-blue-500"
                 value={dateStart}
                 onChange={(e) => setDateStart(e.target.value)}
               />
               <span className="text-gray-400">-</span>
               <input
                 type="date"
-                className="bg-[#030616] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-blue-500"
+                className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-blue-500"
                 value={dateEnd}
                 onChange={(e) => setDateEnd(e.target.value)}
               />
@@ -429,7 +428,7 @@ export default function SensorHistoryPage() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="bg-[#030616] border-[#374151] text-white"
+                  className="bg-[#0B1121] border-[#374151] text-white"
                 >
                   <DropdownMenuItem
                     onClick={handleExportCSV}
@@ -494,7 +493,7 @@ export default function SensorHistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
+        <Card className="bg-[#0B1121] border-[1.35px] border-[#374151]">
           <CardContent className="p-6">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-center">

@@ -73,7 +73,7 @@ export default function LoginPage() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-              ?.data?.message
+            ?.data?.message
           : undefined;
       setError(errorMessage || "Login failed");
     }
@@ -81,8 +81,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#030616] px-4">
-      <Card className="w-full max-w-md bg-[#030616] border-[1.35px] border-[#374151]">
+    <div className="min-h-screen flex items-center justify-center bg-[#0B1121] px-4">
+      <Card className="w-full max-w-md bg-[#0B1121] border-[1.35px] border-[#374151]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-white">
             Welcome back
@@ -110,7 +110,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
+                className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400"
               />
             </div>
 
@@ -126,7 +126,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400 pr-10"
+                  className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white placeholder:text-gray-400 pr-10"
                 />
                 <button
                   type="button"

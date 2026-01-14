@@ -108,16 +108,16 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
   return (
     <div className="w-full flex flex-col md:flex-row gap-4">
       {/* Card 1: Main Summary */}
-      <div className="flex-[2] p-2 border-[1.35px] border-[#374151] rounded-xl bg-[#030616] shadow-md text-white flex flex-col">
+      <div className="flex-[2] p-2 border-[1px] border-[#374151] rounded-lg bg-[#030616] shadow-md text-white flex flex-col">
         {/* Top Section: Total Sensor Info */}
-        <div className="rounded-lg p-0 bg-[#030616] mb-2">
+        <div className="rounded-md p-0 bg-[#030616] mb-2">
           <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
             {/* Left: Total Sensor Info */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 min-h-[48px] sm:min-h-[64px]">
               <div className="text-lg sm:text-2xl md:text-3xl font-semibold text-white">
                 Connected Sensor Total: {connectedTotal}
               </div>
-              <div className="text-xs text-white">
+              <div className="text-[10px] sm:text-xs text-white opacity-80 mt-0.5">
                 Latest status of all sensors (Updated at {lastUpdatedText})
               </div>
             </div>
@@ -160,17 +160,17 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                 key={key}
                 onClick={() => hasFilterFunction && handleStatusClick(key)}
                 className={cn(
-                  "rounded-lg bg-card text-card-foreground p-2 flex flex-col justify-center items-center transition-all duration-200 h-full",
+                  "rounded-md bg-card text-card-foreground p-2 flex flex-col justify-center items-center transition-all duration-200 h-full",
                   isSelected ? config.selectedBgColor : config.bgColor,
                   isSelected
                     ? "border-[3px] border-black shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-105 z-10"
                     : "border-2 border-black",
                   activeSelectedStatuses.length > 0 &&
-                    !isSelected &&
-                    "opacity-40 scale-95 grayscale-[0.5]",
+                  !isSelected &&
+                  "opacity-40 scale-95 grayscale-[0.5]",
                   hasFilterFunction &&
-                    !isSelected &&
-                    "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
+                  !isSelected &&
+                  "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
                 )}
               >
                 <div className="flex items-center gap-2 w-full justify-center">
@@ -198,14 +198,14 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
       </div>
 
       {/* Card 2: Disconnect Section */}
-      <div className="flex-1 p-2 border-[1.35px] border-[#374151] rounded-xl bg-[#030616] shadow-md text-white flex flex-col">
-        <div className="rounded-lg p-0 bg-[#030616] mb-2">
+      <div className="flex-1 p-2 border-[1px] border-[#374151] rounded-lg bg-[#030616] shadow-md text-white flex flex-col">
+        <div className="rounded-md p-0 bg-[#030616] mb-2">
           <div className="flex flex-col sm:flex-row items-start gap-4">
-            <div className="min-w-0 flex-1 break-words whitespace-normal">
-              <div className="text-base sm:text-xl md:text-2xl font-semibold text-white">
+            <div className="min-w-0 flex-1 break-words whitespace-normal min-h-[48px] sm:min-h-[64px]">
+              <div className="text-lg sm:text-2xl md:text-3xl font-semibold text-white">
                 Disconnected Sensor Total: {disconnectedTotal}
               </div>
-              <div className="text-xs text-transparent select-none hidden sm:block">
+              <div className="text-[10px] sm:text-xs text-transparent select-none mt-0.5">
                 Placeholder for alignment
               </div>
             </div>
@@ -223,17 +223,17 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                 key={key}
                 onClick={() => hasFilterFunction && handleStatusClick(key)}
                 className={cn(
-                  "rounded-lg bg-card text-card-foreground p-2 flex flex-col justify-center items-center transition-all duration-200 h-full",
+                  "rounded-md bg-card text-card-foreground p-2 flex flex-col justify-center items-center transition-all duration-200 h-full",
                   isSelected ? config.selectedBgColor : config.bgColor,
                   isSelected
                     ? "border-[3px] border-black shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-105 z-10"
                     : "border-2 border-black",
                   activeSelectedStatuses.length > 0 &&
-                    !isSelected &&
-                    "opacity-40 scale-95 grayscale-[0.5]",
+                  !isSelected &&
+                  "opacity-40 scale-95 grayscale-[0.5]",
                   hasFilterFunction &&
-                    !isSelected &&
-                    "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
+                  !isSelected &&
+                  "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
                 )}
               >
                 <div className="flex items-center gap-2 w-full justify-center">

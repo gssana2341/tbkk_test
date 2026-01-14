@@ -12,7 +12,7 @@
   --color-solid: #a162f7;
   --color-select-solid: #3b82f6;
 
-  --color-background: #0f172a;
+  --color-background: #0B1121;
   --color-surface: #1e1e2f;
   --color-show: #353544;
   --color-text-primary: #ffffff;
@@ -144,6 +144,11 @@
   --sidebar-accent-foreground: #222222;
   --sidebar-border: #ebebeb;
   --sidebar-ring: #ababab;
+}
+
+.dark {
+  --background: #0B1121;
+  --foreground: #ffffff;
 }
 
 @layer base {

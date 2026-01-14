@@ -43,7 +43,7 @@ export default function ViewSelector({
 
   return (
     <TooltipProvider>
-      <div className="flex items-center space-x-1 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-1">
+      <div className="flex items-center space-x-1 bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-1">
         {views.map((view) => {
           const Icon = view.icon;
           const isActive = currentView === view.mode;
@@ -54,11 +54,10 @@ export default function ViewSelector({
                 <Button
                   variant={isActive ? "default" : "ghost"}
                   size="sm"
-                  className={`h-8 w-8 p-0 ${
-                    isActive
+                  className={`h-8 w-8 p-0 ${isActive
                       ? "bg-blue-600 text-white hover:bg-blue-700"
                       : "text-gray-400 hover:text-white hover:bg-[#374151]/50"
-                  }`}
+                    }`}
                   onClick={() => onViewChange(view.mode)}
                 >
                   <Icon className="h-4 w-4" />
@@ -66,7 +65,7 @@ export default function ViewSelector({
               </TooltipTrigger>
               <TooltipContent
                 side="bottom"
-                className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white"
               >
                 <div className="text-center">
                   <div className="font-semibold">{view.label}</div>

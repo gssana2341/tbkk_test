@@ -7,22 +7,19 @@ import type { Sensor } from "@/lib/types";
 import SensorCard from "./SensorCard";
 
 interface SensorGridProps {
+  sensors?: Sensor[];
   sensorGroups?: Sensor[][];
 }
 
-export default function SensorGrid({ sensorGroups }: SensorGridProps) {
+export default function SensorGrid({ sensors, sensorGroups }: SensorGridProps) {
   const router = useRouter();
 
-  // Use sensorGroups from props, or empty array if not provided
-  const sensorGroupsData: Sensor[][] =
-    sensorGroups && sensorGroups.length > 0 ? sensorGroups : [];
+  // Prefer flat sensors array, fallback to flattening sensorGroups
+  const allSensors = sensors || sensorGroups?.flat() || [];
 
   const handleSensorClick = (sensorId: string) => {
     router.push(`/sensors/${sensorId}`);
   };
-
-  // Flatten all groups into a single array to avoid gaps between groups
-  const allSensors = sensorGroupsData.flat();
 
   if (allSensors.length === 0) {
     return (
@@ -33,7 +30,7 @@ export default function SensorGrid({ sensorGroups }: SensorGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1800px]:grid-cols-6 min-[2200px]:grid-cols-8 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1600px]:grid-cols-6 min-[1850px]:grid-cols-7 min-[2100px]:grid-cols-8 gap-4">
       {allSensors.map((sensor) => (
         <SensorCard
           key={sensor.id}

@@ -366,7 +366,7 @@ export function SensorFormContent({
 
       {/* Machine Class Section */}
       {watchedMachineClassEnabled && (
-        <div className="p-4 border-[1.35px] border-[#374151] rounded-lg bg-[#030616] space-y-4">
+        <div className="p-4 border-[1.35px] border-[#374151] rounded-lg bg-[#0B1121] space-y-4">
           <FormField
             control={form.control}
             name={`sensors.${index}.machineClass`}
@@ -518,7 +518,7 @@ export function SensorFormContent({
       )}
 
       {watchedNamePlaceEnabled && (
-        <div className="p-6 border-[1.35px] border-[#374151] rounded-xl bg-[#030616] space-y-6">
+        <div className="p-6 border-[1.35px] border-[#374151] rounded-xl bg-[#0B1121] space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -704,11 +704,10 @@ export function SensorFormContent({
       {/* Additional Settings */}
       {/* Row 1: Columns depend on Name Place being enabled */}
       <div
-        className={`grid grid-cols-1 gap-4 ${
-          watchedNamePlaceEnabled
+        className={`grid grid-cols-1 gap-4 ${watchedNamePlaceEnabled
             ? "md:grid-cols-2 2xl:grid-cols-2"
             : "md:grid-cols-3 2xl:grid-cols-3"
-        }`}
+          }`}
       >
         <FormField
           control={form.control}

@@ -246,7 +246,7 @@ export default function UserSettings() {
         </Alert>
       )}
 
-      <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
+      <Card className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white">
         <CardHeader>
           <CardTitle>User Profile</CardTitle>
           <CardDescription>Manage your account information</CardDescription>
@@ -266,7 +266,7 @@ export default function UserSettings() {
                   variant="outline"
                   size="sm"
                   asChild
-                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white hover:bg-[#374151]/50 hover:text-white"
+                  className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white hover:bg-[#374151]/50 hover:text-white"
                 >
                   <span>Change Avatar</span>
                 </Button>
@@ -289,7 +289,7 @@ export default function UserSettings() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={saving}
-                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white"
+                  className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white"
                 />
               </div>
 
@@ -300,7 +300,7 @@ export default function UserSettings() {
                   type="email"
                   value={email}
                   disabled
-                  className="bg-[#030616] border-[1.35px] border-[#374151] text-white cursor-not-allowed opacity-50"
+                  className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white cursor-not-allowed opacity-50"
                 />
               </div>
 

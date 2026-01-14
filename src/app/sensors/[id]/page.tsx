@@ -1974,7 +1974,7 @@ export default function SensorDetailPage() {
       const dataUrl = await htmlToImage.toPng(printRef.current, {
         quality: 1.0,
         pixelRatio: 2,
-        backgroundColor: "#030616",
+        backgroundColor: "#0B1121",
         style: {
           borderRadius: "0",
         },
@@ -2015,7 +2015,7 @@ export default function SensorDetailPage() {
 
   if (!mounted || loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#030616]">
+      <div className="flex h-screen items-center justify-center bg-[#0B1121]">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
       </div>
     );
@@ -2023,7 +2023,7 @@ export default function SensorDetailPage() {
 
   if (!sensor) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-[#030616] text-white">
+      <div className="flex h-screen flex-col items-center justify-center bg-[#0B1121] text-white">
         <h2 className="text-2xl font-bold">Sensor not found</h2>
         <Button
           variant="outline"
@@ -2037,7 +2037,7 @@ export default function SensorDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#030616] text-white">
+    <div className="min-h-screen bg-[#0B1121] text-white">
       {/* Header */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
@@ -2091,7 +2091,7 @@ export default function SensorDetailPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-[#030616] border-[1.35px] border-[#374151]"
+              className="bg-[#0B1121] border-[1.35px] border-[#374151]"
             >
               {(user?.role?.toLowerCase() === "admin" ||
                 user?.role?.toLowerCase() === "editor") && (
@@ -2403,11 +2403,11 @@ export default function SensorDetailPage() {
         </div>
 
         {/* Horizontal Sensor Information */}
-        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
+        <Card className="bg-[#0B1121] border-[1.35px] border-[#374151]">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="shrink-0 flex justify-center">
-                <div className="w-60 h-full min-h-[320px] bg-[#030616] border-[1.35px] border-[#374151] rounded-md flex items-center justify-center overflow-hidden relative">
+                <div className="w-60 h-full min-h-[320px] bg-[#0B1121] border-[1.35px] border-[#374151] rounded-md flex items-center justify-center overflow-hidden relative">
                   {sensorImage || configData.image_url ? (
                     <Image
                       src={sensorImage || configData.image_url || ""}
@@ -2730,7 +2730,7 @@ export default function SensorDetailPage() {
                     </h2>
                   </div>
                   <div
-                    className="bg-[#030616] rounded-md p-2 overflow-y-auto custom-scrollbar"
+                    className="bg-[#0B1121] rounded-md p-2 overflow-y-auto custom-scrollbar"
                     style={{ maxHeight: "280px" }}
                   >
                     {sortedDatetimes.length > 0 ? (
@@ -2778,7 +2778,7 @@ export default function SensorDetailPage() {
 
 
         {/* Vibration Analysis Section */}
-        <Card className="bg-[#030616] border-[1.35px] border-[#374151]">
+        <Card className="bg-[#0B1121] border-[1.35px] border-[#374151]">
           <CardContent className="p-6">
             <h2 className="text-lg md:text-xl lg:text-2xl font-extrabold mb-4 text-white">
               Vibration Frequency Analysis
@@ -2875,7 +2875,7 @@ export default function SensorDetailPage() {
                   {/* RMS Overall + Top 5 Peaks & Short Trend Section */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* Left Column: RMS Overall + Top 5 Peaks */}
-                    <div className="bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-6">
+                    <div className="bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
                       <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-4">
                           <h4 className="text-xl font-bold text-white">
@@ -2924,13 +2924,13 @@ export default function SensorDetailPage() {
                     </div>
 
                     {/* Right Column: Short Trend */}
-                    <div className="bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-6">
+                    <div className="bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
                       <h4 className="text-xl font-bold text-white mb-8">
                         Short Trend
                       </h4>
                       <div className="overflow-x-auto max-h-80 overflow-y-auto custom-scrollbar">
                         <table className="min-w-full text-base">
-                          <thead className="sticky top-0 bg-[#030616]">
+                          <thead className="sticky top-0 bg-[#0B1121]">
                             <tr className="">
                               <th className="text-left px-3 py-3 font-bold text-white">
                                 Date & Time
@@ -3008,11 +3008,11 @@ export default function SensorDetailPage() {
                         Time Domain : {selectedAxis.split("-")[0]}
                       </span>
                     </h3>
-                    <div className="h-80 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4">
+                    <div className="h-80 bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-4">
                       {hasData && vibrationData.timeData ? (
                         <ReactECharts
                           option={{
-                            backgroundColor: "#030616",
+                            backgroundColor: "#0B1121",
                             grid: {
                               left: 60,
                               right: 30,
@@ -3135,11 +3135,11 @@ export default function SensorDetailPage() {
                         Frequency Domain : {selectedAxis.split("-")[0]}
                       </span>
                     </h3>
-                    <div className="h-80 bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4">
+                    <div className="h-80 bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-4">
                       {hasData && vibrationData.freqData ? (
                         <ReactECharts
                           option={{
-                            backgroundColor: "#030616",
+                            backgroundColor: "#0B1121",
                             grid: {
                               left: 60,
                               right: 30,

@@ -207,7 +207,7 @@ export function NotificationHistoryTable({
   };
 
   return (
-    <Card className="border-[1.35px] border-[#374151] shadow-sm rounded-xl bg-[#030616] w-[98%] mx-auto pb-10">
+    <Card className="border-[1.35px] border-[#374151] shadow-sm rounded-xl bg-[#0B1121] w-[98%] mx-auto pb-10">
       <CardContent className="p-0">
         {/* Header & Legend with Clear All button */}
         <div className="flex px-8 pt-6 pb-2 items-center justify-between gap-4">
@@ -262,7 +262,7 @@ export function NotificationHistoryTable({
         <div className="overflow-x-auto">
           <table className="min-w-full text-base 2xl:text-xl">
             <thead>
-              <tr className="bg-[#030616] border-b-[1.35px] border-[#374151] text-center text-gray-200 text-lg 2xl:text-2xl">
+              <tr className="bg-[#0B1121] border-b-[1.35px] border-[#374151] text-center text-gray-200 text-lg 2xl:text-2xl">
                 <th
                   className="py-3 px-4 font-medium cursor-pointer hover:text-white transition-colors"
                   onClick={() => requestSort("sensorName")}
@@ -385,8 +385,8 @@ export function NotificationHistoryTable({
                           <div className="flex items-center justify-center gap-2">
                             <span
                               className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${colorCode !== undefined
-                                  ? getAxisColorCode(colorCode)
-                                  : getAxisColor(entry[axis], entry.config)
+                                ? getAxisColorCode(colorCode)
+                                : getAxisColor(entry[axis], entry.config)
                                 }`}
                             />
                             <span className="font-medium text-gray-300">

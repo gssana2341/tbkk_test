@@ -4,7 +4,7 @@ import RoleGuard from "@/components/auth/RoleGuard";
 
 export default function RegisterPage() {
   return (
-    <div className="max-w-full mx-auto space-y-4 px-8 pt-4 bg-[#030616]">
+    <div className="max-w-full mx-auto space-y-4 px-8 pt-4 bg-[#0B1121]">
       <RoleGuard
         allowedRoles={["admin", "editor"]}
         mode="redirect"

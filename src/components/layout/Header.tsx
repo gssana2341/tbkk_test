@@ -124,15 +124,15 @@ export default function Header() {
 
           const datetime = sensor.last_data?.datetime
             ? new Date(sensor.last_data.datetime)
-                .toLocaleString("en-GB", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })
-                .replace(",", "")
+              .toLocaleString("en-GB", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })
+              .replace(",", "")
             : "-";
 
           let statusClass = "";
@@ -234,7 +234,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-[#030616] border-b-[1.35px] border-[#374151] py-3 px-6 shrink-0">
+    <header className="bg-[#0B1121] border-b-[1.35px] border-[#374151] py-3 px-6 shrink-0">
       <div className="flex items-center justify-between">
         <div className="flex-1 flex items-center gap-3">
           <span className="text-lg 2xl:text-2xl font-medium text-white">
@@ -270,7 +270,7 @@ export default function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-[#030616] text-white w-[380px] shadow-2xl border-[1.35px] border-[#374151] p-0 rounded-2xl overflow-hidden"
+              className="bg-[#0B1121] text-white w-[380px] shadow-2xl border-[1.35px] border-[#374151] p-0 rounded-2xl overflow-hidden"
             >
               <div className="flex items-center justify-between px-5 py-3 border-b border-[#374151]">
                 <div>
@@ -346,7 +346,7 @@ export default function Header() {
                   ))
                 )}
               </div>
-              <div className="px-5 py-3 text-sm font-medium text-gray-400 text-center border-t-[1.35px] border-[#374151] bg-[#030616]">
+              <div className="px-5 py-3 text-sm font-medium text-gray-400 text-center border-t-[1.35px] border-[#374151] bg-[#0B1121]">
                 {notifications.length} Notifications
               </div>
             </DropdownMenuContent>
@@ -369,11 +369,11 @@ export default function Header() {
                   <AvatarFallback className="bg-gray-600 text-gray-300 text-xs font-medium">
                     {user?.name
                       ? user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                          .slice(0, 2)
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
                       : "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -385,7 +385,7 @@ export default function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-[#030616] border-[1.35px] border-[#374151]"
+              className="bg-[#0B1121] border-[1.35px] border-[#374151]"
             >
               <DropdownMenuLabel className="text-white">
                 {user ? user.name : "Guest"}

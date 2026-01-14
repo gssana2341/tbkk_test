@@ -58,12 +58,12 @@ export default function SensorPagination({
 
   return (
     <div className="flex items-center justify-center mt-6">
-      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 border-[1.35px] border-[#374151] rounded-full bg-[#030616] shadow">
+      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 border-[1.35px] border-[#374151] rounded-full bg-[#0B1121] shadow">
         {/* Previous Button */}
         <button
           onClick={handlePrevious}
           disabled={currentPage === 1}
-          className="w-8 h-8 rounded-full border-[1.35px] border-[#374151] bg-[#030616] flex items-center justify-center text-gray-400 hover:bg-[#374151]/50 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-8 h-8 rounded-full border-[1.35px] border-[#374151] bg-[#0B1121] flex items-center justify-center text-gray-400 hover:bg-[#374151]/50 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Previous page"
         >
           <Image src="/arrow-left.png" alt="Previous" width={12} height={12} />
@@ -76,11 +76,10 @@ export default function SensorPagination({
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                isActive
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${isActive
                   ? "bg-[#3758F9] text-white shadow"
-                  : "border-[1.35px] border-[#374151] bg-[#030616] text-white hover:bg-[#374151]/50"
-              }`}
+                  : "border-[1.35px] border-[#374151] bg-[#0B1121] text-white hover:bg-[#374151]/50"
+                }`}
               aria-label={`Page ${page}`}
               aria-current={isActive ? "page" : undefined}
             >
@@ -93,7 +92,7 @@ export default function SensorPagination({
         <button
           onClick={handleNext}
           disabled={currentPage === totalPages}
-          className="w-8 h-8 rounded-full border-[1.35px] border-[#374151] bg-[#030616] flex items-center justify-center text-gray-400 hover:bg-[#374151]/50 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-8 h-8 rounded-full border-[1.35px] border-[#374151] bg-[#0B1121] flex items-center justify-center text-gray-400 hover:bg-[#374151]/50 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Next page"
         >
           <Image

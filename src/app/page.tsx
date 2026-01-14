@@ -236,16 +236,11 @@ export default function SensorsPage() {
   // Group sensors for different views
   const sensorGroups = useMemo(() => {
     if (currentView === "grid") {
-      // For grid view: 5 sensors per group (for 5 columns)
-      const groupSize = 5;
-      const groups: Sensor[][] = [];
-      for (let i = 0; i < filteredSensors.length; i += groupSize) {
-        groups.push(filteredSensors.slice(i, i + groupSize));
-      }
-      // Pagination for card view: 8 rows per page (40 cards)
-      const start = (cardPage - 1) * 8;
-      const pagedGroups = groups.slice(start, start + 8); // 8 rows per page
-      return pagedGroups;
+      // 40 items per page regardless of column count (standard pagination)
+      const pageSize = 40;
+      const start = (cardPage - 1) * pageSize;
+      const pagedSensors = filteredSensors.slice(start, start + pageSize);
+      return [pagedSensors]; // Return as a single group for SensorGrid to flatten
     } else if (currentView === "list") {
       const maxColumns = 3;
       if (filteredSensors.length === 0) return [];
@@ -269,9 +264,8 @@ export default function SensorsPage() {
   // Total pages for card view
   const totalCardPages = useMemo(() => {
     if (currentView !== "grid") return 1;
-    const groupSize = 5;
-    const totalRows = Math.ceil(filteredSensors.length / groupSize);
-    return Math.max(1, Math.ceil(totalRows / 8)); // 8 rows (40 cards) per page
+    const pageSize = 40;
+    return Math.max(1, Math.ceil(filteredSensors.length / pageSize));
   }, [filteredSensors, currentView]);
 
   const renderCurrentView = () => {
@@ -281,8 +275,8 @@ export default function SensorsPage() {
     switch (currentView) {
       case "grid":
         return (
-          <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#030616] p-4 mx-auto w-full transition-all duration-300">
-            <SensorGrid sensorGroups={sensorGroups} />
+          <div className="bg-[#0B1121] text-white rounded-2xl shadow border-[1.35px] border-[#0B1121] p-4 mx-auto w-full transition-all duration-300">
+            <SensorGrid sensors={sensorGroups[0] || []} />
             {/* Pagination for card view */}
             <SensorPagination
               currentPage={cardPage}
@@ -307,7 +301,7 @@ export default function SensorsPage() {
         return <SensorListView sensorGroups={sensorGroups} />;
       case "dot":
         return (
-          <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#030616] p-4 mx-auto w-full transition-all duration-300">
+          <div className="bg-[#0B1121] text-white rounded-2xl shadow border-[1.35px] border-[#0B1121] p-4 mx-auto w-full transition-all duration-300">
             <SensorDotView sensorGroups={sensorGroups} dotSize={dotSize} />
           </div>
         );
@@ -317,9 +311,9 @@ export default function SensorsPage() {
   };
 
   return (
-    <div className="space-y-2 bg-[#030616] min-h-screen">
+    <div className="space-y-2 bg-[#0B1121] min-h-screen">
       {/* Sensor Status Summary with Quick Filter */}
-      <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#030616] p-4 mx-auto w-full transition-all duration-300">
+      <div className="bg-[#0B1121] text-white rounded-2xl shadow border-[1.35px] border-[#0B1121] p-4 mx-auto w-full transition-all duration-300">
         <SensorStatusSummary
           data={sensorStatusData}
           selectedStatuses={selectedStatuses}
@@ -328,7 +322,7 @@ export default function SensorsPage() {
       </div>
 
       {/* Device Toolbar */}
-      <div className="bg-[#030616] text-white rounded-2xl shadow border-[1.35px] border-[#030616] px-4 py-0 mx-auto w-full transition-all duration-300">
+      <div className="bg-[#0B1121] text-white rounded-2xl shadow border-[1.35px] border-[#0B1121] px-4 py-0 mx-auto w-full transition-all duration-300">
         <DeviceToolbar
           currentView={currentView}
           onViewChange={handleViewChange}
