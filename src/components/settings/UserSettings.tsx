@@ -12,25 +12,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import {
   getUserProfile,
   updateUserProfile,
-  changePassword,
-  updateSecuritySettings,
-  enableTwoFactor,
   uploadAvatar,
 } from "@/api/users/users";
+import { compressImage } from "@/lib/utils/imageUtils";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
@@ -53,15 +43,6 @@ export default function UserSettings() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [bio, setBio] = useState("");
 
-  // Password state
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  // Security settings state
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [sessionTimeout, setSessionTimeout] = useState<string>("30");
-
   // Confirmation dialog state
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState<{
@@ -71,7 +52,7 @@ export default function UserSettings() {
   }>({
     title: "",
     description: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const triggerConfirm = (
@@ -103,12 +84,7 @@ export default function UserSettings() {
       setDepartment(userData.department || "");
       setPhoneNumber(userData.phone_number || "");
       setBio(userData.bio || "");
-      setTwoFactorEnabled(userData.two_factor_enabled || false);
-      setSessionTimeout(
-        userData.session_timeout_minutes === null
-          ? "never"
-          : userData.session_timeout_minutes?.toString() || "30"
-      );
+      setBio(userData.bio || "");
     } catch {
       setError("Failed to load user profile. Please refresh the page.");
       // Use current user data as fallback
@@ -155,7 +131,7 @@ export default function UserSettings() {
           const errorMessage =
             err && typeof err === "object" && "response" in err
               ? (err as { response?: { data?: { message?: string } } }).response
-                  ?.data?.message
+                ?.data?.message
               : err && typeof err === "object" && "message" in err
                 ? (err as { message?: string }).message
                 : undefined;
@@ -169,159 +145,6 @@ export default function UserSettings() {
           });
         } finally {
           setSaving(false);
-        }
-      }
-    );
-  };
-
-  const handleChangePassword = async () => {
-    if (newPassword !== confirmPassword) {
-      setError("New password and confirm password do not match.");
-      toast({
-        title: "Validation Error",
-        description: "New password and confirm password do not match.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters long.");
-      toast({
-        title: "Validation Error",
-        description: "Password must be at least 8 characters long.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    triggerConfirm(
-      "Change Password",
-      "Are you sure you want to change your password? You will need to use your new password for future logins.",
-      async () => {
-        try {
-          setSaving(true);
-          setSaveStatus(null);
-          setError("");
-
-          await changePassword({
-            current_password: currentPassword,
-            new_password: newPassword,
-            confirm_password: confirmPassword,
-          });
-
-          // Clear password fields
-          setCurrentPassword("");
-          setNewPassword("");
-          setConfirmPassword("");
-
-          toast({
-            title: "Password Changed",
-            description: "Your password has been changed successfully.",
-          });
-        } catch (err) {
-          console.error("Error changing password:", err);
-          setSaveStatus("error");
-          const errorMessage =
-            err && typeof err === "object" && "response" in err
-              ? (err as { response?: { data?: { message?: string } } }).response
-                  ?.data?.message
-              : err && typeof err === "object" && "message" in err
-                ? (err as { message?: string }).message
-                : undefined;
-          const finalErrorMessage =
-            errorMessage || "Failed to change password. Please try again.";
-          setError(finalErrorMessage);
-          toast({
-            title: "Change Password Failed",
-            description: finalErrorMessage,
-            variant: "destructive",
-          });
-        } finally {
-          setSaving(false);
-        }
-      }
-    );
-  };
-
-  const handleToggleTwoFactor = async (enabled: boolean) => {
-    const actionLabel = enabled ? "Enable" : "Disable";
-    triggerConfirm(
-      `${actionLabel} 2FA`,
-      `Are you sure you want to ${actionLabel.toLowerCase()} Two-Factor Authentication?`,
-      async () => {
-        try {
-          setSaving(true);
-          setError("");
-
-          if (enabled) {
-            await enableTwoFactor();
-            setTwoFactorEnabled(true);
-            await updateSecuritySettings({ two_factor_enabled: true });
-            toast({
-              title: "2FA Enabled",
-              description:
-                "Two-factor authentication has been enabled. Please save your backup codes.",
-            });
-            // You can show QR code and backup codes in a dialog here
-          } else {
-            // For disabling, we might need password confirmation
-            // For now, just update the settings
-            await updateSecuritySettings({ two_factor_enabled: false });
-            setTwoFactorEnabled(false);
-            toast({
-              title: "2FA Disabled",
-              description: "Two-factor authentication has been disabled.",
-            });
-          }
-        } catch (err) {
-          console.error("Error toggling 2FA:", err);
-          setTwoFactorEnabled(!enabled); // Revert on error
-          const errorMessage =
-            err && typeof err === "object" && "response" in err
-              ? (err as { response?: { data?: { message?: string } } }).response
-                  ?.data?.message
-              : err && typeof err === "object" && "message" in err
-                ? (err as { message?: string }).message
-                : undefined;
-          const finalErrorMessage =
-            errorMessage || "Failed to update 2FA settings. Please try again.";
-          setError(finalErrorMessage);
-          toast({
-            title: "Update Failed",
-            description: finalErrorMessage,
-            variant: "destructive",
-          });
-        } finally {
-          setSaving(false);
-        }
-      }
-    );
-  };
-
-  const handleSessionTimeoutChange = async (value: string) => {
-    const previousValue = sessionTimeout;
-    triggerConfirm(
-      "Change Session Timeout",
-      `Are you sure you want to change the session timeout to ${value === "never" ? "never" : value + " minutes"}?`,
-      async () => {
-        setSessionTimeout(value);
-        try {
-          const timeoutMinutes = value === "never" ? null : parseInt(value);
-          await updateSecuritySettings({
-            session_timeout_minutes: timeoutMinutes,
-          });
-          toast({
-            title: "Settings Updated",
-            description: "Session timeout has been updated successfully.",
-          });
-        } catch {
-          setSessionTimeout(previousValue); // Revert on error
-          toast({
-            title: "Update Failed",
-            description: "Failed to update session timeout. Please try again.",
-            variant: "destructive",
-          });
         }
       }
     );
@@ -356,8 +179,17 @@ export default function UserSettings() {
     try {
       setSaving(true);
 
+      // Compress image before upload
+      console.log("Original file size:", (file.size / 1024).toFixed(2), "KB");
+      const compressedFile = await compressImage(file, 800, 800, 0.8);
+      console.log(
+        "Compressed file size:",
+        (compressedFile.size / 1024).toFixed(2),
+        "KB"
+      );
+
       // Upload the file to the server using the Base64 logic (same as registration)
-      const response = await uploadAvatar(file);
+      const response = await uploadAvatar(compressedFile);
 
       if (response.avatar_url) {
         setAvatarUrl(response.avatar_url);
@@ -521,115 +353,6 @@ export default function UserSettings() {
         </CardContent>
       </Card>
 
-      <Card className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
-        <CardHeader>
-          <CardTitle>Security</CardTitle>
-          <CardDescription>
-            Manage your account security settings
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="current-password">Current Password</Label>
-              <Input
-                id="current-password"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                disabled={saving}
-                className="bg-[#11171F] border-[#4B5563] text-white"
-              />
-            </div>
-
-            <div></div>
-
-            <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
-              <Input
-                id="new-password"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                disabled={saving}
-                className="bg-[#11171F] border-[#4B5563] text-white"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm New Password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={saving}
-                className="bg-[#11171F] border-[#4B5563] text-white"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button
-              onClick={handleChangePassword}
-              disabled={saving || !currentPassword || !newPassword}
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Changing...
-                </>
-              ) : (
-                "Change Password"
-              )}
-            </Button>
-          </div>
-
-          <div className="space-y-4 pt-4 border-t">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-medium">
-                  Two-Factor Authentication
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Add an extra layer of security to your account
-                </p>
-              </div>
-              <Switch
-                checked={twoFactorEnabled}
-                onCheckedChange={handleToggleTwoFactor}
-                disabled={saving}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-medium">Session Timeout</h3>
-                <p className="text-sm text-gray-500">
-                  Automatically log out after inactivity
-                </p>
-              </div>
-              <Select
-                value={sessionTimeout}
-                onValueChange={handleSessionTimeoutChange}
-                disabled={saving}
-              >
-                <SelectTrigger className="w-[180px] bg-[#030616] border-[1.35px] border-[#374151] text-white">
-                  <SelectValue placeholder="Select timeout" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#030616] border-[1.35px] border-[#374151] text-white">
-                  <SelectItem value="15">15 minutes</SelectItem>
-                  <SelectItem value="30">30 minutes</SelectItem>
-                  <SelectItem value="60">1 hour</SelectItem>
-                  <SelectItem value="120">2 hours</SelectItem>
-                  <SelectItem value="never">Never</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="flex justify-end">
         <Button onClick={handleSaveProfile} disabled={saving}>
           {saving ? (
@@ -650,6 +373,6 @@ export default function UserSettings() {
         title={confirmConfig.title}
         description={confirmConfig.description}
       />
-    </div>
+    </div >
   );
 }

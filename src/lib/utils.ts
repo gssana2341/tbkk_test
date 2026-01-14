@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { compressImage } from "./utils/imageUtils";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -114,7 +115,10 @@ export async function uploadSensorImage(
   sensorId: string,
   imageFile: File
 ): Promise<{ image_url: string; message: string; status: string }> {
-  const base64Image = await toBase64(imageFile);
+  // Compress image before upload
+  const compressedFile = await compressImage(imageFile, 1200, 1200, 0.85);
+
+  const base64Image = await toBase64(compressedFile);
   const contentType = imageFile.type || "image/jpeg";
   const token =
     typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;

@@ -41,19 +41,19 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Use undefined for missing data to distinguish from 0 (which is valid data)
   const veloRmsH =
     sensor?.last_data?.velo_rms_h !== undefined &&
-    sensor?.last_data?.velo_rms_h !== null
+      sensor?.last_data?.velo_rms_h !== null
       ? Number(sensor.last_data.velo_rms_h)
       : undefined;
 
   const veloRmsV =
     sensor?.last_data?.velo_rms_v !== undefined &&
-    sensor?.last_data?.velo_rms_v !== null
+      sensor?.last_data?.velo_rms_v !== null
       ? Number(sensor.last_data.velo_rms_v)
       : undefined;
 
   const veloRmsA =
     sensor?.last_data?.velo_rms_a !== undefined &&
-    sensor?.last_data?.velo_rms_a !== null
+      sensor?.last_data?.velo_rms_a !== null
       ? Number(sensor.last_data.velo_rms_a)
       : undefined;
 
@@ -120,14 +120,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
   const lastUpdateText = lastUpdate
     ? lastUpdate.toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
     : "-";
 
   // Determine card background color based on sensor status
@@ -168,8 +168,8 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     }
 
     return {
-      backgroundColor: "#030616",
-      borderTop: `12px solid ${borderColor}`, // Thick top colored border
+      backgroundColor: "#161E28",
+      borderTop: `18px solid ${borderColor}`, // Thicker top colored border
       borderRight: "1.35px solid #374151", // Thin gray border for shape
       borderBottom: "1.35px solid #374151",
       borderLeft: "1.35px solid #374151",
@@ -217,161 +217,175 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
             </div>
           </div>
           <div className="min-w-0 flex-1 overflow-hidden">
-            <div className="text-[0.75rem] sm:text-sm lg:text-base 2xl:text-lg font-extrabold tracking-tight leading-tight truncate text-white">
+            <div className="text-[0.9rem] sm:text-base lg:text-lg 2xl:text-xl font-extrabold tracking-tight leading-tight truncate text-white">
               {deviceId}
             </div>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1 shrink-0 mr-1.5 sm:mr-2 2xl:mr-3">
             <span
-              className="flex items-center justify-center w-5 h-7 sm:w-6 sm:h-8 2xl:w-7 2xl:h-9 text-[0.625rem] sm:text-xs 2xl:text-sm rounded-full font-bold leading-none shadow-sm"
+              className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
               style={getAxisBadgeStyle(veloRmsH)}
             >
               H
             </span>
             <span
-              className="flex items-center justify-center w-5 h-7 sm:w-6 sm:h-8 2xl:w-7 2xl:h-9 text-[0.625rem] sm:text-xs 2xl:text-sm rounded-full font-bold leading-none shadow-sm"
+              className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
               style={getAxisBadgeStyle(veloRmsV)}
             >
               V
             </span>
             <span
-              className="flex items-center justify-center w-5 h-7 sm:w-6 sm:h-8 2xl:w-7 2xl:h-9 text-[0.625rem] sm:text-xs 2xl:text-sm rounded-full font-bold leading-none shadow-sm"
+              className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
               style={getAxisBadgeStyle(veloRmsA)}
             >
               A
             </span>
           </div>
         </div>
-        {/* Divider */}
-        <div className="my-1.5 2xl:my-2 h-px w-full bg-[#374151]" />
-        {/* Row 2: Area/Machine | Temperature */}
-        <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
-          <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-            <div className="text-xs sm:text-sm lg:text-base 2xl:text-lg font-semibold truncate text-gray-300">
-              {areaLabel} / {machineLabel}
+        <div className="mt-1 2xl:mt-1.5 flex items-center justify-between gap-1 overflow-hidden">
+          {/* Left Column: Row 2 and Row 3 labels/stats */}
+          <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+            {/* Row 2: Area/Machine */}
+            <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+              <div className="text-[0.95rem] sm:text-lg lg:text-xl 2xl:text-2xl font-semibold truncate text-gray-300 leading-tight">
+                {areaLabel} / {machineLabel}
+              </div>
+            </div>
+
+            {/* Row 3: Battery | Wifi | Time */}
+            <div
+              className="flex items-center gap-0.5 2xl:gap-1 text-[0.55rem] sm:text-[0.65rem] lg:text-[0.75rem] 2xl:text-xs overflow-hidden leading-tight"
+              style={{ color: "#7A8290" }}
+            >
+              <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap">
+                {/* Modern battery icon with 4 fill bars */}
+                <svg
+                  width="20"
+                  height="12"
+                  viewBox="0 0 24 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-3.5 h-1.5 sm:w-4.5 sm:h-2 lg:w-5 lg:h-2.5 2xl:w-6.5 2xl:h-3.5"
+                >
+                  <rect
+                    x="1"
+                    y="2"
+                    width="20"
+                    height="10"
+                    rx="3"
+                    fill="#374151"
+                    stroke="#9CA3AF"
+                    strokeWidth="1.2"
+                  />
+                  {/* Battery tip */}
+                  <rect x="22" y="5" width="2" height="4" rx="1" fill="#9CA3AF" />
+                  {/* 4 bars, fill based on battery level */}
+                  {Array.from({ length: 4 }).map((_, i) => {
+                    const percent = Math.max(
+                      0,
+                      Math.min(100, Number(battery) || 0)
+                    );
+                    // Each bar represents 25%
+                    const barStart = i * 25;
+                    // How much of this bar should be filled (0-1)
+                    const fillRatio =
+                      percent > barStart
+                        ? Math.min(1, (percent - barStart) / 25)
+                        : 0;
+                    // Bar color by overall percent
+                    const fillColor =
+                      percent > 50
+                        ? "#22C55E"
+                        : percent > 25
+                          ? "#FACC15"
+                          : "#EF4444";
+                    return (
+                      <g key={i}>
+                        {/* Bar background */}
+                        <rect
+                          x={3 + i * 4.25}
+                          y={4}
+                          width={3.5}
+                          height={6}
+                          rx={1}
+                          fill="#4B5563"
+                        />
+                        {/* Bar fill (proportional) */}
+                        {fillRatio > 0 && (
+                          <rect
+                            x={3 + i * 4.25}
+                            y={4}
+                            width={3.5 * fillRatio}
+                            height={6}
+                            rx={1}
+                            fill={fillColor}
+                          />
+                        )}
+                      </g>
+                    );
+                  })}
+                </svg>
+                {Math.max(0, Math.min(100, Number(battery) || 0)).toFixed(0)}%
+              </span>
+              <span className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap">
+                {/* Tiered WiFi icon based on actual signal strength */}
+                {(() => {
+                  const rssi = sensor?.last_data?.rssi || 0;
+                  const level = getSignalStrength(rssi);
+                  const iconProps = {
+                    className: "w-3 h-3 sm:w-3.5 sm:h-3.5 2xl:w-4 2xl:h-4",
+                  };
+
+                  let icon;
+                  let colorClass = "";
+
+                  switch (level) {
+                    case 0:
+                      icon = <WifiOff {...iconProps} />;
+                      colorClass = "text-gray-400";
+                      break;
+                    case 1:
+                      icon = <WifiZero {...iconProps} />;
+                      colorClass = "text-yellow-400";
+                      break;
+                    case 2:
+                      icon = <WifiLow {...iconProps} />;
+                      colorClass = "text-yellow-400";
+                      break;
+                    case 3:
+                      icon = <WifiHigh {...iconProps} />;
+                      colorClass = "text-[#00E200]";
+                      break;
+                    case 4:
+                      icon = <Wifi {...iconProps} />;
+                      colorClass = "text-[#00E200]";
+                      break;
+                    default:
+                      icon = <WifiOff {...iconProps} />;
+                      colorClass = "text-gray-400";
+                  }
+
+                  return <span className={colorClass}>{icon}</span>;
+                })()}
+              </span>
+              <span className="shrink truncate min-w-0">
+                {lastUpdateText}
+              </span>
             </div>
           </div>
-          <div className="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold shrink-0 whitespace-nowrap text-white">
-            {(Number(temperature) || 0).toFixed(0)}°C
-          </div>
-        </div>
-        {/* Row 3: Battery | Wifi | Time */}
-        <div className="mt-0.5 2xl:mt-1 flex items-center gap-0.5 2xl:gap-1 text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base overflow-hidden">
-          <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap text-gray-300">
-            {/* Modern battery icon with 4 fill bars */}
-            <svg
-              width="24"
-              height="14"
-              viewBox="0 0 24 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-3 sm:w-6 sm:h-3.5 lg:w-7 lg:h-4 2xl:w-8 2xl:h-4.5"
+
+          {/* Temperature spanning Row 2 and Row 3 on the right */}
+          <div className="flex items-baseline gap-0.5 mt-0.5 shrink-0 whitespace-nowrap text-white pr-1.5 sm:pr-2 2xl:pr-3">
+            <span
+              className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-bold leading-none"
+              style={{ fontFamily: 'Inter, sans-serif' }}
             >
-              <rect
-                x="1"
-                y="2"
-                width="20"
-                height="10"
-                rx="3"
-                fill="#374151"
-                stroke="#9CA3AF"
-                strokeWidth="1.2"
-              />
-              {/* Battery tip */}
-              <rect x="22" y="5" width="2" height="4" rx="1" fill="#9CA3AF" />
-              {/* 4 bars, fill based on battery level */}
-              {Array.from({ length: 4 }).map((_, i) => {
-                const percent = Math.max(
-                  0,
-                  Math.min(100, Number(battery) || 0)
-                );
-                // Each bar represents 25%
-                const barStart = i * 25;
-                // ...existing code...
-                // How much of this bar should be filled (0-1)
-                const fillRatio =
-                  percent > barStart
-                    ? Math.min(1, (percent - barStart) / 25)
-                    : 0;
-                // Bar color by overall percent
-                const fillColor =
-                  percent > 50
-                    ? "#22C55E"
-                    : percent > 25
-                      ? "#FACC15"
-                      : "#EF4444";
-                return (
-                  <g key={i}>
-                    {/* Bar background */}
-                    <rect
-                      x={3 + i * 4.25}
-                      y={4}
-                      width={3.5}
-                      height={6}
-                      rx={1}
-                      fill="#4B5563"
-                    />
-                    {/* Bar fill (proportional) */}
-                    {fillRatio > 0 && (
-                      <rect
-                        x={3 + i * 4.25}
-                        y={4}
-                        width={3.5 * fillRatio}
-                        height={6}
-                        rx={1}
-                        fill={fillColor}
-                      />
-                    )}
-                  </g>
-                );
-              })}
-            </svg>
-            {Math.max(0, Math.min(100, Number(battery) || 0)).toFixed(0)}%
-          </span>
-          <span className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap">
-            {/* Tiered WiFi icon based on actual signal strength */}
-            {(() => {
-              const rssi = sensor?.last_data?.rssi || 0;
-              const level = getSignalStrength(rssi);
-              const iconProps = {
-                className: "w-4 h-4 sm:w-4.5 sm:h-4.5 2xl:w-5 2xl:h-5",
-              };
-
-              let icon;
-              let colorClass = "";
-
-              switch (level) {
-                case 0:
-                  icon = <WifiOff {...iconProps} />;
-                  colorClass = "text-gray-400";
-                  break;
-                case 1:
-                  icon = <WifiZero {...iconProps} />;
-                  colorClass = "text-yellow-400";
-                  break;
-                case 2:
-                  icon = <WifiLow {...iconProps} />;
-                  colorClass = "text-yellow-400";
-                  break;
-                case 3:
-                  icon = <WifiHigh {...iconProps} />;
-                  colorClass = "text-[#00E200]";
-                  break;
-                case 4:
-                  icon = <Wifi {...iconProps} />;
-                  colorClass = "text-[#00E200]";
-                  break;
-                default:
-                  icon = <WifiOff {...iconProps} />;
-                  colorClass = "text-gray-400";
-              }
-
-              return <span className={colorClass}>{icon}</span>;
-            })()}
-          </span>
-          <span className="text-[0.5rem] sm:text-[0.563rem] lg:text-xs 2xl:text-sm text-gray-300 shrink truncate min-w-0">
-            {lastUpdateText}
-          </span>
+              {(Number(temperature) || 0).toFixed(0)}
+            </span>
+            <span className="text-xs sm:text-sm lg:text-base 2xl:text-lg font-bold leading-none">
+              °C
+            </span>
+          </div>
         </div>
       </CardContent>
     </Card>

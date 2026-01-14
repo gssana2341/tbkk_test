@@ -128,7 +128,7 @@ export async function uploadAvatar(
   const contentType = file.type || "image/jpeg";
   const token = getToken();
 
-  const url = `${API_BASE_URL}/users/avatar`;
+  const url = `${API_BASE_URL}/users/avatar/base64`;
 
   try {
     const response = await fetch(url, {
