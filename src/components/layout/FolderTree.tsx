@@ -493,28 +493,26 @@ const FolderTree: React.FC<{
       </div>
 
       {/* Summary Popover */}
-      {
-        popover.id && (
-          <Popover
-            open={Boolean(popover.anchor)}
-            anchorEl={popover.anchor}
-            onClose={handlePopoverClose}
-            anchorOrigin={{ vertical: "center", horizontal: "right" }}
-            transformOrigin={{ vertical: "center", horizontal: "left" }}
-            sx={{ pointerEvents: "none" }}
-            PaperProps={{
-              sx: {
-                pointerEvents: "auto",
-                background: "transparent",
-                boxShadow: "none",
-              },
-            }}
-          >
-            {renderSummary(popover.id)}
-          </Popover>
-        )
-      }
-    </div >
+      {popover.id && (
+        <Popover
+          open={Boolean(popover.anchor)}
+          anchorEl={popover.anchor}
+          onClose={handlePopoverClose}
+          anchorOrigin={{ vertical: "center", horizontal: "right" }}
+          transformOrigin={{ vertical: "center", horizontal: "left" }}
+          sx={{ pointerEvents: "none" }}
+          PaperProps={{
+            sx: {
+              pointerEvents: "auto",
+              background: "transparent",
+              boxShadow: "none",
+            },
+          }}
+        >
+          {renderSummary(popover.id)}
+        </Popover>
+      )}
+    </div>
   );
 };
 

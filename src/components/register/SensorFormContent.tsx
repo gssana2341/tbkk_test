@@ -704,10 +704,11 @@ export function SensorFormContent({
       {/* Additional Settings */}
       {/* Row 1: Columns depend on Name Place being enabled */}
       <div
-        className={`grid grid-cols-1 gap-4 ${watchedNamePlaceEnabled
+        className={`grid grid-cols-1 gap-4 ${
+          watchedNamePlaceEnabled
             ? "md:grid-cols-2 2xl:grid-cols-2"
             : "md:grid-cols-3 2xl:grid-cols-3"
-          }`}
+        }`}
       >
         <FormField
           control={form.control}

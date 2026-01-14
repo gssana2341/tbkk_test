@@ -243,7 +243,7 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
             : 2.0;
         const tMed =
           apiSensor.threshold_medium !== undefined &&
-            apiSensor.threshold_medium > 0
+          apiSensor.threshold_medium > 0
             ? apiSensor.threshold_medium
             : 4.5;
         const tMax =
@@ -292,26 +292,26 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         // Store raw API data for access by components
         last_data: apiSensor.last_data
           ? {
-            datetime: apiSensor.last_data.datetime,
-            acc_h: apiSensor.last_data.acc_h || [],
-            freq_h: apiSensor.last_data.freq_h || [],
-            acc_v: apiSensor.last_data.acc_v || [],
-            freq_v: apiSensor.last_data.freq_v || [],
-            acc_a: apiSensor.last_data.acc_a || [],
-            freq_a: apiSensor.last_data.freq_a || [],
-            velo_rms_h: apiSensor.last_data.velo_rms_h,
-            velo_rms_v: apiSensor.last_data.velo_rms_v,
-            velo_rms_a: apiSensor.last_data.velo_rms_a,
-            temperature: apiSensor.last_data.temperature,
-            battery: apiSensor.last_data.battery,
-            rssi: apiSensor.last_data.rssi,
-            level_vibration: apiSensor.last_data.level_vibration,
-            level_temperature: apiSensor.last_data.level_temperature,
-            // Also keep arrays for calculation
-            h: hData,
-            v: vData,
-            a: aData,
-          }
+              datetime: apiSensor.last_data.datetime,
+              acc_h: apiSensor.last_data.acc_h || [],
+              freq_h: apiSensor.last_data.freq_h || [],
+              acc_v: apiSensor.last_data.acc_v || [],
+              freq_v: apiSensor.last_data.freq_v || [],
+              acc_a: apiSensor.last_data.acc_a || [],
+              freq_a: apiSensor.last_data.freq_a || [],
+              velo_rms_h: apiSensor.last_data.velo_rms_h,
+              velo_rms_v: apiSensor.last_data.velo_rms_v,
+              velo_rms_a: apiSensor.last_data.velo_rms_a,
+              temperature: apiSensor.last_data.temperature,
+              battery: apiSensor.last_data.battery,
+              rssi: apiSensor.last_data.rssi,
+              level_vibration: apiSensor.last_data.level_vibration,
+              level_temperature: apiSensor.last_data.level_temperature,
+              // Also keep arrays for calculation
+              h: hData,
+              v: vData,
+              a: aData,
+            }
           : undefined,
         // Store calculated H, V, A statistics
         h_stats: hStats,

@@ -197,9 +197,9 @@ function prepareChartData(
   const rms =
     processedData.length > 0
       ? Math.sqrt(
-        processedData.reduce((sum, val) => sum + val * val, 0) /
-        processedData.length
-      )
+          processedData.reduce((sum, val) => sum + val * val, 0) /
+            processedData.length
+        )
       : 0;
   const peak = Math.max(...processedData.map(Math.abs));
 

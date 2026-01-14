@@ -41,19 +41,19 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Use undefined for missing data to distinguish from 0 (which is valid data)
   const veloRmsH =
     sensor?.last_data?.velo_rms_h !== undefined &&
-      sensor?.last_data?.velo_rms_h !== null
+    sensor?.last_data?.velo_rms_h !== null
       ? Number(sensor.last_data.velo_rms_h)
       : undefined;
 
   const veloRmsV =
     sensor?.last_data?.velo_rms_v !== undefined &&
-      sensor?.last_data?.velo_rms_v !== null
+    sensor?.last_data?.velo_rms_v !== null
       ? Number(sensor.last_data.velo_rms_v)
       : undefined;
 
   const veloRmsA =
     sensor?.last_data?.velo_rms_a !== undefined &&
-      sensor?.last_data?.velo_rms_a !== null
+    sensor?.last_data?.velo_rms_a !== null
       ? Number(sensor.last_data.velo_rms_a)
       : undefined;
 
@@ -120,14 +120,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
   const lastUpdateText = lastUpdate
     ? lastUpdate.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
     : "-";
 
   // Determine card background color based on sensor status
@@ -278,7 +278,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                     strokeWidth="1.2"
                   />
                   {/* Battery tip */}
-                  <rect x="22" y="5" width="2" height="4" rx="1" fill="#9CA3AF" />
+                  <rect
+                    x="22"
+                    y="5"
+                    width="2"
+                    height="4"
+                    rx="1"
+                    fill="#9CA3AF"
+                  />
                   {/* 4 bars, fill based on battery level */}
                   {Array.from({ length: 4 }).map((_, i) => {
                     const percent = Math.max(
@@ -368,9 +375,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                   return <span className={colorClass}>{icon}</span>;
                 })()}
               </span>
-              <span className="shrink truncate min-w-0">
-                {lastUpdateText}
-              </span>
+              <span className="shrink truncate min-w-0">{lastUpdateText}</span>
             </div>
           </div>
 
@@ -378,7 +383,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
           <div className="flex items-baseline gap-0.5 mt-0.5 shrink-0 whitespace-nowrap text-white pr-1.5 sm:pr-2 2xl:pr-3">
             <span
               className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-bold leading-none"
-              style={{ fontFamily: 'Inter, sans-serif' }}
+              style={{ fontFamily: "Inter, sans-serif" }}
             >
               {(Number(temperature) || 0).toFixed(0)}
             </span>

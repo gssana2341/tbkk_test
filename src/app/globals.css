@@ -12,7 +12,7 @@
   --color-solid: #a162f7;
   --color-select-solid: #3b82f6;
 
-  --color-background: #0B1121;
+  --color-background: #0b1121;
   --color-surface: #1e1e2f;
   --color-show: #353544;
   --color-text-primary: #ffffff;
@@ -147,7 +147,7 @@
 }
 
 .dark {
-  --background: #0B1121;
+  --background: #0b1121;
   --foreground: #ffffff;
 }
 

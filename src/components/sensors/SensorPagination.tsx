@@ -76,10 +76,11 @@ export default function SensorPagination({
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${isActive
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                isActive
                   ? "bg-[#3758F9] text-white shadow"
                   : "border-[1.35px] border-[#374151] bg-[#0B1121] text-white hover:bg-[#374151]/50"
-                }`}
+              }`}
               aria-label={`Page ${page}`}
               aria-current={isActive ? "page" : undefined}
             >

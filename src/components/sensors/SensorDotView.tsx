@@ -237,10 +237,11 @@ export default function SensorDotView({
             <div className="flex items-center space-x-1">
               <span>Status:</span>
               <div
-                className={`w-2 h-2 rounded-full ${sensor.connectivity === "online"
+                className={`w-2 h-2 rounded-full ${
+                  sensor.connectivity === "online"
                     ? "bg-green-500"
                     : "bg-gray-500"
-                  }`}
+                }`}
               />
               <span className="text-xs">
                 {sensor.connectivity || "offline"}
@@ -250,22 +251,25 @@ export default function SensorDotView({
               <span>Vibration:</span>
               <div className="flex space-x-0.5">
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(sensor.h_stats?.velocityTopPeak || "0") > 0
+                  className={`w-1 h-1 rounded-full ${
+                    parseFloat(sensor.h_stats?.velocityTopPeak || "0") > 0
                       ? "bg-green-500"
                       : "bg-gray-500"
-                    }`}
+                  }`}
                 />
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(sensor.v_stats?.velocityTopPeak || "0") > 0
+                  className={`w-1 h-1 rounded-full ${
+                    parseFloat(sensor.v_stats?.velocityTopPeak || "0") > 0
                       ? "bg-green-500"
                       : "bg-gray-500"
-                    }`}
+                  }`}
                 />
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(sensor.a_stats?.velocityTopPeak || "0") > 0
+                  className={`w-1 h-1 rounded-full ${
+                    parseFloat(sensor.a_stats?.velocityTopPeak || "0") > 0
                       ? "bg-green-500"
                       : "bg-gray-500"
-                    }`}
+                  }`}
                 />
               </div>
             </div>

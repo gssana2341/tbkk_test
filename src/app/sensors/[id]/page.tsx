@@ -364,7 +364,6 @@ function prepareChartData(
     };
   }
 
-
   const n = effectiveAccData.length;
   // Calculate theoretical total time based on config (e.g. 1600/400 = 4.0s)
   const theoreticalTotalTime = configData.lor / configData.fmax;
@@ -374,7 +373,6 @@ function prepareChartData(
     if (i === n - 1) return theoreticalTotalTime.toFixed(4);
     return ((i * theoreticalTotalTime) / (n - 1)).toFixed(4);
   });
-
 
   let processedData: number[];
   let yAxisLabel: string;
@@ -399,9 +397,9 @@ function prepareChartData(
       ? rmsOverride
       : processedData.length > 0
         ? Math.sqrt(
-          processedData.reduce((sum, val) => sum + val * val, 0) /
-          processedData.length
-        )
+            processedData.reduce((sum, val) => sum + val * val, 0) /
+              processedData.length
+          )
         : 0;
   const peak = Math.max(...processedData.map(Math.abs));
 
@@ -410,7 +408,6 @@ function prepareChartData(
   const rmsValue = rms.toFixed(2);
   const peakValue = peak.toFixed(2);
   const peakToPeakValue = peakToPeak.toFixed(2);
-
 
   const timeChartData = {
     labels: timeLabels,
@@ -1317,7 +1314,7 @@ export default function SensorDetailPage() {
               : prev.thresholdMin || "",
           thresholdMedium:
             sensorLastData.threshold_medium &&
-              sensorLastData.threshold_medium > 0
+            sensorLastData.threshold_medium > 0
               ? sensorLastData.threshold_medium.toString()
               : prev.thresholdMedium || "",
           thresholdMax:
@@ -2095,18 +2092,18 @@ export default function SensorDetailPage() {
             >
               {(user?.role?.toLowerCase() === "admin" ||
                 user?.role?.toLowerCase() === "editor") && (
-                  <DropdownMenuItem
-                    className="text-white"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      router.push("/register");
-                    }}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Configure Sensor
-                  </DropdownMenuItem>
-                )}
+                <DropdownMenuItem
+                  className="text-white"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    router.push("/register");
+                  }}
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  Configure Sensor
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 className="text-white cursor-pointer"
                 onClick={handleExportCSV}
@@ -2134,35 +2131,35 @@ export default function SensorDetailPage() {
               </DropdownMenuItem>
               {(user?.role?.toLowerCase() === "admin" ||
                 user?.role?.toLowerCase() === "editor") && (
-                  <DropdownMenuItem
-                    className="text-red-500 cursor-pointer"
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      console.log("Delete selected for sensor:", params.id);
+                <DropdownMenuItem
+                  className="text-red-500 cursor-pointer"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    console.log("Delete selected for sensor:", params.id);
 
-                      setTimeout(async () => {
-                        if (
-                          confirm(
-                            "Are you sure you want to delete this sensor? This action cannot be undone."
-                          )
-                        ) {
-                          console.log("User confirmed delete");
-                          const success = await deleteSensor(params.id);
-                          console.log("Delete result:", success);
-                          if (success) {
-                            router.push("/");
-                          } else {
-                            alert("Failed to delete sensor");
-                          }
+                    setTimeout(async () => {
+                      if (
+                        confirm(
+                          "Are you sure you want to delete this sensor? This action cannot be undone."
+                        )
+                      ) {
+                        console.log("User confirmed delete");
+                        const success = await deleteSensor(params.id);
+                        console.log("Delete result:", success);
+                        if (success) {
+                          router.push("/");
                         } else {
-                          console.log("User cancelled delete");
+                          alert("Failed to delete sensor");
                         }
-                      }, 0);
-                    }}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                )}
+                      } else {
+                        console.log("User cancelled delete");
+                      }
+                    }, 0);
+                  }}
+                >
+                  Delete
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -2191,28 +2188,34 @@ export default function SensorDetailPage() {
             <CardContent className="p-4 2xl:p-6">
               <div className="flex flex-col w-full h-full">
                 <h3
-                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${safeTemp > (configData?.alarm_ths || 35) * 0.7 && safeTemp <= (configData?.alarm_ths || 35)
-                    ? "text-gray-900"
-                    : "text-white"
-                    }`}
+                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${
+                    safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
+                    safeTemp <= (configData?.alarm_ths || 35)
+                      ? "text-gray-900"
+                      : "text-white"
+                  }`}
                 >
                   Temperature
                 </h3>
 
                 <div className="flex justify-between items-center mb-1">
                   <div
-                    className={`text-2xl md:text-4xl 2xl:text-6xl font-extrabold ${safeTemp > (configData?.alarm_ths || 35) * 0.7 && safeTemp <= (configData?.alarm_ths || 35)
-                      ? "text-gray-900"
-                      : "text-white"
-                      }`}
+                    className={`text-2xl md:text-4xl 2xl:text-6xl font-extrabold ${
+                      safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
+                      safeTemp <= (configData?.alarm_ths || 35)
+                        ? "text-gray-900"
+                        : "text-white"
+                    }`}
                   >
                     {safeTemp.toFixed(0)}°C
                   </div>
                   <div
-                    className={`text-xl 2xl:text-4xl font-bold ${safeTemp > (configData?.alarm_ths || 35) * 0.7 && safeTemp <= (configData?.alarm_ths || 35)
-                      ? "text-gray-900"
-                      : "text-white"
-                      }`}
+                    className={`text-xl 2xl:text-4xl font-bold ${
+                      safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
+                      safeTemp <= (configData?.alarm_ths || 35)
+                        ? "text-gray-900"
+                        : "text-white"
+                    }`}
                   >
                     {safeTemp > (configData?.alarm_ths || 35)
                       ? "Critical"
@@ -2223,10 +2226,12 @@ export default function SensorDetailPage() {
                 </div>
 
                 <div
-                  className={`mt-auto text-sm 2xl:text-xl font-medium ${safeTemp > (configData?.alarm_ths || 35) * 0.7 && safeTemp <= (configData?.alarm_ths || 35)
-                    ? "text-gray-700"
-                    : "text-gray-300"
-                    }`}
+                  className={`mt-auto text-sm 2xl:text-xl font-medium ${
+                    safeTemp > (configData?.alarm_ths || 35) * 0.7 &&
+                    safeTemp <= (configData?.alarm_ths || 35)
+                      ? "text-gray-700"
+                      : "text-gray-300"
+                  }`}
                 >
                   Threshold max: {configData?.thresholdMax ?? 2.5} °C
                 </div>
@@ -2240,48 +2245,69 @@ export default function SensorDetailPage() {
             >
               <CardContent className="p-4 2xl:p-6">
                 <h3
-                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
-                    ? "!text-white"
-                    : "!text-black"
-                    }`}
+                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(xStats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                  }`}
                 >
                   Horizontal (H)
                 </h3>
                 <div className="space-y-0">
                   <div className="flex justify-between items-end">
                     <span
-                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`font-semibold text-xl 2xl:text-2xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(xStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
                       Acceleration
                     </span>
                     <span
-                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(xStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
-                      {xStats.accelTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">G</span>
+                      {xStats.accelTopPeak}{" "}
+                      <span className="text-sm 2xl:text-xl opacity-80 ml-1">
+                        G
+                      </span>
                     </span>
                   </div>
                   <div className="flex justify-between items-end">
                     <span
-                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`font-semibold text-xl 2xl:text-2xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(xStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
                       Velocity
                     </span>
                     <span
-                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(xStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(xStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
-                      {xStats.velocityTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">mm/s</span>
+                      {xStats.velocityTopPeak}{" "}
+                      <span className="text-sm 2xl:text-xl opacity-80 ml-1">
+                        mm/s
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -2296,48 +2322,69 @@ export default function SensorDetailPage() {
             >
               <CardContent className="p-4 2xl:p-6">
                 <h3
-                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
-                    ? "!text-white"
-                    : "!text-black"
-                    }`}
+                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(yStats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                  }`}
                 >
                   Vertical (V)
                 </h3>
                 <div className="space-y-0">
                   <div className="flex justify-between items-end">
                     <span
-                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`font-semibold text-xl 2xl:text-2xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(yStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
                       Acceleration
                     </span>
                     <span
-                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(yStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
-                      {yStats.accelTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">G</span>
+                      {yStats.accelTopPeak}{" "}
+                      <span className="text-sm 2xl:text-xl opacity-80 ml-1">
+                        G
+                      </span>
                     </span>
                   </div>
                   <div className="flex justify-between items-end">
                     <span
-                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`font-semibold text-xl 2xl:text-2xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(yStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
                       Velocity
                     </span>
                     <span
-                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(yStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(yStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
-                      {yStats.velocityTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">mm/s</span>
+                      {yStats.velocityTopPeak}{" "}
+                      <span className="text-sm 2xl:text-xl opacity-80 ml-1">
+                        mm/s
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -2352,48 +2399,69 @@ export default function SensorDetailPage() {
             >
               <CardContent className="p-4 2xl:p-6">
                 <h3
-                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
-                    ? "!text-white"
-                    : "!text-black"
-                    }`}
+                  className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(zStats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                  }`}
                 >
                   Axial (A)
                 </h3>
                 <div className="space-y-0">
                   <div className="flex justify-between items-end">
                     <span
-                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`font-semibold text-xl 2xl:text-2xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(zStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
                       Acceleration
                     </span>
                     <span
-                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(zStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
-                      {zStats.accelTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">G</span>
+                      {zStats.accelTopPeak}{" "}
+                      <span className="text-sm 2xl:text-xl opacity-80 ml-1">
+                        G
+                      </span>
                     </span>
                   </div>
                   <div className="flex justify-between items-end">
                     <span
-                      className={`font-semibold text-xl 2xl:text-2xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`font-semibold text-xl 2xl:text-2xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(zStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
                       Velocity
                     </span>
                     <span
-                      className={`text-right font-bold text-2xl 2xl:text-5xl ${shouldTextBeWhite(getDetailCardColor(parseFloat(zStats.velocityTopPeak)))
-                        ? "!text-white"
-                        : "!text-black"
-                        }`}
+                      className={`text-right font-bold text-2xl 2xl:text-5xl ${
+                        shouldTextBeWhite(
+                          getDetailCardColor(parseFloat(zStats.velocityTopPeak))
+                        )
+                          ? "!text-white"
+                          : "!text-black"
+                      }`}
                     >
-                      {zStats.velocityTopPeak} <span className="text-sm 2xl:text-xl opacity-80 ml-1">mm/s</span>
+                      {zStats.velocityTopPeak}{" "}
+                      <span className="text-sm 2xl:text-xl opacity-80 ml-1">
+                        mm/s
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -2430,16 +2498,16 @@ export default function SensorDetailPage() {
                     </h2>
                     {(user?.role?.toLowerCase() === "admin" ||
                       user?.role?.toLowerCase() === "editor") && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
-                          onClick={() => router.push(`/register?id=${params.id}`)}
-                        >
-                          <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
-                          Edit
-                        </Button>
-                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
+                        onClick={() => router.push(`/register?id=${params.id}`)}
+                      >
+                        <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
+                        Edit
+                      </Button>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] gap-x-8 gap-y-1 text-base 2xl:text-xl">
@@ -2458,10 +2526,11 @@ export default function SensorDetailPage() {
                     {/* Machine Number */}
                     <span className="text-gray-400">Machine Number</span>
                     <span
-                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${configData.machineNumber
-                        ? "text-white"
-                        : "text-gray-500"
-                        }`}
+                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${
+                        configData.machineNumber
+                          ? "text-white"
+                          : "text-gray-500"
+                      }`}
                     >
                       {configData.machineNumber || "Not Set"}
                     </span>
@@ -2469,10 +2538,11 @@ export default function SensorDetailPage() {
                     {/* Installation Point */}
                     <span className="text-gray-400">Installation Point</span>
                     <span
-                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${configData.installationPoint
-                        ? "text-white"
-                        : "text-gray-500"
-                        }`}
+                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${
+                        configData.installationPoint
+                          ? "text-white"
+                          : "text-gray-500"
+                      }`}
                     >
                       {configData.installationPoint || "Not Set"}
                     </span>
@@ -2480,12 +2550,13 @@ export default function SensorDetailPage() {
                     {/* Machine Class */}
                     <span className="text-gray-400">Machine Class</span>
                     <span
-                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${configData.machineClass ? "text-white" : "text-gray-500"
-                        }`}
+                      className={`text-lg 2xl:text-2xl whitespace-nowrap ${
+                        configData.machineClass ? "text-white" : "text-gray-500"
+                      }`}
                     >
                       {configData.machineClass
                         ? configData.machineClass.charAt(0).toUpperCase() +
-                        configData.machineClass.slice(1)
+                          configData.machineClass.slice(1)
                         : "Not Set"}
                     </span>
 
@@ -2496,8 +2567,8 @@ export default function SensorDetailPage() {
                     <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
                       {sensor?.installationDate
                         ? formatDate(
-                          new Date(sensor.installationDate).toISOString()
-                        )
+                            new Date(sensor.installationDate).toISOString()
+                          )
                         : "Not Set"}
                     </span>
 
@@ -2699,8 +2770,8 @@ export default function SensorDetailPage() {
                     <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
                       {sensor?.installationDate
                         ? formatDate(
-                          new Date(sensor.installationDate).toISOString()
-                        )
+                            new Date(sensor.installationDate).toISOString()
+                          )
                         : formatDate("2025-04-26")}
                     </span>
 
@@ -2738,10 +2809,11 @@ export default function SensorDetailPage() {
                         {sortedDatetimes.map((datetime, index) => (
                           <li key={`${datetime}-${index}`}>
                             <button
-                              className={`w-full text-left px-2 py-1 rounded hover:bg-[#374151]/50 text-white ${selectedDatetime === datetime
-                                ? "bg-blue-600"
-                                : ""
-                                }`}
+                              className={`w-full text-left px-2 py-1 rounded hover:bg-[#374151]/50 text-white ${
+                                selectedDatetime === datetime
+                                  ? "bg-blue-600"
+                                  : ""
+                              }`}
                               onClick={async () => {
                                 setSelectedDatetime(datetime);
                                 try {
@@ -2776,7 +2848,6 @@ export default function SensorDetailPage() {
           </CardContent>
         </Card>
 
-
         {/* Vibration Analysis Section */}
         <Card className="bg-[#0B1121] border-[1.35px] border-[#374151]">
           <CardContent className="p-6">
@@ -2796,9 +2867,7 @@ export default function SensorDetailPage() {
                       onChange={() => setSelectedAxis("H-axis")}
                       className="w-4 h-4 accent-blue-600"
                     />
-                    <span className="text-xl font-bold text-white">
-                      H
-                    </span>
+                    <span className="text-xl font-bold text-white">H</span>
                   </label>
                 )}
                 {configData.vAxisEnabled && (
@@ -2809,9 +2878,7 @@ export default function SensorDetailPage() {
                       onChange={() => setSelectedAxis("V-axis")}
                       className="w-4 h-4 accent-blue-600"
                     />
-                    <span className="text-xl font-bold text-white">
-                      V
-                    </span>
+                    <span className="text-xl font-bold text-white">V</span>
                   </label>
                 )}
                 {configData.aAxisEnabled && (
@@ -2822,9 +2889,7 @@ export default function SensorDetailPage() {
                       onChange={() => setSelectedAxis("A-axis")}
                       className="w-4 h-4 accent-blue-600"
                     />
-                    <span className="text-xl font-bold text-white">
-                      A
-                    </span>
+                    <span className="text-xl font-bold text-white">A</span>
                   </label>
                 )}
               </div>
@@ -2838,9 +2903,7 @@ export default function SensorDetailPage() {
                     onChange={() => setSelectedUnit("Acceleration (G)")}
                     className="w-4 h-4 accent-blue-600"
                   />
-                  <span className="text-xl font-bold text-white">
-                    G
-                  </span>
+                  <span className="text-xl font-bold text-white">G</span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
@@ -2849,9 +2912,7 @@ export default function SensorDetailPage() {
                     onChange={() => setSelectedUnit("Acceleration (mm/s²)")}
                     className="w-4 h-4 accent-blue-600"
                   />
-                  <span className="text-xl font-bold text-white">
-                    mm/s²
-                  </span>
+                  <span className="text-xl font-bold text-white">mm/s²</span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
@@ -2860,9 +2921,7 @@ export default function SensorDetailPage() {
                     onChange={() => setSelectedUnit("Velocity (mm/s)")}
                     className="w-4 h-4 accent-blue-600"
                   />
-                  <span className="text-xl font-bold text-white">
-                    mm/s
-                  </span>
+                  <span className="text-xl font-bold text-white">mm/s</span>
                 </label>
               </div>
             </div>
@@ -2886,7 +2945,9 @@ export default function SensorDetailPage() {
                           </span>
                         </div>
                         <span className="text-xl font-bold text-white">
-                          {hasData ? selectedUnit.match(/\(([^)]+)\)/)?.[1] : ""}
+                          {hasData
+                            ? selectedUnit.match(/\(([^)]+)\)/)?.[1]
+                            : ""}
                         </span>
                       </div>
 
@@ -3180,7 +3241,11 @@ export default function SensorDetailPage() {
                             yAxis: {
                               type: "value",
                               name: vibrationData.yAxisLabel
-                                ? vibrationData.yAxisLabel.replace("Acceleration ", "").replace("Velocity ", "").replace("(", "").replace(")", "")
+                                ? vibrationData.yAxisLabel
+                                    .replace("Acceleration ", "")
+                                    .replace("Velocity ", "")
+                                    .replace("(", "")
+                                    .replace(")", "")
                                 : "",
                               nameTextStyle: {
                                 color: "#fff",
@@ -3221,7 +3286,11 @@ export default function SensorDetailPage() {
                             series: [
                               {
                                 name: vibrationData.yAxisLabel
-                                  ? vibrationData.yAxisLabel.replace("Acceleration ", "").replace("Velocity ", "").replace("(", "").replace(")", "")
+                                  ? vibrationData.yAxisLabel
+                                      .replace("Acceleration ", "")
+                                      .replace("Velocity ", "")
+                                      .replace("(", "")
+                                      .replace(")", "")
                                   : "",
                                 type: "line",
                                 data: vibrationData.freqData.datasets[0].data,

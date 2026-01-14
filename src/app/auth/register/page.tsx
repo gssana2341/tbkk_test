@@ -74,7 +74,7 @@ export default function RegisterPage() {
       const errorMessage =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { message?: string } } }).response
-            ?.data?.message
+              ?.data?.message
           : err && typeof err === "object" && "message" in err
             ? (err as { message?: string }).message
             : undefined;

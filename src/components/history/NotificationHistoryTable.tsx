@@ -384,10 +384,11 @@ export function NotificationHistoryTable({
                         <td key={axis} className="py-4 px-4">
                           <div className="flex items-center justify-center gap-2">
                             <span
-                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${colorCode !== undefined
-                                ? getAxisColorCode(colorCode)
-                                : getAxisColor(entry[axis], entry.config)
-                                }`}
+                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${
+                                colorCode !== undefined
+                                  ? getAxisColorCode(colorCode)
+                                  : getAxisColor(entry[axis], entry.config)
+                              }`}
                             />
                             <span className="font-medium text-gray-300">
                               {entry[axis] != null

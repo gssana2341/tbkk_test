@@ -82,8 +82,9 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
     <FolderTreeFilterContext.Provider value={{ selectedIds, selectedSensors }}>
       <ProtectedRoute>
         <div
-          className={`flex bg-[#0B1121] ${isRegisterPage ? "min-h-screen" : "h-screen overflow-hidden"
-            }`}
+          className={`flex bg-[#0B1121] ${
+            isRegisterPage ? "min-h-screen" : "h-screen overflow-hidden"
+          }`}
         >
           {/* Left Sidebar - Navigation Menu (not covered by header) */}
           <div className="shrink-0">
@@ -92,31 +93,35 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
 
           {/* Right side with Header on top */}
           <div
-            className={`flex-1 flex flex-col ${isRegisterPage ? "" : "overflow-hidden"
-              }`}
+            className={`flex-1 flex flex-col ${
+              isRegisterPage ? "" : "overflow-hidden"
+            }`}
           >
             {/* Header at the top */}
             <Header />
 
             {/* Content area below header */}
             <div
-              className={`flex flex-1 ${isRegisterPage ? "" : "overflow-hidden"
-                }`}
+              className={`flex flex-1 ${
+                isRegisterPage ? "" : "overflow-hidden"
+              }`}
             >
               {/* Left Panel - Organization Tree - Width adjusts based on collapsed state */}
               <div
-                className={`shrink-0 bg-[#0B1121] border-r-[1.35px] border-[#374151] flex flex-col transition-all duration-300 ${isRegisterPage
-                  ? "sticky top-0 h-screen overflow-y-auto"
-                  : "overflow-hidden"
-                  } ${collapsed ? "w-[52px]" : "w-64"}`}
+                className={`shrink-0 bg-[#0B1121] border-r-[1.35px] border-[#374151] flex flex-col transition-all duration-300 ${
+                  isRegisterPage
+                    ? "sticky top-0 h-screen overflow-y-auto"
+                    : "overflow-hidden"
+                } ${collapsed ? "w-[52px]" : "w-64"}`}
               >
                 <FolderTree onFilterChange={handleFilterChange} />
               </div>
 
               {/* Right Panel - Main Content Area */}
               <div
-                className={`flex-1 bg-[#0B1121] p-4 ${isRegisterPage ? "" : "overflow-auto"
-                  }`}
+                className={`flex-1 bg-[#0B1121] p-4 ${
+                  isRegisterPage ? "" : "overflow-auto"
+                }`}
               >
                 {children}
               </div>
