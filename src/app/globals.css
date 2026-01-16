@@ -28,6 +28,8 @@
   /* 14px */
   --text-h3: 0.7rem;
   /* 16px */
+
+  --font-sans: var(--font-inter);
 }
 
 @theme inline {

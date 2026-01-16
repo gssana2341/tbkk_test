@@ -111,10 +111,10 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
       <div className="flex-[2] p-2 border-[1px] border-[#374151] rounded-lg bg-[#030616] shadow-md text-white flex flex-col">
         {/* Top Section: Total Sensor Info */}
         <div className="rounded-md p-0 bg-[#030616] mb-2">
-          <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
+          <div className="flex flex-col sm:flex-row items-start justify-between sm:items-center gap-2">
             {/* Left: Total Sensor Info */}
-            <div className="flex-shrink-0 min-h-[48px] sm:min-h-[64px]">
-              <div className="text-lg sm:text-2xl md:text-3xl font-semibold text-white">
+            <div className="min-h-[50px] sm:min-h-[60px] flex flex-col justify-center">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">
                 Connected Sensor Total: {connectedTotal}
               </div>
               <div className="text-[10px] sm:text-xs text-white opacity-80 mt-0.5">
@@ -122,26 +122,22 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
               </div>
             </div>
 
-            {/* Right: Buttons */}
-            <div className="flex items-center gap-2 flex-1 justify-start sm:justify-end w-full sm:w-auto">
-              <div className="flex items-center gap-2">
-                {activeSelectedStatuses.length > 0 && (
-                  <button
-                    onClick={() => {
-                      const empty: SensorStatusType[] = [];
-                      if (onStatusFilterChange) {
-                        onStatusFilterChange(empty);
-                      } else {
-                        setInternalSelectedStatuses(empty);
-                      }
-                    }}
-                    className="h-[42px] px-3 text-sm text-muted-foreground hover:text-foreground underline whitespace-nowrap"
-                  >
-                    Clear filters ({activeSelectedStatuses.length})
-                  </button>
-                )}
-              </div>
-            </div>
+            {/* Right: Buttons (If filter is active) */}
+            {activeSelectedStatuses.length > 0 && (
+              <button
+                onClick={() => {
+                  const empty: SensorStatusType[] = [];
+                  if (onStatusFilterChange) {
+                    onStatusFilterChange(empty);
+                  } else {
+                    setInternalSelectedStatuses(empty);
+                  }
+                }}
+                className="h-[32px] px-3 text-xs text-muted-foreground hover:text-foreground underline whitespace-nowrap"
+              >
+                Clear filters ({activeSelectedStatuses.length})
+              </button>
+            )}
           </div>
         </div>
 
@@ -166,17 +162,17 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                     ? "border-[3px] border-black shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-105 z-10"
                     : "border-2 border-black",
                   activeSelectedStatuses.length > 0 &&
-                    !isSelected &&
-                    "opacity-40 scale-95 grayscale-[0.5]",
+                  !isSelected &&
+                  "opacity-40 scale-95 grayscale-[0.5]",
                   hasFilterFunction &&
-                    !isSelected &&
-                    "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
+                  !isSelected &&
+                  "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
                 )}
               >
                 <div className="flex items-center gap-2 w-full justify-center">
                   <span
                     className={cn(
-                      "text-xs font-medium capitalize",
+                      "text-sm md:text-base font-bold capitalize",
                       config.textColor
                     )}
                   >
@@ -185,7 +181,7 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                 </div>
                 <span
                   className={cn(
-                    "text-5xl font-bold leading-none",
+                    "text-3xl sm:text-4xl font-bold leading-none",
                     config.textColor
                   )}
                 >
@@ -200,9 +196,9 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
       {/* Card 2: Disconnect Section */}
       <div className="flex-1 p-2 border-[1px] border-[#374151] rounded-lg bg-[#030616] shadow-md text-white flex flex-col">
         <div className="rounded-md p-0 bg-[#030616] mb-2">
-          <div className="flex flex-col sm:flex-row items-start gap-4">
-            <div className="min-w-0 flex-1 break-words whitespace-normal min-h-[48px] sm:min-h-[64px]">
-              <div className="text-lg sm:text-2xl md:text-3xl font-semibold text-white">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="min-h-[50px] sm:min-h-[60px] flex flex-col justify-center">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">
                 Disconnected Sensor Total: {disconnectedTotal}
               </div>
               <div className="text-[10px] sm:text-xs text-transparent select-none mt-0.5">
@@ -229,17 +225,17 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                     ? "border-[3px] border-black shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-105 z-10"
                     : "border-2 border-black",
                   activeSelectedStatuses.length > 0 &&
-                    !isSelected &&
-                    "opacity-40 scale-95 grayscale-[0.5]",
+                  !isSelected &&
+                  "opacity-40 scale-95 grayscale-[0.5]",
                   hasFilterFunction &&
-                    !isSelected &&
-                    "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
+                  !isSelected &&
+                  "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
                 )}
               >
                 <div className="flex items-center gap-2 w-full justify-center">
                   <span
                     className={cn(
-                      "text-xs font-medium capitalize",
+                      "text-sm md:text-base font-bold capitalize",
                       config.textColor
                     )}
                   >
