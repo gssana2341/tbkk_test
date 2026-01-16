@@ -91,26 +91,6 @@ function getAxisColorCode(code: number | undefined) {
   return "bg-gray-400";
 }
 
-function getAxisColor(
-  value: number | null | undefined,
-  config?: {
-    thresholdMin: number;
-    thresholdMedium: number;
-    thresholdMax: number;
-  }
-) {
-  if (value == null) return "bg-gray-400";
-
-  const min = config?.thresholdMin ?? 2.5;
-  const medium = config?.thresholdMedium ?? 4.5;
-  const max = config?.thresholdMax ?? 9.0;
-
-  if (value < min) return axisColors.normal;
-  if (value < medium) return axisColors.warning;
-  if (value < max) return axisColors.concern;
-  return axisColors.critical;
-}
-
 export function NotificationHistoryTable({
   entries,
 }: NotificationHistoryTableProps) {
@@ -185,8 +165,8 @@ export function NotificationHistoryTable({
   }, [search, dateStart, dateEnd, data, sortConfig]);
 
   const hasEntries = rows.length > 0;
-  const totalPages = Math.max(1, Math.ceil(rows.length / 10));
-  const pagedRows = rows.slice((activePage - 1) * 10, activePage * 10);
+  const totalPages = Math.max(1, Math.ceil(rows.length / 20));
+  const pagedRows = rows.slice((activePage - 1) * 20, activePage * 20);
 
   const getClassNamesFor = (name: keyof NotificationEntry) => {
     if (!sortConfig) return "";
@@ -387,7 +367,7 @@ export function NotificationHistoryTable({
                               className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${
                                 colorCode !== undefined
                                   ? getAxisColorCode(colorCode)
-                                  : getAxisColor(entry[axis], entry.config)
+                                  : "bg-gray-400"
                               }`}
                             />
                             <span className="font-medium text-gray-300">

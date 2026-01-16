@@ -172,7 +172,7 @@ export interface ChartFreqData {
     borderColor: string;
     backgroundColor: string;
     tension: number;
-    pointRadius: number;
+    pointRadius: number | number[];
     pointBackgroundColor: string[];
   }>;
 }

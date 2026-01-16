@@ -706,19 +706,19 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
   const xStats = useMemo(() => {
     if (loading || !sensorLastData?.data)
       return {
-        accelTopPeak: "0.000",
-        velocityTopPeak: "0.000",
-        dominantFreq: "0.000",
+        accelTopPeak: "0.00",
+        velocityTopPeak: "0.00",
+        dominantFreq: "0.00",
         topPeaks: { G: [], mmPerS2: [], mmPerS: [] },
       };
     const hData = allChartData.h;
     const data = sensorLastData.data;
     return {
-      accelTopPeak: data.g_rms_h?.toFixed(3) || "0.000",
-      accelMmPerS2: data.a_rms_h?.toFixed(2) || "0.000",
-      velocityTopPeak: data.velo_rms_h?.toFixed(3) || "0.000",
+      accelTopPeak: data.g_rms_h?.toFixed(2) || "0.00",
+      accelMmPerS2: data.a_rms_h?.toFixed(2) || "0.00",
+      velocityTopPeak: data.velo_rms_h?.toFixed(2) || "0.00",
       dominantFreq:
-        hData["Velocity (mm/s)"]?.topPeaks?.[0]?.frequency || "0.000",
+        hData["Velocity (mm/s)"]?.topPeaks?.[0]?.frequency || "0.00",
       topPeaks: {
         G: hData["Acceleration (G)"]?.topPeaks || [],
         mmPerS2: hData["Acceleration (mm/s²)"]?.topPeaks || [],
@@ -730,19 +730,19 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
   const yStats = useMemo(() => {
     if (loading || !sensorLastData?.data)
       return {
-        accelTopPeak: "0.000",
-        velocityTopPeak: "0.000",
-        dominantFreq: "0.000",
+        accelTopPeak: "0.00",
+        velocityTopPeak: "0.00",
+        dominantFreq: "0.00",
         topPeaks: { G: [], mmPerS2: [], mmPerS: [] },
       };
     const vData = allChartData.v;
     const data = sensorLastData.data;
     return {
-      accelTopPeak: data.g_rms_v?.toFixed(3) || "0.000",
-      accelMmPerS2: data.a_rms_v?.toFixed(2) || "0.000",
-      velocityTopPeak: data.velo_rms_v?.toFixed(3) || "0.000",
+      accelTopPeak: data.g_rms_v?.toFixed(2) || "0.00",
+      accelMmPerS2: data.a_rms_v?.toFixed(2) || "0.00",
+      velocityTopPeak: data.velo_rms_v?.toFixed(2) || "0.00",
       dominantFreq:
-        vData["Velocity (mm/s)"]?.topPeaks?.[0]?.frequency || "0.000",
+        vData["Velocity (mm/s)"]?.topPeaks?.[0]?.frequency || "0.00",
       topPeaks: {
         G: vData["Acceleration (G)"]?.topPeaks || [],
         mmPerS2: vData["Acceleration (mm/s²)"]?.topPeaks || [],
@@ -754,19 +754,19 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
   const zStats = useMemo(() => {
     if (loading || !sensorLastData?.data)
       return {
-        accelTopPeak: "0.000",
-        velocityTopPeak: "0.000",
-        dominantFreq: "0.000",
+        accelTopPeak: "0.00",
+        velocityTopPeak: "0.00",
+        dominantFreq: "0.00",
         topPeaks: { G: [], mmPerS2: [], mmPerS: [] },
       };
     const aData = allChartData.a;
     const data = sensorLastData.data;
     return {
-      accelTopPeak: data.g_rms_a?.toFixed(3) || "0.000",
-      accelMmPerS2: data.a_rms_a?.toFixed(2) || "0.000",
-      velocityTopPeak: data.velo_rms_a?.toFixed(3) || "0.000",
+      accelTopPeak: data.g_rms_a?.toFixed(2) || "0.00",
+      accelMmPerS2: data.a_rms_a?.toFixed(2) || "0.00",
+      velocityTopPeak: data.velo_rms_a?.toFixed(2) || "0.00",
       dominantFreq:
-        aData["Velocity (mm/s)"]?.topPeaks?.[0]?.frequency || "0.000",
+        aData["Velocity (mm/s)"]?.topPeaks?.[0]?.frequency || "0.00",
       topPeaks: {
         G: aData["Acceleration (G)"]?.topPeaks || [],
         mmPerS2: aData["Acceleration (mm/s²)"]?.topPeaks || [],

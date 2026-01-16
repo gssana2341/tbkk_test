@@ -178,7 +178,7 @@ export default function SensorHistoryPage() {
       series.push({
         name: "H-axis",
         type: "line",
-        data: history.map((h) => getVal(h, "h").toFixed(3)),
+        data: history.map((h) => getVal(h, "h").toFixed(2)),
         color: "#00E5FF",
         smooth: false,
         symbol: "none", // No point
@@ -191,7 +191,7 @@ export default function SensorHistoryPage() {
       series.push({
         name: "V-axis",
         type: "line",
-        data: history.map((h) => getVal(h, "v").toFixed(3)),
+        data: history.map((h) => getVal(h, "v").toFixed(2)),
         color: "#4C6FFF",
         smooth: false,
         symbol: "none",
@@ -204,7 +204,7 @@ export default function SensorHistoryPage() {
       series.push({
         name: "A-axis",
         type: "line",
-        data: history.map((h) => getVal(h, "a").toFixed(3)),
+        data: history.map((h) => getVal(h, "a").toFixed(2)),
         color: "#C77DFF",
         smooth: false,
         symbol: "none",
@@ -222,7 +222,7 @@ export default function SensorHistoryPage() {
     // Auto scale: exactly 10% above max data value
     const yAxisMax =
       maxDataValue > 0
-        ? parseFloat((maxDataValue * 1.1).toFixed(3))
+        ? parseFloat((maxDataValue * 1.1).toFixed(2))
         : THRESHOLDS.RED_START + 1; // Fallback if no data
 
     const markArea = {
@@ -316,13 +316,13 @@ export default function SensorHistoryPage() {
       };
 
       if (selectedAxis === "all" || selectedAxis === "h") {
-        row[`H-axis (${selectedUnit})`] = getAxisVal(item, "h").toFixed(3);
+        row[`H-axis (${selectedUnit})`] = getAxisVal(item, "h").toFixed(2);
       }
       if (selectedAxis === "all" || selectedAxis === "v") {
-        row[`V-axis (${selectedUnit})`] = getAxisVal(item, "v").toFixed(3);
+        row[`V-axis (${selectedUnit})`] = getAxisVal(item, "v").toFixed(2);
       }
       if (selectedAxis === "all" || selectedAxis === "a") {
-        row[`A-axis (${selectedUnit})`] = getAxisVal(item, "a").toFixed(3);
+        row[`A-axis (${selectedUnit})`] = getAxisVal(item, "a").toFixed(2);
       }
 
       return row;
@@ -571,21 +571,21 @@ export default function SensorHistoryPage() {
                           {(selectedAxis === "all" || selectedAxis === "h") && (
                             <>
                               <td className="py-4 font-mono">
-                                {getVal(item, "h").toFixed(3)}
+                                {getVal(item, "h").toFixed(2)}
                               </td>
                             </>
                           )}
                           {(selectedAxis === "all" || selectedAxis === "v") && (
                             <>
                               <td className="py-4 font-mono">
-                                {getVal(item, "v").toFixed(3)}
+                                {getVal(item, "v").toFixed(2)}
                               </td>
                             </>
                           )}
                           {(selectedAxis === "all" || selectedAxis === "a") && (
                             <>
                               <td className="py-4 font-mono">
-                                {getVal(item, "a").toFixed(3)}
+                                {getVal(item, "a").toFixed(2)}
                               </td>
                             </>
                           )}

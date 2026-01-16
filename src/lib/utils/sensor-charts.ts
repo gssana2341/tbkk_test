@@ -151,9 +151,9 @@ export function prepareChartData(
   const theoreticalTotalTime = configData.lor / configData.fmax;
 
   const timeLabels = Array.from({ length: n }, (_, i) => {
-    if (n <= 1) return "0.0000";
-    if (i === n - 1) return theoreticalTotalTime.toFixed(4);
-    return ((i * theoreticalTotalTime) / (n - 1)).toFixed(4);
+    if (n <= 1) return "0.00";
+    if (i === n - 1) return theoreticalTotalTime.toFixed(2);
+    return ((i * theoreticalTotalTime) / (n - 1)).toFixed(2);
   });
 
   let processedData: number[];
@@ -205,47 +205,60 @@ export function prepareChartData(
   let freqMagnitude: number[] = [];
   let freqLabels: string[] = [];
 
-  // CRITICAL: Alway calculate FFT from the Time Domain data (effectiveAccData)
-  // to get a high-resolution, continuous spectrum as shown in the user's reference.
+  // 1. ALWAYS calculate high-resolution spectrum from Time Domain for the LINE GRAPH
+  let calculatedMagnitude: number[] = [];
+  let calculatedLabels: string[] = [];
+
   if (effectiveAccData && effectiveAccData.length > 0) {
     const fftResult = calculateFFT(effectiveAccData, configData.fmax);
-    freqMagnitude = fftResult.magnitude;
-    freqLabels = fftResult.frequency.map((f: number) => f.toFixed(2));
-  } else if (freqData && freqData.length > 0) {
-    // Fallback to provided freqData only if no time domain data exists
-    let finalFreq = fPoints || freqData.map((_, i) => i);
-    if (finalFreq.length === freqData.length) {
-      const sorted = prepareCombinedSortedData(finalFreq, freqData);
-      freqMagnitude = sorted.sortedMag;
-      freqLabels = sorted.sortedFreq.map((f) => f.toFixed(2));
+    calculatedMagnitude = fftResult.magnitude;
+    calculatedLabels = fftResult.frequency.map((f: number) => f.toFixed(2));
+  }
+
+  // 2. DEFINE Source for PEAKS (Prefer sensor data if provided)
+  let peakSourceMag = calculatedMagnitude;
+  let peakSourceLabels = calculatedLabels;
+
+  if (freqData && freqData.length > 0) {
+    let sensorFreq = fPoints || freqData.map((_, i) => i);
+    if (sensorFreq.length === freqData.length) {
+      const sorted = prepareCombinedSortedData(sensorFreq, freqData);
+      peakSourceMag = sorted.sortedMag;
+      peakSourceLabels = sorted.sortedFreq.map((f) => f.toFixed(2));
     } else {
-      freqMagnitude = freqData;
-      freqLabels = freqData.map((_, i) => i.toFixed(2));
+      peakSourceMag = freqData;
+      peakSourceLabels = freqData.map((_, i) => i.toFixed(2));
     }
   }
 
+  // Use calculated FFT for the graph visualization
+  freqMagnitude = calculatedMagnitude;
+  freqLabels = calculatedLabels;
+
   if (freqMagnitude.length > 0) {
-    // Only cutoff if we are using calculated FFT or if Fmax is reasonably large
-    const maxDisplayFreq = Math.max(
-      configData.fmax,
-      ...freqLabels.map((f) => parseFloat(f))
-    );
-    // If the user's config is way too small compared to data, we show all data
-    const realCutoff = Math.max(
-      configData.fmax,
-      1.1 * Math.max(...freqLabels.map((f) => parseFloat(f)))
+    // Find peaks using the peak source (Sensor data)
+    const { topPeaks: processedPeaks } = findTopPeaks(
+      peakSourceMag,
+      peakSourceLabels,
+      configData.lor,
+      5
     );
 
-    // Actually, if it's spectrum data from API, let's not cutoff at all unless it's huge
-    // For now, let's just make sure we don't cutoff if it results in 0 points
-    const cutOffIdx = freqLabels.findIndex((f) => parseFloat(f) > realCutoff);
-    if (cutOffIdx !== -1 && cutOffIdx > 0) {
-      freqMagnitude = freqMagnitude.slice(0, cutOffIdx);
-      freqLabels = freqLabels.slice(0, cutOffIdx);
-    }
-
-    const { topPeaks: processedPeaks, pointBackgroundColor: processedColors } =
-      findTopPeaks(freqMagnitude, freqLabels, configData.lor, 5);
+    // Create colored dots for the chart based on the selected peaks
+    // We need to match the peak frequencies (from sensor) to the labels in our calculated FFT graph
+    const pointRadius = new Array(freqMagnitude.length).fill(0);
+    const pointBackgroundColor = new Array(freqMagnitude.length).fill(
+      "transparent"
+    );
+    processedPeaks.forEach((peak) => {
+      const closestIdx = freqLabels.findIndex(
+        (l) => Math.abs(parseFloat(l) - parseFloat(peak.frequency)) < 0.5
+      );
+      if (closestIdx !== -1) {
+        pointBackgroundColor[closestIdx] = "red";
+        pointRadius[closestIdx] = 4;
+      }
+    });
 
     const freqChartData = {
       labels: freqLabels,
@@ -256,8 +269,8 @@ export function prepareChartData(
           borderColor: "#3b82f6",
           backgroundColor: "rgba(59, 130, 246, 0.1)",
           tension: 0.1,
-          pointRadius: 0,
-          pointBackgroundColor: processedColors,
+          pointRadius: pointRadius,
+          pointBackgroundColor: pointBackgroundColor,
         },
       ],
     };
@@ -296,15 +309,35 @@ export function prepareChartData(
 export function formatDateTimeDayFirst(dateStr: string): string {
   if (!dateStr) return "-";
   try {
+    // Check if format is ISO (contains T)
+    if (dateStr.includes("T")) {
+      const [datePart, timePartRaw] = dateStr.split("T");
+      if (datePart && timePartRaw) {
+        const date = datePart.split("-").reverse().join("/");
+        const time = timePartRaw.split("Z")[0].split(".")[0]; // Remove Z and milliseconds
+        // Handle HH:mm:ss -> HH:mm
+        const timeParts = time.split(":");
+        if (timeParts.length >= 2) {
+          return `${date} ${timeParts[0]}:${timeParts[1]}`;
+        }
+        return `${date} ${time}`;
+      }
+    }
+
+    // Fallback to simpler parsing for non-ISO or if split fails
     const date = new Date(dateStr);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
+    if (isNaN(date.getTime())) return dateStr;
+
+    return date
+      .toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+      .replace(",", "");
   } catch {
     return dateStr;
   }

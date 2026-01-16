@@ -112,18 +112,18 @@ export const VibrationAnalysisSection: React.FC<
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Left Column: RMS Overall + Top 5 Peaks */}
             <div className="bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                  <h4 className="text-xl font-bold text-white">
-                    {selectedUnit.split(" ")[0]} RMS Overall :
-                  </h4>
-                  <span className="text-xl font-bold text-white">
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+                  {selectedUnit.split(" ")[0]} RMS Overall :
+                </h4>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
                     {hasData ? vibrationData.rmsValue : "-"}
                   </span>
+                  <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+                    {hasData ? selectedUnit.match(/\(([^)]+)\)/)?.[1] : ""}
+                  </span>
                 </div>
-                <span className="text-xl font-bold text-white">
-                  {hasData ? selectedUnit.match(/\(([^)]+)\)/)?.[1] : ""}
-                </span>
               </div>
 
               <div className="mb-4">
@@ -157,9 +157,11 @@ export const VibrationAnalysisSection: React.FC<
               </div>
             </div>
 
-            {/* Right Column: Short Trend */}
+            {/* Right Column: Trend Last Up Date Data */}
             <div className="bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
-              <h4 className="text-xl font-bold text-white mb-8">Short Trend</h4>
+              <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white mb-8 text-center">
+                Trend Last Up Date Data
+              </h4>
               <div className="overflow-x-auto max-h-80 overflow-y-auto custom-scrollbar">
                 <table className="min-w-full text-base">
                   <thead className="sticky top-0 bg-[#0B1121]">
@@ -185,14 +187,14 @@ export const VibrationAnalysisSection: React.FC<
                         let unitShort = "";
 
                         if (selectedUnit === "Acceleration (G)") {
-                          rmsValue = (item[`g_rms_${axisKey}`] || 0).toFixed(3);
+                          rmsValue = (item[`g_rms_${axisKey}`] || 0).toFixed(2);
                           unitShort = "G";
                         } else if (selectedUnit === "Acceleration (mm/s²)") {
                           rmsValue = (item[`a_rms_${axisKey}`] || 0).toFixed(2);
                           unitShort = "mm/s²";
                         } else {
                           rmsValue = (item[`velo_rms_${axisKey}`] || 0).toFixed(
-                            3
+                            2
                           );
                           unitShort = "mm/s";
                         }
@@ -231,7 +233,12 @@ export const VibrationAnalysisSection: React.FC<
           <div>
             <h3 className="text-base font-semibold mb-3 text-white">
               <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
-                Time Domain : {selectedAxis.split("-")[0]}
+                Time Domain :{" "}
+                {selectedAxis === "H-axis"
+                  ? "Horizontal (H)"
+                  : selectedAxis === "V-axis"
+                    ? "Vertical (V)"
+                    : "Axial (A)"}
               </span>
             </h3>
             <div className="h-80 bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-4">
@@ -247,7 +254,7 @@ export const VibrationAnalysisSection: React.FC<
                         if (params && params.length > 0) {
                           const time = params[0].axisValue;
                           const value = params[0].value;
-                          return `F(ts) ${time} s<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(4)}`;
+                          return `F(ts) ${time} s<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(2)}`;
                         }
                         return "";
                       },
@@ -345,13 +352,15 @@ export const VibrationAnalysisSection: React.FC<
             <div className="space-y-4">
               {/* Frequency Domain Chart */}
               <div>
-                <h3 className="text-lg font-bold text-gray-100 mb-2">
-                  Frequency Domain :{" "}
-                  {selectedAxis === "H-axis"
-                    ? "H"
-                    : selectedAxis === "V-axis"
-                      ? "V"
-                      : "A"}
+                <h3 className="text-base font-semibold mb-3 text-white">
+                  <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+                    Frequency Domain :{" "}
+                    {selectedAxis === "H-axis"
+                      ? "Horizontal (H)"
+                      : selectedAxis === "V-axis"
+                        ? "Vertical (V)"
+                        : "Axial (A)"}
+                  </span>
                 </h3>
                 <div className="h-[300px] w-full bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4 relative">
                   {vibrationData.hasData &&
@@ -370,7 +379,7 @@ export const VibrationAnalysisSection: React.FC<
                             if (params && params.length > 0) {
                               const freq = params[0].axisValue;
                               const value = params[0].value;
-                              return `F(Hz): ${freq} Hz<br/>Magnitude: ${Number(value).toFixed(4)}`;
+                              return `F(Hz): ${freq} Hz<br/>Magnitude: ${Number(value).toFixed(2)}`;
                             }
                             return "";
                           },

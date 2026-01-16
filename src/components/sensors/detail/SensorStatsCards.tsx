@@ -141,69 +141,58 @@ export const SensorStatsCards: React.FC<SensorStatsCardsProps> = ({
               >
                 {axis.label}
               </h3>
-              <div className="space-y-0">
-                <div className="flex justify-between items-end">
-                  <span
-                    className={`font-semibold text-xl 2xl:text-2xl ${
-                      shouldTextBeWhite(
-                        getDetailCardColor(
-                          parseFloat(axis.stats.velocityTopPeak)
-                        )
-                      )
-                        ? "!text-white"
-                        : "!text-black"
-                    }`}
-                  >
-                    Acceleration
+              <div className="grid grid-cols-[1fr_auto] 2xl:grid-cols-[1.2fr_1fr] gap-x-2 2xl:gap-x-4 items-baseline mt-2">
+                <span
+                  className={`font-bold text-lg md:text-xl 2xl:text-3xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                  }`}
+                >
+                  Acceleration
+                </span>
+                <span
+                  className={`font-bold text-lg md:text-xl 2xl:text-3xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                  }`}
+                >
+                  {axis.stats.accelTopPeak}{" "}
+                  <span className="text-sm md:text-base 2xl:text-2xl opacity-80 ml-1">
+                    G
                   </span>
-                  <span
-                    className={`text-right font-bold text-2xl 2xl:text-5xl ${
-                      shouldTextBeWhite(
-                        getDetailCardColor(
-                          parseFloat(axis.stats.velocityTopPeak)
-                        )
-                      )
-                        ? "!text-white"
-                        : "!text-black"
-                    }`}
-                  >
-                    {axis.stats.accelTopPeak}{" "}
-                    <span className="text-sm 2xl:text-xl opacity-80 ml-1">
-                      G
-                    </span>
+                </span>
+
+                <span
+                  className={`font-bold text-lg md:text-xl 2xl:text-3xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                  }`}
+                >
+                  Velocity
+                </span>
+                <span
+                  className={`font-bold text-lg md:text-xl 2xl:text-3xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                    )
+                      ? "!text-white"
+                      : "!text-black"
+                  }`}
+                >
+                  {axis.stats.velocityTopPeak}{" "}
+                  <span className="text-sm md:text-base 2xl:text-2xl opacity-80 ml-1">
+                    mm/s
                   </span>
-                </div>
-                <div className="flex justify-between items-end">
-                  <span
-                    className={`font-semibold text-xl 2xl:text-2xl ${
-                      shouldTextBeWhite(
-                        getDetailCardColor(
-                          parseFloat(axis.stats.velocityTopPeak)
-                        )
-                      )
-                        ? "!text-white"
-                        : "!text-black"
-                    }`}
-                  >
-                    Velocity
-                  </span>
-                  <span
-                    className={`text-right font-bold text-2xl 2xl:text-5xl ${
-                      shouldTextBeWhite(
-                        getDetailCardColor(
-                          parseFloat(axis.stats.velocityTopPeak)
-                        )
-                      )
-                        ? "!text-white"
-                        : "!text-black"
-                    }`}
-                  >
-                    {axis.stats.velocityTopPeak}{" "}
-                    <span className="text-sm 2xl:text-xl opacity-80 ml-1">
-                      mm/s
-                    </span>
-                  </span>
-                </div>
+                </span>
               </div>
             </CardContent>
           </Card>

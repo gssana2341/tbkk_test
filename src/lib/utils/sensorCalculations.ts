@@ -144,20 +144,17 @@ export function calculateFFT(
     const Fs = maxFreq * 2.56;
     const df = Fs / nextPow2;
 
-    for (let i = 0; i < nextPow2; i++) {
+    // We only return points up to maxFreq (Nyquist frequency or user defined Fmax)
+    // Actually, maxFreq here is what the user wants to see.
+    // The FFT gives points up to Fs. We only need up to maxFreq.
+    const maxPoints = Math.floor(maxFreq / df) + 1;
+
+    for (let i = 0; i < Math.min(maxPoints, nextPow2); i++) {
       const real = outputComplex[2 * i];
       const imag = outputComplex[2 * i + 1];
 
-      // Calculate magnitude
-      // Normalization: Divide by N (number of samples)
-      // And for single-sided spectrum of real signal, usually multiply by 2 (except DC).
-      // But user essentially asked for "Complex -> Magnitude".
-      // Let's stick to simple |C| / N normalization for now, or match the chart scale roughly.
-      // Previous code used: (2.56 / n) * abs ??? That was specific to some hardware scaling.
-      // Let's use standard DSP: Mag = 2 * |DFT| / N
-
       const abs = Math.sqrt(real * real + imag * imag);
-      magnitude.push((2 * abs) / n); // Normalize by original N is common
+      magnitude.push((2 * abs) / n);
 
       frequency.push(i * df);
     }
@@ -241,9 +238,9 @@ export function getAxisTopPeakStats(
         accelTopPeak: "0.00",
         velocityTopPeak: "0.00",
         dominantFreq: "0.00",
-        rms: rms.toFixed(3),
-        peak: peak.toFixed(3),
-        peakToPeak: peakToPeak.toFixed(3),
+        rms: rms.toFixed(2),
+        peak: peak.toFixed(2),
+        peakToPeak: peakToPeak.toFixed(2),
       };
     }
 
@@ -289,9 +286,9 @@ export function getAxisTopPeakStats(
       accelTopPeak: accelTopPeak.toFixed(2),
       velocityTopPeak: velocityTopPeak.toFixed(2),
       dominantFreq: dominantFreq.toFixed(2),
-      rms: rms.toFixed(3),
-      peak: peak.toFixed(3),
-      peakToPeak: peakToPeak.toFixed(3),
+      rms: rms.toFixed(2),
+      peak: peak.toFixed(2),
+      peakToPeak: peakToPeak.toFixed(2),
     };
   } catch (error) {
     // Error in getAxisTopPeakStats
@@ -524,17 +521,17 @@ export function calculateVibrationStats(
 
     // ===== RETURN RESULTS =====
     return {
-      rms: rmsTotal.toFixed(3),
-      peak: peakTotal.toFixed(3),
+      rms: rmsTotal.toFixed(2),
+      peak: peakTotal.toFixed(2),
       status,
       // Additional detailed stats for debugging/advanced use
       details: {
-        rmsX: rmsX.toFixed(3),
-        rmsY: rmsY.toFixed(3),
-        rmsZ: rmsZ.toFixed(3),
-        peakX: peakX.toFixed(3),
-        peakY: peakY.toFixed(3),
-        peakZ: peakZ.toFixed(3),
+        rmsX: rmsX.toFixed(2),
+        rmsY: rmsY.toFixed(2),
+        rmsZ: rmsZ.toFixed(2),
+        peakX: peakX.toFixed(2),
+        peakY: peakY.toFixed(2),
+        peakZ: peakZ.toFixed(2),
       },
     };
   } catch (error) {
@@ -545,12 +542,12 @@ export function calculateVibrationStats(
       peak: "0.000",
       status: "Normal",
       details: {
-        rmsX: "0.000",
-        rmsY: "0.000",
-        rmsZ: "0.000",
-        peakX: "0.000",
-        peakY: "0.000",
-        peakZ: "0.000",
+        rmsX: "0.00",
+        rmsY: "0.00",
+        rmsZ: "0.00",
+        peakX: "0.00",
+        peakY: "0.00",
+        peakZ: "0.00",
       },
     };
   }
@@ -573,7 +570,7 @@ export function calculateAxisRMS(
     const rms = Math.sqrt(
       gData.reduce((sum, val) => sum + val * val, 0) / gData.length
     );
-    return rms.toFixed(3);
+    return rms.toFixed(2);
   } catch (error) {
     console.error("Error calculating axis RMS:", error);
     return "0.000";
@@ -595,7 +592,7 @@ export function calculateAxisPeak(
   try {
     const gData = axisData.map((adc) => adcToAccelerationG(adc, g_scale));
     const peak = Math.max(...gData.map(Math.abs));
-    return peak.toFixed(3);
+    return peak.toFixed(2);
   } catch (error) {
     console.error("Error calculating axis peak:", error);
     return "0.000";
@@ -619,7 +616,7 @@ export function calculateAxisPeakToPeak(
     const max = Math.max(...gData);
     const min = Math.min(...gData);
     const peakToPeak = max - min;
-    return peakToPeak.toFixed(3);
+    return peakToPeak.toFixed(2);
   } catch (error) {
     console.error("Error calculating axis peak-to-peak:", error);
     return "0.000";
@@ -747,7 +744,7 @@ export function getAxisStats(axisData: number[], timeInterval: number) {
 
     return {
       accelRMS: maxMagnitude.toFixed(2),
-      velocityRMS: maxVelocity.toFixed(3),
+      velocityRMS: maxVelocity.toFixed(2),
       dominantFreq: dominantFreq.toFixed(2),
     };
   } catch {

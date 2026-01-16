@@ -20,50 +20,39 @@ export default function NotificationHistoryPage() {
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      // Fetch data from the new endpoint
-      const response = await getNotificationLogs({ limit: 10000 });
+      let allLogs: NotificationLog[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
 
-      // Transform NotificationLog to NotificationEntry format
-      const notificationEntries: NotificationEntry[] = response.data.map(
+      // 1. Loop to fetch all pages (handling backend limit)
+      do {
+        const response = await getNotificationLogs({
+          limit: 100,
+          page: currentPage,
+        });
+
+        if (response.data && response.data.length > 0) {
+          allLogs = [...allLogs, ...response.data];
+        }
+
+        totalPages = response.total_pages || 1;
+        currentPage++;
+      } while (currentPage <= totalPages);
+
+      // 2. Transform NotificationLog to NotificationEntry format
+      const notificationEntries: NotificationEntry[] = allLogs.map(
         (log: NotificationLog) => {
-          // 1. Recalculate true status using thresholds and axis values
-          const hVal = log.h_vrms || 0;
-          const vVal = log.v_vrms || 0;
-          const aVal = log.a_vrms || 0;
-
-          // Prepare config for threshold utility
-          const config = {
-            thresholdMin: log.threshold_min ?? 2.0,
-            thresholdMedium: log.threshold_medium ?? 2.5,
-            thresholdMax: log.threshold_max ?? 3.0,
+          // Map API status to Title Case for UI consistency
+          const apiStatus = log.status?.toLowerCase() || "normal";
+          const statusMap: Record<string, NotificationEntry["status"]> = {
+            critical: "Critical",
+            concern: "Concern",
+            warning: "Warning",
+            normal: "Normal",
+            standby: "Standby",
+            lost: "Lost",
           };
-
-          const hStatus = getVibrationLevelFromConfig(hVal, config);
-          const vStatus = getVibrationLevelFromConfig(vVal, config);
-          const aStatus = getVibrationLevelFromConfig(aVal, config);
-
-          // Determine worst status among axes
-          let calculatedLevel: VibrationLevel = "normal";
-          const levels = [hStatus, vStatus, aStatus];
-
-          if (levels.includes("critical")) {
-            calculatedLevel = "critical";
-          } else if (levels.includes("concern")) {
-            calculatedLevel = "concern";
-          } else if (levels.includes("warning")) {
-            calculatedLevel = "warning";
-          }
-
-          // Status mapping (Component expects Title Case)
-          const statusMap: Record<VibrationLevel, NotificationEntry["status"]> =
-            {
-              critical: "Critical",
-              concern: "Concern",
-              warning: "Warning",
-              normal: "Normal",
-            };
-
-          const finalStatus = statusMap[calculatedLevel];
+          const finalStatus = statusMap[apiStatus] || "Normal";
 
           // Format datetime from log
           const dateObj = new Date(log.datetime);
@@ -97,15 +86,15 @@ export default function NotificationHistoryPage() {
               : null,
             battery: log.battery ? `${Math.round(log.battery)}%` : null,
             config: {
-              thresholdMin: config.thresholdMin,
-              thresholdMedium: config.thresholdMedium,
-              thresholdMax: config.thresholdMax,
+              thresholdMin: log.threshold_min ?? 2.0,
+              thresholdMedium: log.threshold_medium ?? 2.5,
+              thresholdMax: log.threshold_max ?? 3.0,
             },
           };
         }
       );
 
-      // Sort by timestamp descending (Latest First) as requested
+      // Sort by timestamp descending (Latest First)
       const sortedEntries = notificationEntries.sort(
         (a, b) => b.timestamp - a.timestamp
       );

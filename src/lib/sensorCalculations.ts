@@ -55,15 +55,15 @@ export const getAxisTopPeakStats = (
     }
   }
 
-  const accelTopPeak = maxMag.toFixed(3);
+  const accelTopPeak = maxMag.toFixed(2);
 
   // Placeholder for velocity calculation
-  const velocityTopPeak = (maxMag * 10).toFixed(3);
+  const velocityTopPeak = (maxMag * 10).toFixed(2);
 
   return {
     accelTopPeak,
     velocityTopPeak,
-    dominantFreq: dominantFreq.toFixed(3),
+    dominantFreq: dominantFreq.toFixed(2),
   };
 };
 
@@ -75,8 +75,8 @@ export const calculateVibrationStats = (
   const allData = [...h, ...v, ...a];
   const rms = Math.sqrt(
     allData.reduce((sum, val) => sum + val * val, 0) / allData.length
-  ).toFixed(3);
-  const peak = Math.max(...allData.map(Math.abs)).toFixed(3);
+  ).toFixed(2);
+  const peak = Math.max(...allData.map(Math.abs)).toFixed(2);
   const status =
     parseFloat(rms) > 0.8
       ? "Critical"
@@ -115,7 +115,7 @@ export const findTopPeaks = (
     .slice(0, count)
     .map((p) => ({
       peak: p.magnitude,
-      rms: (p.magnitude / Math.sqrt(2)).toFixed(3),
+      rms: (p.magnitude / Math.sqrt(2)).toFixed(2),
       frequency: p.frequency.toString(),
     }));
 

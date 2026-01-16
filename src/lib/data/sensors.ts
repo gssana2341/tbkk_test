@@ -97,7 +97,7 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         const sumSquare = velocityData.reduce((sum, val) => sum + val * val, 0);
         const rms = Math.sqrt(sumSquare / velocityData.length);
 
-        return Number(rms.toFixed(3));
+        return Number(rms.toFixed(2));
       };
 
       // Check if we need to calculate RMS (if missing or 0)
@@ -210,19 +210,19 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
 
       // Use RMS values directly from API (no calculation needed)
       const hStats = {
-        accelTopPeak: "0.000",
-        velocityTopPeak: apiSensor.last_data?.velo_rms_h?.toFixed(3) || "0.000",
-        dominantFreq: "0.000", // Can be calculated from freq_h if needed
+        accelTopPeak: "0.00",
+        velocityTopPeak: apiSensor.last_data?.velo_rms_h?.toFixed(2) || "0.00",
+        dominantFreq: "0.00", // Can be calculated from freq_h if needed
       };
       const vStats = {
-        accelTopPeak: "0.000",
-        velocityTopPeak: apiSensor.last_data?.velo_rms_v?.toFixed(3) || "0.000",
-        dominantFreq: "0.000", // Can be calculated from freq_v if needed
+        accelTopPeak: "0.00",
+        velocityTopPeak: apiSensor.last_data?.velo_rms_v?.toFixed(2) || "0.00",
+        dominantFreq: "0.00", // Can be calculated from freq_v if needed
       };
       const aStats = {
-        accelTopPeak: "0.000",
-        velocityTopPeak: apiSensor.last_data?.velo_rms_a?.toFixed(3) || "0.000",
-        dominantFreq: "0.000", // Can be calculated from freq_a if needed
+        accelTopPeak: "0.00",
+        velocityTopPeak: apiSensor.last_data?.velo_rms_a?.toFixed(2) || "0.00",
+        dominantFreq: "0.00", // Can be calculated from freq_a if needed
       };
 
       // Determine status based on visual color groups (matches SensorCard.tsx)
