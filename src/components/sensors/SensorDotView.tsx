@@ -148,9 +148,24 @@ export default function SensorDotView({
     };
 
     // Calculate axis colors for tooltip
-    const hColor = getVibrationColorFromVelocity(veloRmsH, sensorConfig, "detail", sensor.connectivity === "offline");
-    const vColor = getVibrationColorFromVelocity(veloRmsV, sensorConfig, "detail", sensor.connectivity === "offline");
-    const aColor = getVibrationColorFromVelocity(veloRmsA, sensorConfig, "detail", sensor.connectivity === "offline");
+    const hColor = getVibrationColorFromVelocity(
+      veloRmsH,
+      sensorConfig,
+      "detail",
+      sensor.connectivity === "offline"
+    );
+    const vColor = getVibrationColorFromVelocity(
+      veloRmsV,
+      sensorConfig,
+      "detail",
+      sensor.connectivity === "offline"
+    );
+    const aColor = getVibrationColorFromVelocity(
+      veloRmsA,
+      sensorConfig,
+      "detail",
+      sensor.connectivity === "offline"
+    );
 
     return (
       <Tooltip key={sensor.id}>
