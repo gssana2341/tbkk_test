@@ -13,6 +13,7 @@ import {
 import SensorPagination from "./SensorPagination";
 import {
   getCardBackgroundColor,
+  getVibrationColorFromVelocity,
   SensorConfig,
 } from "@/lib/utils/vibrationUtils";
 
@@ -146,6 +147,11 @@ export default function SensorDotView({
       4: "28px",
     };
 
+    // Calculate axis colors for tooltip
+    const hColor = getVibrationColorFromVelocity(veloRmsH, sensorConfig, "detail", sensor.connectivity === "offline");
+    const vColor = getVibrationColorFromVelocity(veloRmsV, sensorConfig, "detail", sensor.connectivity === "offline");
+    const aColor = getVibrationColorFromVelocity(veloRmsA, sensorConfig, "detail", sensor.connectivity === "offline");
+
     return (
       <Tooltip key={sensor.id}>
         <TooltipTrigger asChild>
@@ -238,37 +244,19 @@ export default function SensorDotView({
               </span>
             </div>
             <div className="flex items-center space-x-1">
-              <span>Status:</span>
-              <div
-                className={`w-2 h-2 rounded-full ${sensor.connectivity === "online"
-                    ? "bg-green-500"
-                    : "bg-gray-500"
-                  }`}
-              />
-              <span className="text-xs">
-                {sensor.connectivity || "offline"}
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
               <span>Vibration:</span>
-              <div className="flex space-x-0.5">
+              <div className="flex space-x-1">
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(sensor.h_stats?.velocityTopPeak || "0") > 0
-                      ? "bg-green-500"
-                      : "bg-gray-500"
-                    }`}
+                  className={`w-2 h-2 rounded-full ${hColor.split(" ")[0]}`}
+                  title="Horizontal (H)"
                 />
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(sensor.v_stats?.velocityTopPeak || "0") > 0
-                      ? "bg-green-500"
-                      : "bg-gray-500"
-                    }`}
+                  className={`w-2 h-2 rounded-full ${vColor.split(" ")[0]}`}
+                  title="Vertical (V)"
                 />
                 <div
-                  className={`w-1 h-1 rounded-full ${parseFloat(sensor.a_stats?.velocityTopPeak || "0") > 0
-                      ? "bg-green-500"
-                      : "bg-gray-500"
-                    }`}
+                  className={`w-2 h-2 rounded-full ${aColor.split(" ")[0]}`}
+                  title="Axial (A)"
                 />
               </div>
             </div>

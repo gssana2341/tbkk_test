@@ -61,33 +61,24 @@ export default function Header() {
   const pageTitle = getPageTitle(pathname);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [lastCleared, setLastCleared] = useState<Date | null>(null);
-
-  // Load last cleared timestamp on mount
-  useEffect(() => {
-    const stored = localStorage.getItem("notificationLastCleared");
-    if (stored) {
-      setLastCleared(new Date(stored));
-    }
-  }, []);
 
   // Fetch notifications from API
   const fetchNotifications = useCallback(async () => {
-    // Get latest ignored timestamp from state or local storage logic
-    // We use the state 'lastCleared' which is updated on mount and on clear.
-    // However, inside useCallback, we need to be careful about stale closures if we use state.
-    // Reading from localStorage directly inside the async function is safer for immediate consistency without tight deps.
-    const storedDate = localStorage.getItem("notificationLastCleared");
-    const ignoreBefore = storedDate ? new Date(storedDate) : null;
 
     try {
       const { sensors } = await getSensors({ limit: 10000 });
+
+      // Load acknowledged alerts from localStorage
+      const stored = localStorage.getItem("acknowledgedAlerts");
+      let acknowledged: Record<string, string> = stored ? JSON.parse(stored) : {};
+      let updatedAcknowledged = { ...acknowledged };
+      let hasAcknowledgedChanges = false;
 
       // Transform and filter simultaneously based on RECALCULATED status
       const notificationItems: NotificationItem[] = [];
 
       sensors.forEach((sensor: Sensor) => {
-        // 1. Recalculate true status using helper (fixes 0 threshold issue)
+        // 1. Recalculate true status using helper
         const hVal = sensor.last_data?.velo_rms_h || 0;
         const vVal = sensor.last_data?.velo_rms_v || 0;
         const aVal = sensor.last_data?.velo_rms_a || 0;
@@ -112,27 +103,43 @@ export default function Header() {
           calculatedStatus = "WARNING";
         }
 
-        // 2. Only add if status is WARNING or CRITICAL (ignore Normal)
-        if (calculatedStatus !== "NORMAL") {
-          // Check if notification is older than lastCleared
-          if (sensor.last_data?.datetime) {
-            const notifDate = new Date(sensor.last_data.datetime);
-            if (ignoreBefore && notifDate <= ignoreBefore) {
-              return; // Skip this notification
-            }
+        // 2. Logic for filtering and list cleanup
+        if (calculatedStatus === "NORMAL") {
+          // If sensor is now normal, remove it from acknowledged list so it can alert again later
+          if (updatedAcknowledged[sensor.id]) {
+            delete updatedAcknowledged[sensor.id];
+            hasAcknowledgedChanges = true;
+          }
+        } else {
+          // If sensor is in ALERT state
+          const lastAcknowledgedStatus = updatedAcknowledged[sensor.id];
+
+          // If it was acknowledged with the SAME status, skip it
+          if (lastAcknowledgedStatus === calculatedStatus) {
+            return;
           }
 
+          // If status CHANGED (e.g. Warning -> Critical), remove from acknowledged to re-alert
+          if (
+            lastAcknowledgedStatus &&
+            lastAcknowledgedStatus !== calculatedStatus
+          ) {
+            delete updatedAcknowledged[sensor.id];
+            hasAcknowledgedChanges = true;
+          }
+
+          // Add to display list
           const datetime = sensor.last_data?.datetime
             ? new Date(sensor.last_data.datetime)
-                .toLocaleString("en-GB", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })
-                .replace(",", "")
+              .toLocaleString("en-GB", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })
+              .replace(",", "")
             : "-";
 
           let statusClass = "";
@@ -147,6 +154,7 @@ export default function Header() {
               statusClass = "bg-[#ffff00] text-black";
               break;
           }
+
           notificationItems.push({
             id: sensor.id,
             sensorName: sensor.serialNumber || sensor.name,
@@ -162,6 +170,14 @@ export default function Header() {
           });
         }
       });
+
+      // Save updated acknowledged list if any changes occurred (cleanup or status changes)
+      if (hasAcknowledgedChanges) {
+        localStorage.setItem(
+          "acknowledgedAlerts",
+          JSON.stringify(updatedAcknowledged)
+        );
+      }
 
       setNotifications(notificationItems);
     } catch (error) {
@@ -225,12 +241,24 @@ export default function Header() {
   }, [fetchNotifications]);
 
   const handleClearAll = () => {
-    const now = new Date();
-    localStorage.setItem("notificationLastCleared", now.toISOString());
-    setLastCleared(now);
-    setNotifications([]); // Visually clear immediately
-    // Ideally we re-fetch to ensure consistency, but clearing list is enough for perceived speed
-    // fetchNotifications();
+    try {
+      // 1. Get current acknowledged list
+      const stored = localStorage.getItem("acknowledgedAlerts");
+      let acknowledged: Record<string, string> = stored ? JSON.parse(stored) : {};
+
+      // 2. Add all CURRENT alerting sensors to the acknowledged list with their current status
+      notifications.forEach((notif) => {
+        acknowledged[notif.id] = notif.status;
+      });
+
+      // 3. Save to localStorage
+      localStorage.setItem("acknowledgedAlerts", JSON.stringify(acknowledged));
+
+      // 4. Update UI immediately
+      setNotifications([]);
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+    }
   };
 
   return (
@@ -369,11 +397,11 @@ export default function Header() {
                   <AvatarFallback className="bg-gray-600 text-gray-300 text-xs font-medium">
                     {user?.name
                       ? user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                          .slice(0, 2)
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
                       : "U"}
                   </AvatarFallback>
                 </Avatar>
