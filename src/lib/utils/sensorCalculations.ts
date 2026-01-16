@@ -216,8 +216,8 @@ export function getAxisTopPeakStats(
     const rms =
       velocity.length > 0
         ? Math.sqrt(
-          velocity.reduce((sum, val) => sum + val * val, 0) / velocity.length
-        )
+            velocity.reduce((sum, val) => sum + val * val, 0) / velocity.length
+          )
         : 0;
     const peak = rms;
     const peakToPeak = peak * 2;
@@ -436,10 +436,10 @@ export function getAxisTopPeakStatsEnhanced(
       totalVelocityPeaks: velocityPeakResult.totalPeaksFound,
       dominantPeak: velocityPeakResult.dominantPeak
         ? {
-          peak: (velocityPeakResult.dominantPeak.peak * 0.707).toFixed(2),
-          frequency: velocityPeakResult.dominantPeak.frequency,
-          index: velocityPeakResult.dominantPeak.index,
-        }
+            peak: (velocityPeakResult.dominantPeak.peak * 0.707).toFixed(2),
+            frequency: velocityPeakResult.dominantPeak.frequency,
+            index: velocityPeakResult.dominantPeak.index,
+          }
         : null,
     };
   } catch (error) {
@@ -801,7 +801,7 @@ export function findTopPeaks(
       const sortedIndices = freqMagnitude
         .map((val, idx) => ({ val, idx }))
         .sort((a, b) => b.val - a.val)
-        .map(item => item.idx);
+        .map((item) => item.idx);
 
       for (let idx of sortedIndices) {
         if (!topIndices.includes(idx)) {
@@ -922,10 +922,10 @@ export function findTopPeaksEnhanced(
     const dominantPeak =
       topPeaks.length > 0
         ? {
-          peak: topPeaks[0].peak,
-          frequency: topPeaks[0].frequency,
-          index: topPeaks[0].index,
-        }
+            peak: topPeaks[0].peak,
+            frequency: topPeaks[0].frequency,
+            index: topPeaks[0].index,
+          }
         : null;
 
     return {
