@@ -84,9 +84,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     // Parse Tailwind classes to inline styles
     const commonStyle = { border: "1px solid #000000", color: "#000000" };
 
-    // If value is undefined (no data), return Gray
+    // Special case for Lost status: all axes turn status color (#404040)
+    if (sensor.status === "lost") {
+      return { backgroundColor: "#404040", color: "#ffffff" };
+    }
+
+    // If value is undefined (no data), return Gray (Standby)
     if (veloRms === undefined) {
-      return { backgroundColor: "#c8c8c8", ...commonStyle };
+      return { backgroundColor: "#f8f8f8", ...commonStyle };
     }
 
     const colorClass = getCardBackgroundColor(veloRms, sensorConfig);
@@ -100,7 +105,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     } else if (colorClass.includes("bg-[#ff2b05]")) {
       return { backgroundColor: "#ff4d4d", ...commonStyle }; // Critical
     } else if (colorClass.includes("bg-gray-400")) {
-      return { backgroundColor: "#c8c8c8", ...commonStyle }; // Offline/Standby (Medium Gray)
+      return { backgroundColor: "#f8f8f8", ...commonStyle }; // Offline/Standby (Very Light Gray)
     }
 
     // Default to Normal
@@ -109,24 +114,30 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
   // Safely derive last update timestamp from known possible fields
   const resolveLastUpdate = (s: Sensor): Date | null => {
-    const ts =
-      s.last_data?.datetime ??
-      (typeof (s as unknown as { updatedAt?: string }).updatedAt === "string"
-        ? (s as unknown as { updatedAt?: string }).updatedAt
-        : undefined);
+    // Collect all possible timestamps
+    const times: number[] = [];
 
-    if (!ts) return null;
-    const d = new Date(ts);
-    return isNaN(d.getTime()) ? null : d;
+    if (s.last_data?.datetime) {
+      const d = new Date(s.last_data.datetime.replace("Z", ""));
+      if (!isNaN(d.getTime())) times.push(d.getTime());
+    }
+
+    const updatedAt = (s as any).updatedAt || (s as any).updated_at;
+    if (updatedAt && typeof updatedAt === "string") {
+      const d = new Date(updatedAt.replace("Z", ""));
+      if (!isNaN(d.getTime())) times.push(d.getTime());
+    }
+
+    if (times.length === 0) return null;
+
+    // Use the latest one (Math.max)
+    return new Date(Math.max(...times));
   };
 
   // Fix: Treat server time as Local by removing Z if present
   // The API sends "2025-12-18T13:16:09Z" when it means 13:16 Local Time.
   // Standard parsing shifts this to 20:16 (+7h), so we must strip Z to force local interpretation.
-  const rawLastUpdate = resolveLastUpdate(sensor);
-  const lastUpdate = rawLastUpdate
-    ? new Date(rawLastUpdate.toISOString().replace("Z", ""))
-    : null;
+  const lastUpdate = resolveLastUpdate(sensor);
 
   const lastUpdateText = lastUpdate
     ? lastUpdate.toLocaleString("en-GB", {
@@ -148,12 +159,9 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   const getCardStyle = (): React.CSSProperties => {
     let borderColor = "#72ff82"; // Default Normal (Green)
 
-    // Priority 1: Lost (offline and not standby)
-    if (
-      sensor.connectivity === "offline" &&
-      sensor.operationalStatus !== "standby"
-    ) {
-      borderColor = "#626262"; // Lost - Dark Gray
+    // Priority 1: Lost
+    if (sensor.status === "lost") {
+      borderColor = "#404040"; // Lost - Dark Gray
     } else {
       // Calculate Max RMS to determine status color
       const maxRms = Math.max(veloRmsH ?? 0, veloRmsV ?? 0, veloRmsA ?? 0);
@@ -173,7 +181,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
       }
       // Priority 5: Standby
       else if (sensor.operationalStatus === "standby") {
-        borderColor = "#c8c8c8";
+        borderColor = "#f8f8f8";
       }
     }
 
@@ -183,7 +191,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
       borderRight: "1.35px solid #374151", // Thin gray border for shape
       borderBottom: "1.35px solid #374151",
       borderLeft: "1.35px solid #374151",
-      color: "#ffffff", // White text for everything
+      color: sensor.status === "lost" ? "#404040" : "#ffffff", // Dark Gray for Lost, White for others
     };
   };
 
@@ -227,7 +235,9 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
             </div>
           </div>
           <div className="min-w-0 flex-1 overflow-hidden">
-            <div className="text-[0.9rem] sm:text-base lg:text-lg 2xl:text-xl font-extrabold tracking-tight leading-tight truncate text-white">
+            <div
+              className={`text-[0.9rem] sm:text-base lg:text-lg 2xl:text-xl font-extrabold tracking-tight leading-tight truncate ${sensor.status === "lost" ? "text-[#404040]" : "text-white"}`}
+            >
               {deviceId}
             </div>
           </div>
@@ -257,7 +267,9 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
           <div className="flex flex-col gap-0.5 min-w-0 flex-1">
             {/* Row 2: Area/Machine */}
             <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-              <div className="text-[0.95rem] sm:text-lg lg:text-xl 2xl:text-2xl font-semibold truncate text-gray-300 leading-tight">
+              <div
+                className={`text-[0.95rem] sm:text-lg lg:text-xl 2xl:text-2xl font-semibold truncate leading-tight ${sensor.status === "lost" ? "text-[#404040]" : "text-gray-300"}`}
+              >
                 {areaLabel} / {machineLabel}
               </div>
             </div>
@@ -390,16 +402,22 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
           </div>
 
           {/* Temperature spanning Row 2 and Row 3 on the right */}
-          <div className="flex items-baseline gap-0.5 mt-0.5 shrink-0 whitespace-nowrap text-white pr-1.5 sm:pr-2 2xl:pr-3">
+          <div
+            className={`flex items-baseline gap-0.5 mt-0.5 shrink-0 whitespace-nowrap pr-1.5 sm:pr-2 2xl:pr-3 ${sensor.status === "lost" ? "text-[#404040]" : "text-white"}`}
+          >
             <span
               className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-bold leading-none"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
-              {(Number(temperature) || 0).toFixed(0)}
+              {sensor.status === "lost"
+                ? "-"
+                : (Number(temperature) || 0).toFixed(0)}
             </span>
-            <span className="text-xs sm:text-sm lg:text-base 2xl:text-lg font-bold leading-none">
-              °C
-            </span>
+            {sensor.status !== "lost" && (
+              <span className="text-xs sm:text-sm lg:text-base 2xl:text-lg font-bold leading-none">
+                °C
+              </span>
+            )}
           </div>
         </div>
       </CardContent>

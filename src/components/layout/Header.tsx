@@ -42,7 +42,7 @@ function getPageTitle(pathname: string): string {
 interface NotificationItem {
   id: string;
   sensorName: string;
-  status: "CRITICAL" | "WARNING" | "CONCERN" | "NORMAL";
+  status: "CRITICAL" | "WARNING" | "CONCERN" | "NORMAL" | "LOST";
   statusClass: string;
   area: string;
   machine: string;
@@ -92,11 +92,17 @@ export default function Header() {
         const aStatus = getVibrationLevelFromConfig(aVal, config);
 
         // Determine worst status among axes
-        let calculatedStatus: "CRITICAL" | "WARNING" | "CONCERN" | "NORMAL" =
-          "NORMAL";
+        let calculatedStatus:
+          | "CRITICAL"
+          | "WARNING"
+          | "CONCERN"
+          | "NORMAL"
+          | "LOST" = "NORMAL";
         const statuses = [hStatus, vStatus, aStatus];
 
-        if (statuses.includes("critical")) {
+        if (sensor.status === "lost") {
+          calculatedStatus = "LOST";
+        } else if (statuses.includes("critical")) {
           calculatedStatus = "CRITICAL";
         } else if (statuses.includes("concern")) {
           calculatedStatus = "CONCERN";
@@ -131,7 +137,7 @@ export default function Header() {
 
           // Add to display list
           const datetime = sensor.last_data?.datetime
-            ? new Date(sensor.last_data.datetime)
+            ? new Date(sensor.last_data.datetime.replace("Z", ""))
                 .toLocaleString("en-GB", {
                   year: "numeric",
                   month: "2-digit",
@@ -154,6 +160,9 @@ export default function Header() {
             case "WARNING":
               statusClass = "bg-[#ffff00] text-black";
               break;
+            case "LOST":
+              statusClass = "bg-[#404040] text-white";
+              break;
           }
 
           notificationItems.push({
@@ -171,16 +180,71 @@ export default function Header() {
               sensor.machineName ||
               sensor.machine_number ||
               "-",
-            rmsH: sensor.last_data?.velo_rms_h?.toFixed(2) || "0.00",
-            rmsV: sensor.last_data?.velo_rms_v?.toFixed(2) || "0.00",
-            rmsA: sensor.last_data?.velo_rms_a?.toFixed(2) || "0.00",
-            temp: sensor.last_data?.temperature?.toFixed(1) || "0.0",
+            rmsH:
+              calculatedStatus === "LOST"
+                ? "-"
+                : sensor.last_data?.velo_rms_h?.toFixed(2) || "0.00",
+            rmsV:
+              calculatedStatus === "LOST"
+                ? "-"
+                : sensor.last_data?.velo_rms_v?.toFixed(2) || "0.00",
+            rmsA:
+              calculatedStatus === "LOST"
+                ? "-"
+                : sensor.last_data?.velo_rms_a?.toFixed(2) || "0.00",
+            temp:
+              calculatedStatus === "LOST"
+                ? "-"
+                : sensor.last_data?.temperature?.toFixed(1) || "0.0",
             datetime,
           });
         }
       });
 
-      // Save updated acknowledged list if any changes occurred (cleanup or status changes)
+      // 3. Persistent Notification Stack Integration
+      const stackStored = localStorage.getItem("notificationStack");
+      let notificationStack: NotificationItem[] = stackStored
+        ? JSON.parse(stackStored)
+        : [];
+
+      // Add new unique alerts to the persistent stack
+      let stackChanged = false;
+      notificationItems.forEach((newItem) => {
+        // A unique alert is defined by [id + status + datetime]
+        const isDuplicate = notificationStack.some(
+          (oldItem) =>
+            oldItem.id === newItem.id &&
+            oldItem.status === newItem.status &&
+            oldItem.datetime === newItem.datetime
+        );
+
+        if (!isDuplicate) {
+          notificationStack.unshift(newItem); // Add to top
+          stackChanged = true;
+        }
+      });
+
+      // Limit stack size (e.g., 50 items)
+      if (notificationStack.length > 50) {
+        notificationStack = notificationStack.slice(0, 50);
+        stackChanged = true;
+      }
+
+      if (stackChanged) {
+        localStorage.setItem(
+          "notificationStack",
+          JSON.stringify(notificationStack)
+        );
+      }
+
+      // 4. Final Display Filter
+      // Only show items from the stack that haven't been acknowledged by their unique signature
+      const displayNotifications = notificationStack.filter((item) => {
+        const signature = `${item.id}-${item.status}-${item.datetime}`;
+        return !updatedAcknowledged[signature];
+      });
+
+      // Save updated acknowledged list if any changes occurred
       if (hasAcknowledgedChanges) {
         localStorage.setItem(
           "acknowledgedAlerts",
@@ -188,7 +252,7 @@ export default function Header() {
         );
       }
 
-      setNotifications(notificationItems);
+      setNotifications(displayNotifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setNotifications([]);
@@ -257,9 +321,10 @@ export default function Header() {
         ? JSON.parse(stored)
         : {};
 
-      // 2. Add all CURRENT alerting sensors to the acknowledged list with their current status
+      // 2. Acknowledge all currently VISIBLE notifications by their unique signature
       notifications.forEach((notif) => {
-        acknowledged[notif.id] = notif.status;
+        const signature = `${notif.id}-${notif.status}-${notif.datetime}`;
+        acknowledged[signature] = "true";
       });
 
       // 3. Save to localStorage

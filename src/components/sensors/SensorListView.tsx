@@ -77,6 +77,7 @@ export default function SensorListView({
 
                   // Get status color based on velocity values
                   const getStatusColor = (velocity: string) => {
+                    if (sensor.status === "lost") return "bg-[#404040]";
                     const vel = parseFloat(velocity);
                     if (vel === 0) return "bg-gray-600";
                     // Use sensor thresholds if available
@@ -99,39 +100,62 @@ export default function SensorListView({
                       className="flex items-center px-2 py-1 hover:bg-gray-800 cursor-pointer border-b border-gray-700"
                       onClick={() => handleSensorClick(sensor.id)}
                     >
-                      <div className="flex-1 text-sm">
+                      <div
+                        className={`flex-1 text-sm ${sensor.status === "lost" ? "text-[#404040]" : ""}`}
+                      >
                         {sensorName.length > 11
                           ? sensorName.slice(0, 11) + "..."
                           : sensorName}
                       </div>
                       <div className="w-12 flex justify-center">
                         <span
-                          className={`px-2 py-1 rounded text-xs bg-gray-600 text-white`}
+                          className={`px-2 py-1 rounded text-xs ${sensor.status === "lost" ? "bg-[#404040]" : sensor.status === "standby" ? "bg-[#f8f8f8] text-black" : "bg-gray-600"} text-white`}
                         >
-                          {sensor.operationalStatus || "standby"}
+                          {sensor.status ||
+                            sensor.operationalStatus ||
+                            "standby"}
                         </span>
                       </div>
                       <div className="w-16 flex justify-center">
                         <div
-                          className={`w-1 h-2 ${getStatusColor(hVelocity)} rounded-full border border-gray-600`}
+                          className={`w-1 h-2 ${getStatusColor(hVelocity)} rounded-full border border-gray-600 flex items-center justify-center`}
                           title={`H: ${hVelocity} mm/s`}
-                        />
+                        >
+                          {sensor.status === "lost" && (
+                            <span className="text-[6px] text-white">-</span>
+                          )}
+                        </div>
                       </div>
                       <div className="w-16 flex justify-center">
                         <div
-                          className={`w-1 h-2 ${getStatusColor(vVelocity)} rounded-full border border-gray-600`}
+                          className={`w-1 h-2 ${getStatusColor(vVelocity)} rounded-full border border-gray-600 flex items-center justify-center`}
                           title={`V: ${vVelocity} mm/s`}
-                        />
+                        >
+                          {sensor.status === "lost" && (
+                            <span className="text-[6px] text-white">-</span>
+                          )}
+                        </div>
                       </div>
                       <div className="w-16 flex justify-center">
                         <div
-                          className={`w-1 h-2 ${getStatusColor(aVelocity)} rounded-full border border-gray-600`}
+                          className={`w-1 h-2 ${getStatusColor(aVelocity)} rounded-full border border-gray-600 flex items-center justify-center`}
                           title={`A: ${aVelocity} mm/s`}
-                        />
+                        >
+                          {sensor.status === "lost" && (
+                            <span className="text-[6px] text-white">-</span>
+                          )}
+                        </div>
                       </div>
                       <div className="w-20 flex justify-center">
-                        <span className={`font-semibold text-xs text-gray-300`}>
-                          {currentTemp > 0 ? currentTemp.toFixed(0) : "0"}°C
+                        <span
+                          className={`font-semibold text-xs ${sensor.status === "lost" ? "text-[#404040]" : "text-gray-300"}`}
+                        >
+                          {sensor.status === "lost"
+                            ? "-"
+                            : currentTemp > 0
+                              ? currentTemp.toFixed(0)
+                              : "0"}{" "}
+                          {sensor.status !== "lost" && "°C"}
                         </span>
                       </div>
                     </div>

@@ -194,7 +194,9 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
 
         // Create readings with temperature only (vibration data comes from H, V, A arrays)
         readings.push({
-          timestamp: new Date(apiSensor.last_data.datetime).getTime(),
+          timestamp: new Date(
+            apiSensor.last_data.datetime.replace("Z", "")
+          ).getTime(),
           temperature,
           vibrationX: 0, // Vibration data is calculated from H, V, A arrays
           vibrationY: 0,
@@ -225,14 +227,28 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         dominantFreq: "0.00", // Can be calculated from freq_a if needed
       };
 
+      const lastDataTime = apiSensor.last_data?.datetime
+        ? new Date(apiSensor.last_data.datetime.replace("Z", "")).getTime()
+        : 0;
+      const updatedAtTime = apiSensor.updated_at
+        ? new Date(apiSensor.updated_at.replace("Z", "")).getTime()
+        : 0;
+
+      // Select the latest timestamp between the actual data time and the record's update time
+      const lastUpdated = Math.max(lastDataTime, updatedAtTime) || now;
+
       // Determine status based on visual color groups (matches SensorCard.tsx)
       let status: SensorStatus = "ok";
 
-      // 1. Check connectivity/operational status first (Lost group)
+      // 1. Check for "Lost" status based on time timeout
+      const timeInterval = apiSensor.time_interval || 0; // minutes
+      const timeoutThresholdMs = (timeInterval + 5) * 60 * 1000;
+      const isLost = now - lastUpdated > timeoutThresholdMs;
+
       const connectivity = apiSensor.last_data ? "online" : "offline";
       const operationalStatus = apiSensor.last_data ? "running" : "standby";
 
-      if (connectivity === "offline" && operationalStatus !== "standby") {
+      if (isLost && operationalStatus !== "standby") {
         status = "lost";
       } else {
         // Calculate status from Vibration RMS
@@ -273,9 +289,7 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         sensor_type: apiSensor.sensor_type || "Master",
         location: apiSensor.installed_point || "API Location",
         installationDate: new Date(apiSensor.created_at).getTime(),
-        lastUpdated: new Date(
-          apiSensor.last_data?.datetime || apiSensor.updated_at || now
-        ).getTime(),
+        lastUpdated,
         readings,
         status,
         maintenanceHistory: [],

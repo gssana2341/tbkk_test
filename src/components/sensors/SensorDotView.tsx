@@ -110,12 +110,9 @@ export default function SensorDotView({
 
     const colorClass = getCardBackgroundColor(maxRms, sensorConfig);
 
-    // Priority 1: Lost (offline and not standby)
-    if (
-      sensor.connectivity === "offline" &&
-      sensor.operationalStatus !== "standby"
-    ) {
-      statusColorCode = "#626262"; // Lost - Dark Gray
+    // Priority 1: Lost
+    if (sensor.status === "lost") {
+      statusColorCode = "#404040"; // Lost - Dark Gray
     }
     // Priority 2: Critical (Red)
     else if (colorClass.includes("bg-[#ff2b05]")) {
@@ -130,8 +127,8 @@ export default function SensorDotView({
       statusColorCode = "#ffd84d"; // Warning
     }
     // Priority 5: Standby
-    else if (sensor.operationalStatus === "standby") {
-      statusColorCode = "#c8c8c8"; // Standby - Light Gray
+    else if (sensor.status === "standby") {
+      statusColorCode = "#f8f8f8"; // Standby - Very Light Gray
     }
 
     // Determine background style for top 60% (matches status color)
@@ -167,6 +164,14 @@ export default function SensorDotView({
       sensor.connectivity === "offline"
     );
 
+    // Override axis colors if status is 'lost'
+    const finalHColor =
+      sensor.status === "lost" ? "bg-[#404040] text-white" : hColor;
+    const finalVColor =
+      sensor.status === "lost" ? "bg-[#404040] text-white" : vColor;
+    const finalAColor =
+      sensor.status === "lost" ? "bg-[#404040] text-white" : aColor;
+
     return (
       <Tooltip key={sensor.id}>
         <TooltipTrigger asChild>
@@ -194,13 +199,15 @@ export default function SensorDotView({
                     y="82"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fill="#000"
+                    fill={sensor.status === "lost" ? "#404040" : "#000"}
                     fontSize="35"
                     fontWeight="bold"
                     fontFamily="'Inter', sans-serif"
                     className="select-none"
                   >
-                    {Math.round(temperature)}°
+                    {sensor.status === "lost"
+                      ? "-"
+                      : `${Math.round(temperature)}°`}
                   </text>
                 </svg>
               </div>
@@ -220,13 +227,15 @@ export default function SensorDotView({
                 <div className="absolute bottom-0 left-0 right-0 h-[50%] bg-white"></div>
                 <div className="absolute bottom-0 left-0 right-0 h-[50%] z-10 flex items-center justify-center pb-1">
                   <span
-                    className="font-bold text-gray-900 leading-none"
+                    className={`font-bold leading-none ${sensor.status === "lost" ? "text-[#404040]" : "text-gray-900"}`}
                     style={{
                       fontSize: circleFontSizeMap[dotSize] || "18px",
                       fontFamily: "'Inter', sans-serif",
                     }}
                   >
-                    {Math.round(temperature)}°
+                    {sensor.status === "lost"
+                      ? "-"
+                      : `${Math.round(temperature)}°`}
                   </span>
                 </div>
               </div>
@@ -262,15 +271,15 @@ export default function SensorDotView({
               <span>Vibration:</span>
               <div className="flex space-x-1">
                 <div
-                  className={`w-2 h-2 rounded-full ${hColor.split(" ")[0]}`}
+                  className={`w-2 h-2 rounded-full ${finalHColor.split(" ")[0]}`}
                   title="Horizontal (H)"
                 />
                 <div
-                  className={`w-2 h-2 rounded-full ${vColor.split(" ")[0]}`}
+                  className={`w-2 h-2 rounded-full ${finalVColor.split(" ")[0]}`}
                   title="Vertical (V)"
                 />
                 <div
-                  className={`w-2 h-2 rounded-full ${aColor.split(" ")[0]}`}
+                  className={`w-2 h-2 rounded-full ${finalAColor.split(" ")[0]}`}
                   title="Axial (A)"
                 />
               </div>

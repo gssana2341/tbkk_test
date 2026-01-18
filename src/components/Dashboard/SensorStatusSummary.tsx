@@ -59,13 +59,13 @@ const statusConfig: Record<
   },
   standby: {
     textColor: "text-black",
-    bgColor: "bg-[#c8c8c8]",
-    selectedBgColor: "bg-[#c8c8c8]",
+    bgColor: "bg-[#f8f8f8]",
+    selectedBgColor: "bg-[#f8f8f8]",
   },
   lost: {
-    textColor: "text-black",
-    bgColor: "bg-[#626262]",
-    selectedBgColor: "bg-[#626262]",
+    textColor: "text-white",
+    bgColor: "bg-[#404040]",
+    selectedBgColor: "bg-[#404040]",
   },
 };
 
