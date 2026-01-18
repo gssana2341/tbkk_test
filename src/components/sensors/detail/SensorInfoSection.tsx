@@ -22,6 +22,7 @@ import {
   getVibrationLevelFromConfig,
 } from "@/lib/utils/vibrationUtils";
 import { formatDateTimeDayFirst } from "@/lib/utils/sensor-charts";
+import { getMachineClassName } from "@/lib/iso10816-3";
 import {
   SensorLastData,
   SensorPageConfig,
@@ -44,6 +45,45 @@ interface SensorInfoSectionProps {
   fetchSensorLastData: (sensorId: string, datetime?: string) => Promise<any>;
   setSensorLastData: (data: any) => void;
   setError: (error: string | null) => void;
+}
+
+function parseCustomDate(dateStr: string): Date {
+  try {
+    // Expected format: "18-Dec-2025,09:30:00"
+    if (dateStr.includes(",")) {
+      const [datePart, timePart] = dateStr.split(",");
+      const [day, monthStr, year] = datePart.split("-");
+      const [hour, minute, second] = timePart.split(":");
+
+      const months: Record<string, number> = {
+        Jan: 0,
+        Feb: 1,
+        Mar: 2,
+        Apr: 3,
+        May: 4,
+        Jun: 5,
+        Jul: 6,
+        Aug: 7,
+        Sep: 8,
+        Oct: 9,
+        Nov: 10,
+        Dec: 11,
+      };
+
+      return new Date(
+        parseInt(year),
+        months[monthStr] || 0,
+        parseInt(day),
+        parseInt(hour),
+        parseInt(minute),
+        parseInt(second)
+      );
+    }
+    return new Date(dateStr);
+  } catch (e) {
+    console.error("Error parsing date:", dateStr, e);
+    return new Date();
+  }
 }
 
 export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
@@ -106,12 +146,18 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               <div className="grid grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] gap-x-8 gap-y-1 text-base 2xl:text-xl">
                 <span className="text-gray-400">Area Operation</span>
                 <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
-                  {sensor?.location || "Not Set"}
+                  {sensorLastData?.area ||
+                    sensor?.area ||
+                    sensor?.location ||
+                    "Not Set"}
                 </span>
 
                 <span className="text-gray-400">Machine Name</span>
                 <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
-                  {sensor?.machineName || "Not Set"}
+                  {sensorLastData?.machine ||
+                    sensor?.machine ||
+                    sensor?.machineName ||
+                    "Not Set"}
                 </span>
 
                 <span className="text-gray-400">Machine Number</span>
@@ -143,35 +189,52 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                     configData.machineClass ? "text-white" : "text-gray-500"
                   )}
                 >
-                  {configData.machineClass
-                    ? configData.machineClass.charAt(0).toUpperCase() +
-                      configData.machineClass.slice(1)
-                    : "Not Set"}
+                  {getMachineClassName(configData.machineClass)}
                 </span>
 
                 <span className="text-gray-400">Machine Installation Date</span>
                 <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
-                  {sensor?.installationDate
-                    ? formatDate(
-                        new Date(sensor.installationDate).toISOString()
-                      )
-                    : "Not Set"}
+                  {(() => {
+                    const dateVal =
+                      sensor?.motor_start_time || sensor?.installationDate;
+                    if (!dateVal) return "Not Set";
+                    try {
+                      const dateObj =
+                        typeof dateVal === "string"
+                          ? parseCustomDate(dateVal)
+                          : new Date(dateVal);
+                      return formatDate(dateObj.toISOString());
+                    } catch (e) {
+                      return "Not Set";
+                    }
+                  })()}
                 </span>
 
                 <span className="text-gray-400">Machine Age</span>
                 <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
                   {(() => {
-                    if (!sensor?.installationDate) return "Unknown";
-                    const start = new Date(sensor.installationDate);
-                    const now = new Date();
-                    const diffTime = Math.abs(now.getTime() - start.getTime());
-                    const diffDays = Math.floor(
-                      diffTime / (1000 * 60 * 60 * 24)
-                    );
-                    const diffHours = Math.floor(
-                      (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-                    );
-                    return `${diffDays} Day${diffDays > 1 ? "s" : ""} ${diffHours} Hour${diffHours > 1 ? "s" : ""}`;
+                    const dateVal =
+                      sensor?.motor_start_time || sensor?.installationDate;
+                    if (!dateVal) return "Unknown";
+                    try {
+                      const start =
+                        typeof dateVal === "string"
+                          ? parseCustomDate(dateVal)
+                          : new Date(dateVal);
+                      const now = new Date();
+                      const diffTime = Math.abs(
+                        now.getTime() - start.getTime()
+                      );
+                      const diffDays = Math.floor(
+                        diffTime / (1000 * 60 * 60 * 24)
+                      );
+                      const diffHours = Math.floor(
+                        (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                      );
+                      return `${diffDays} Day${diffDays > 1 ? "s" : ""} ${diffHours} Hour${diffHours > 1 ? "s" : ""}`;
+                    } catch (e) {
+                      return "Unknown";
+                    }
                   })()}
                 </span>
               </div>

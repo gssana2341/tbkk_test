@@ -27,6 +27,9 @@ export interface Sensor {
   installationDate?: string;
   connectivity?: "online" | "offline";
   operationalStatus?: "active" | "standby" | "maintenance";
+  area?: string | null;
+  machine?: string | null;
+  motor_start_time?: string | null;
   lastSeen?: string;
   battery_level?: number;
   updated_at?: string;
@@ -48,6 +51,8 @@ export interface SensorLastData {
   machine_class?: string | null;
   installed_point?: string | null;
   note?: string | null;
+  area?: string | null;
+  machine?: string | null;
   threshold_min?: number;
   threshold_medium?: number;
   threshold_max?: number;
@@ -107,6 +112,8 @@ export interface WithLastDataSensor {
   machine_class?: string | null;
   installed_point?: string | null;
   note?: string | null;
+  area?: string | null;
+  machine?: string | null;
   threshold_min?: number;
   threshold_medium?: number;
   threshold_max?: number;

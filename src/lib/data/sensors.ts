@@ -323,6 +323,7 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         g_scale: apiSensor.g_scale,
         alarm_ths: apiSensor.alarm_ths,
         time_interval: apiSensor.time_interval,
+        motor_start_time: apiSensor.motor_start_time,
         // Threshold configuration fields from API
         threshold_min: apiSensor.threshold_min,
         threshold_medium: apiSensor.threshold_medium,
@@ -330,6 +331,8 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         machine_class: apiSensor.machine_class,
         machine_number: apiSensor.machine_no,
         installation_point: apiSensor.installed_point,
+        area: apiSensor.area,
+        machine: apiSensor.machine,
         sensor_name: apiSensor.sensor_name,
       };
 

@@ -27,12 +27,14 @@ function buildTreeFromSensors(sensors: Sensor[]): TreeItemData[] {
 
   sensors.forEach((sensor) => {
     const areaName =
-      sensor.installation_point?.trim() ||
+      sensor.area?.trim() ||
       sensor.location?.trim() ||
+      sensor.installation_point?.trim() ||
       "Unknown Area";
     const machineName =
-      sensor.machine_number?.trim() ||
+      sensor.machine?.trim() ||
       sensor.machineName?.trim() ||
+      sensor.machine_number?.trim() ||
       "Unknown Machine";
 
     if (!areaMap.has(areaName)) areaMap.set(areaName, new Map());

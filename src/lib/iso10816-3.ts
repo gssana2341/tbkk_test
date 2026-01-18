@@ -188,3 +188,26 @@ export function getMachineClassCode(machineClassId: string): number | null {
   const info = ISO_10816_3_THRESHOLDS[machineClassId];
   return info ? info.code : null;
 }
+
+export function getMachineClassName(
+  classIdOrCode: string | number | null
+): string {
+  if (classIdOrCode === null || classIdOrCode === undefined) return "Not Set";
+
+  // If it's a code (number or string of number)
+  const code =
+    typeof classIdOrCode === "number" ? classIdOrCode : parseInt(classIdOrCode);
+
+  if (!isNaN(code)) {
+    const info = Object.values(ISO_10816_3_THRESHOLDS).find(
+      (v) => v.code === code
+    );
+    if (info) return info.name;
+  }
+
+  // If it's an ID (string)
+  const info = ISO_10816_3_THRESHOLDS[classIdOrCode as string];
+  if (info) return info.name;
+
+  return String(classIdOrCode);
+}

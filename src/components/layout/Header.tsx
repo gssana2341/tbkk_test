@@ -161,8 +161,16 @@ export default function Header() {
             sensorName: sensor.serialNumber || sensor.name,
             status: calculatedStatus,
             statusClass,
-            area: sensor.installation_point || "-",
-            machine: sensor.machine_number || "-",
+            area:
+              sensor.area ||
+              sensor.location ||
+              sensor.installation_point ||
+              "-",
+            machine:
+              sensor.machine ||
+              sensor.machineName ||
+              sensor.machine_number ||
+              "-",
             rmsH: sensor.last_data?.velo_rms_h?.toFixed(2) || "0.00",
             rmsV: sensor.last_data?.velo_rms_v?.toFixed(2) || "0.00",
             rmsA: sensor.last_data?.velo_rms_a?.toFixed(2) || "0.00",

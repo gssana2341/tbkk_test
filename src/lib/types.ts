@@ -84,6 +84,9 @@ export interface SensorApiData {
   threshold_medium?: number;
   threshold_max?: number;
   installed_point?: string | null;
+  area?: string | null;
+  machine?: string | null;
+  motor_start_time?: string | null;
   note?: string | null;
   last_data: {
     datetime: string;
@@ -138,6 +141,9 @@ export interface Sensor {
   vibrationH: "normal" | "warning" | "critical";
   vibrationV: "normal" | "warning" | "critical";
   vibrationA: "normal" | "warning" | "critical";
+  area?: string | null;
+  machine?: string | null;
+  motor_start_time?: string | null;
   // Store raw API data
   last_data?: {
     datetime?: string;

@@ -31,8 +31,18 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     sensorWithRole.role ||
     sensorWithRole.deviceRole ||
     "";
-  const areaLabel = (sensor?.installation_point || "Area 1").toString();
-  const machineLabel = (sensor?.machine_number || "Machine 1").toString();
+  const areaLabel = (
+    sensor?.area ||
+    sensor?.location ||
+    sensor?.installation_point ||
+    "Area 1"
+  ).toString();
+  const machineLabel = (
+    sensor?.machine ||
+    sensor?.machineName ||
+    sensor?.machine_number ||
+    "Machine 1"
+  ).toString();
   const temperature = sensor?.last_data?.temperature ?? 0;
   const battery = sensor?.batteryLevel ?? sensor?.last_data?.battery ?? 0;
   const connectivity = sensor?.connectivity || "offline";

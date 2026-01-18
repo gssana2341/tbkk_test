@@ -388,8 +388,10 @@ export default function SensorDetailPage() {
                 "Unnamed Sensor"}
             </h1>
             <p className="text-gray-400">
-              {sensor.machineName || "Monitoring Test Machine"} •{" "}
-              {sensor.location || "Test Location"}
+              {sensor.machine ||
+                sensor.machineName ||
+                "Monitoring Test Machine"}{" "}
+              • {sensor.area || sensor.location || "Test Location"}
               {sensorLastData && (
                 <span className="ml-2 px-2 py-1 text-xs rounded-full bg-blue-900 text-blue-300">
                   Live Data
