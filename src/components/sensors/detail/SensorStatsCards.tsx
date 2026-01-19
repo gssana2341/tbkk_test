@@ -36,9 +36,9 @@ export const SensorStatsCards: React.FC<SensorStatsCardsProps> = ({
       "detail"
     );
 
-  const tempAlarmThs = configData?.alarm_ths || 35;
-  const isTempCritical = safeTemp > tempAlarmThs;
-  const isTempWarning = safeTemp > tempAlarmThs * 0.7;
+  const tempThresholdMin = configData?.temperature_threshold_min || 35;
+  const tempThresholdMax = configData?.temperature_threshold_max || 45;
+  const isTempWarning = safeTemp > tempThresholdMin;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4 2xl:gap-8">
@@ -46,20 +46,16 @@ export const SensorStatsCards: React.FC<SensorStatsCardsProps> = ({
       <Card
         className="border-[1.35px] border-[#374151] overflow-hidden"
         style={{
-          backgroundColor: isTempCritical
-            ? "#7f1d1d" // red-900
-            : isTempWarning
-              ? "#fae739" // custom yellow
-              : "#14532d", // green-900
+          backgroundColor: isTempWarning
+            ? "#fae739" // custom yellow
+            : "#14532d", // green-900
         }}
       >
         <CardContent className="p-4 2xl:p-6">
           <div className="flex flex-col w-full h-full">
             <h3
               className={`mb-1 font-extrabold text-xl md:text-2xl 2xl:text-4xl ${
-                isTempWarning && !isTempCritical
-                  ? "text-gray-900"
-                  : "text-white"
+                isTempWarning ? "text-gray-900" : "text-white"
               }`}
             >
               Temperature
@@ -68,36 +64,26 @@ export const SensorStatsCards: React.FC<SensorStatsCardsProps> = ({
             <div className="flex justify-between items-center mb-1">
               <div
                 className={`text-2xl md:text-4xl 2xl:text-6xl font-extrabold ${
-                  isTempWarning && !isTempCritical
-                    ? "text-gray-900"
-                    : "text-white"
+                  isTempWarning ? "text-gray-900" : "text-white"
                 }`}
               >
                 {safeTemp.toFixed(0)}°C
               </div>
               <div
                 className={`text-xl 2xl:text-4xl font-bold ${
-                  isTempWarning && !isTempCritical
-                    ? "text-gray-900"
-                    : "text-white"
+                  isTempWarning ? "text-gray-900" : "text-white"
                 }`}
               >
-                {isTempCritical
-                  ? "Critical"
-                  : isTempWarning
-                    ? "Warning"
-                    : "Normal"}
+                {isTempWarning ? "Warning" : "Normal"}
               </div>
             </div>
 
             <div
               className={`mt-auto text-sm 2xl:text-xl font-medium ${
-                isTempWarning && !isTempCritical
-                  ? "text-gray-700"
-                  : "text-gray-300"
+                isTempWarning ? "text-gray-700" : "text-gray-300"
               }`}
             >
-              Threshold max: {configData?.thresholdMax ?? 2.5} °C
+              Threshold max: {tempThresholdMax.toFixed(0)} °C
             </div>
           </div>
         </CardContent>

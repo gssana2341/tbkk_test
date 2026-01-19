@@ -88,6 +88,8 @@ export interface SensorApiData {
   machine?: string | null;
   motor_start_time?: string | null;
   note?: string | null;
+  temperature_threshold_min?: number;
+  temperature_threshold_max?: number;
   last_data: {
     datetime: string;
     acc_h?: number[];
@@ -200,6 +202,8 @@ export interface Sensor {
   installation_point?: string | null;
   sensor_name?: string | null;
   image_url?: string | null;
+  temperature_threshold_min?: number;
+  temperature_threshold_max?: number;
 }
 
 export interface Machine {

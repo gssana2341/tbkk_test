@@ -118,6 +118,8 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
           thresholdMin: data.threshold_min || prev.thresholdMin,
           thresholdMedium: data.threshold_medium || prev.thresholdMedium,
           thresholdMax: data.threshold_max || prev.thresholdMax,
+          temperature_threshold_min: data.temperature_threshold_min,
+          temperature_threshold_max: data.temperature_threshold_max,
           notes: data.note || prev.notes,
           image_url: data.image_url || prev.image_url,
         }));
@@ -170,6 +172,8 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
             threshold_medium: data.threshold_medium,
             threshold_max: data.threshold_max,
             alarm_ths: data.alarm_ths,
+            temperature_threshold_min: data.temperature_threshold_min,
+            temperature_threshold_max: data.temperature_threshold_max,
             image_url: data.image_url,
             data: {
               datetime: data.datetime || data.data?.datetime || "",
@@ -257,6 +261,8 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
               threshold_medium: sensorData.threshold_medium,
               threshold_max: sensorData.threshold_max,
               alarm_ths: sensorData.alarm_ths,
+              temperature_threshold_min: sensorData.temperature_threshold_min,
+              temperature_threshold_max: sensorData.temperature_threshold_max,
               image_url: sensorData.image_url,
               data: {
                 datetime: sensorData.last_data?.datetime || "",
@@ -337,10 +343,10 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
           data.threshold_medium?.toString() || prev.thresholdMedium,
         thresholdMax: data.threshold_max?.toString() || prev.thresholdMax,
         notes: data.note || prev.notes,
-        hAxisEnabled: data.h_axis_enabled !== false,
-        vAxisEnabled: data.v_axis_enabled !== false,
         aAxisEnabled: data.a_axis_enabled !== false,
         image_url: data.image_url || prev.image_url,
+        temperature_threshold_min: data.temperature_threshold_min,
+        temperature_threshold_max: data.temperature_threshold_max,
       }));
       return data;
     } catch (error) {
@@ -393,6 +399,10 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
                   g_scale: sensorData.g_scale,
                   time_interval: sensorData.time_interval,
                   image_url: sensorData.image_url,
+                  temperature_threshold_min:
+                    sensorData.temperature_threshold_min,
+                  temperature_threshold_max:
+                    sensorData.temperature_threshold_max,
                 };
               }
             }

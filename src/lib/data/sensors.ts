@@ -348,6 +348,8 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
         area: apiSensor.area,
         machine: apiSensor.machine,
         sensor_name: apiSensor.sensor_name,
+        temperature_threshold_min: apiSensor.temperature_threshold_min,
+        temperature_threshold_max: apiSensor.temperature_threshold_max,
       };
 
       return sensor;

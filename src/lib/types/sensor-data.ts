@@ -33,6 +33,8 @@ export interface Sensor {
   lastSeen?: string;
   battery_level?: number;
   updated_at?: string;
+  temperature_threshold_min?: number;
+  temperature_threshold_max?: number;
 }
 
 export interface SensorLastData {
@@ -57,6 +59,8 @@ export interface SensorLastData {
   threshold_medium?: number;
   threshold_max?: number;
   alarm_ths?: number;
+  temperature_threshold_min?: number;
+  temperature_threshold_max?: number;
   image_url?: string | null;
   data: {
     datetime: string;
@@ -118,6 +122,8 @@ export interface WithLastDataSensor {
   threshold_medium?: number;
   threshold_max?: number;
   alarm_ths?: number;
+  temperature_threshold_min?: number;
+  temperature_threshold_max?: number;
   image_url?: string | null;
   last_data?: {
     datetime?: string;
@@ -204,6 +210,8 @@ export interface SensorPageConfig {
   thresholdMin: string | number;
   thresholdMedium: string | number;
   thresholdMax: string | number;
+  temperature_threshold_min?: number;
+  temperature_threshold_max?: number;
   notes: string;
   image_url: string;
   hAxisEnabled: boolean;
