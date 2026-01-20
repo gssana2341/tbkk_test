@@ -57,7 +57,7 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
   const sortedDatetimes = useMemo(
     () =>
       [...datetimes].sort(
-        (a, b) => new Date(a).getTime() - new Date(b).getTime()
+        (a, b) => new Date(b).getTime() - new Date(a).getTime()
       ),
     [datetimes]
   );
