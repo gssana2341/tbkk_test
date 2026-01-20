@@ -250,12 +250,9 @@ export default function SensorDotView({
             <div className="font-semibold">
               {sensor.name || sensor.sensor_name || "Unknown Sensor"}
             </div>
-            <div className="text-gray-400">
-              {sensor.model || `Model-${sensor.id.substring(0, 8)}`}
-            </div>
-            <div className="text-gray-400">
-              {sensor.machineName || "Unknown Machine"}:{" "}
-              {isMaster ? "Master" : "Satellite"}
+            <div className="text-white">
+              {sensor.machineName || "Unknown Machine"} /{" "}
+              {sensor.name || sensor.sensor_name || "Unknown Sensor"}
             </div>
             <div className="flex items-center space-x-2">
               <span>Temp: {temperature.toFixed(0)}°C</span>
