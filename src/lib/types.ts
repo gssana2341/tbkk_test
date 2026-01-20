@@ -109,6 +109,12 @@ export interface SensorApiData {
     last_32_h?: number[][];
     last_32_v?: number[][];
     last_32_a?: number[][];
+    g_rms_h?: number;
+    g_rms_v?: number;
+    g_rms_a?: number;
+    a_rms_h?: number;
+    a_rms_v?: number;
+    a_rms_a?: number;
   };
 }
 
@@ -169,6 +175,12 @@ export interface Sensor {
     last_32_h?: number[][];
     last_32_v?: number[][];
     last_32_a?: number[][];
+    g_rms_h?: number;
+    g_rms_v?: number;
+    g_rms_a?: number;
+    a_rms_h?: number;
+    a_rms_v?: number;
+    a_rms_a?: number;
     [key: string]: unknown;
   };
   // Store calculated H, V, A statistics

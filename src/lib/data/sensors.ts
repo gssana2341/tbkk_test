@@ -321,6 +321,14 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
               rssi: apiSensor.last_data.rssi,
               level_vibration: apiSensor.last_data.level_vibration,
               level_temperature: apiSensor.last_data.level_temperature,
+              // G RMS values for tooltip
+              g_rms_h: apiSensor.last_data.g_rms_h,
+              g_rms_v: apiSensor.last_data.g_rms_v,
+              g_rms_a: apiSensor.last_data.g_rms_a,
+              // A RMS values
+              a_rms_h: apiSensor.last_data.a_rms_h,
+              a_rms_v: apiSensor.last_data.a_rms_v,
+              a_rms_a: apiSensor.last_data.a_rms_a,
               // Also keep arrays for calculation
               h: hData,
               v: vData,

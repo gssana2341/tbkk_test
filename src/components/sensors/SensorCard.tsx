@@ -1,13 +1,19 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import type { Sensor } from "@/lib/types";
 import {
   getCardBackgroundColor,
+  getVibrationColorFromVelocity,
   type SensorConfig,
 } from "@/lib/utils/vibrationUtils";
 import { cn, getSignalStrength, getSignalStrengthLabel } from "@/lib/utils";
-import { Wifi, WifiOff, WifiHigh, WifiLow, WifiZero } from "lucide-react";
 
 interface SensorCardProps {
   sensor: Sensor;
@@ -65,6 +71,25 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     sensor?.last_data?.velo_rms_a !== undefined &&
     sensor?.last_data?.velo_rms_a !== null
       ? Number(sensor.last_data.velo_rms_a)
+      : undefined;
+
+  // Get acceleration G RMS values for each axis (for tooltip)
+  const gRmsH =
+    sensor?.last_data?.g_rms_h !== undefined &&
+    sensor?.last_data?.g_rms_h !== null
+      ? Number(sensor.last_data.g_rms_h)
+      : undefined;
+
+  const gRmsV =
+    sensor?.last_data?.g_rms_v !== undefined &&
+    sensor?.last_data?.g_rms_v !== null
+      ? Number(sensor.last_data.g_rms_v)
+      : undefined;
+
+  const gRmsA =
+    sensor?.last_data?.g_rms_a !== undefined &&
+    sensor?.last_data?.g_rms_a !== null
+      ? Number(sensor.last_data.g_rms_a)
       : undefined;
 
   // Get sensor configuration for thresholds
@@ -195,267 +220,382 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
     };
   };
 
+  // Helper function to get axis background color for tooltip
+  const getAxisTooltipBgColor = (veloRms: number | undefined): string => {
+    if (veloRms === undefined || sensor.status === "lost") return "#404040";
+    const colorClass = getVibrationColorFromVelocity(
+      veloRms,
+      sensorConfig,
+      "detail",
+      false
+    );
+    // Extract background color from class
+    if (colorClass.includes("bg-[#72ff82]")) return "#ff6b6b"; // Normal -> coral/red for tooltip
+    if (colorClass.includes("bg-[#ffd84d]")) return "#ff6b6b"; // Warning -> coral/red
+    if (colorClass.includes("bg-[#ff8c1a]")) return "#ff6b6b"; // Concern -> coral/red
+    if (colorClass.includes("bg-[#ff4d4d]")) return "#ff6b6b"; // Critical -> coral/red
+    return "#ff6b6b"; // Default coral/red as shown in image
+  };
+
   return (
-    <Card
-      onClick={onClick}
-      className="relative w-full cursor-pointer shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden"
-      style={getCardStyle()}
-    >
-      <CardContent className="p-1 2xl:p-1.5 overflow-hidden">
-        {" "}
-        {/* Row 1: ID | Pills | Status */}
-        <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
-          <div className="flex items-center justify-center shrink-0 mr-1.5">
-            <div
-              className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 relative flex items-center justify-center shrink-0`}
-            >
-              {deviceRole.toLowerCase() === "master" ? (
-                <>
-                  <svg
-                    viewBox="0 0 100 110"
-                    className="absolute inset-0 w-full h-full overflow-visible drop-shadow-sm"
-                    preserveAspectRatio="xMidYMid meet"
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Card
+            onClick={onClick}
+            className="relative w-full cursor-pointer shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden"
+            style={getCardStyle()}
+          >
+            <CardContent className="p-1 2xl:p-1.5 overflow-hidden">
+              {" "}
+              {/* Row 1: ID | Pills | Status */}
+              <div className="flex items-center justify-between gap-0.5 2xl:gap-1 overflow-hidden">
+                <div className="flex items-center justify-center shrink-0 mr-1.5">
+                  <div
+                    className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 2xl:h-8 2xl:w-8 relative flex items-center justify-center shrink-0`}
                   >
-                    <path
-                      d="M 50 2 C 20 2 2 20 2 50 L 10 108 L 90 108 L 98 50 C 98 20 80 2 50 2 Z"
-                      fill="#2563eb"
-                    />
-                  </svg>
-                  <span className="relative z-10 text-white font-bold text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base leading-none mb-1">
-                    M
+                    {deviceRole.toLowerCase() === "master" ? (
+                      <>
+                        <svg
+                          viewBox="0 0 100 110"
+                          className="absolute inset-0 w-full h-full overflow-visible drop-shadow-sm"
+                          preserveAspectRatio="xMidYMid meet"
+                        >
+                          <path
+                            d="M 50 2 C 20 2 2 20 2 50 L 10 108 L 90 108 L 98 50 C 98 20 80 2 50 2 Z"
+                            fill="#2563eb"
+                          />
+                        </svg>
+                        <span className="relative z-10 text-white font-bold text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base leading-none mb-1">
+                          M
+                        </span>
+                      </>
+                    ) : (
+                      <div className="w-full h-full bg-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base font-bold leading-none">
+                          S
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1 overflow-hidden">
+                  <div
+                    className={`text-[0.9rem] sm:text-base lg:text-lg 2xl:text-xl font-extrabold tracking-tight leading-tight truncate ${sensor.status === "lost" ? "text-[#404040]" : "text-white"}`}
+                  >
+                    {deviceId}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 shrink-0 mr-1.5 sm:mr-2 2xl:mr-3">
+                  <span
+                    className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
+                    style={getAxisBadgeStyle(veloRmsH)}
+                  >
+                    H
                   </span>
-                </>
-              ) : (
-                <div className="w-full h-full bg-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-[0.625rem] sm:text-xs lg:text-sm 2xl:text-base font-bold leading-none">
-                    S
+                  <span
+                    className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
+                    style={getAxisBadgeStyle(veloRmsV)}
+                  >
+                    V
+                  </span>
+                  <span
+                    className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
+                    style={getAxisBadgeStyle(veloRmsA)}
+                  >
+                    A
                   </span>
                 </div>
-              )}
-            </div>
-          </div>
-          <div className="min-w-0 flex-1 overflow-hidden">
+              </div>
+              <div className="mt-1 2xl:mt-1.5 flex items-center justify-between gap-1 overflow-hidden">
+                {/* Left Column: Row 2 and Row 3 labels/stats */}
+                <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                  {/* Row 2: Area/Machine */}
+                  <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+                    <div
+                      className={`text-[0.95rem] sm:text-lg lg:text-xl 2xl:text-2xl font-semibold truncate leading-tight ${sensor.status === "lost" ? "text-[#404040]" : "text-gray-300"}`}
+                    >
+                      {areaLabel} / {machineLabel}
+                    </div>
+                  </div>
+
+                  {/* Row 3: Battery | Wifi | Time */}
+                  <div
+                    className="flex items-center gap-0.5 2xl:gap-1 text-[0.55rem] sm:text-[0.65rem] lg:text-[0.75rem] 2xl:text-xs overflow-hidden leading-tight"
+                    style={{ color: "#7A8290" }}
+                  >
+                    <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap">
+                      {/* Modern battery icon with 4 fill bars */}
+                      <svg
+                        width="20"
+                        height="12"
+                        viewBox="0 0 24 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-3.5 h-1.5 sm:w-4.5 sm:h-2 lg:w-5 lg:h-2.5 2xl:w-6.5 2xl:h-3.5"
+                      >
+                        <rect
+                          x="1"
+                          y="2"
+                          width="20"
+                          height="10"
+                          rx="3"
+                          fill="#374151"
+                          stroke="#9CA3AF"
+                          strokeWidth="1.2"
+                        />
+                        {/* Battery tip */}
+                        <rect
+                          x="22"
+                          y="5"
+                          width="2"
+                          height="4"
+                          rx="1"
+                          fill="#9CA3AF"
+                        />
+                        {/* 4 bars, fill based on battery level */}
+                        {Array.from({ length: 4 }).map((_, i) => {
+                          const percent = Math.max(
+                            0,
+                            Math.min(100, Number(battery) || 0)
+                          );
+                          // Each bar represents 25%
+                          const barStart = i * 25;
+                          // How much of this bar should be filled (0-1)
+                          const fillRatio =
+                            percent > barStart
+                              ? Math.min(1, (percent - barStart) / 25)
+                              : 0;
+                          // Bar color by overall percent
+                          const fillColor =
+                            percent > 50
+                              ? "#22C55E"
+                              : percent > 25
+                                ? "#FACC15"
+                                : "#EF4444";
+                          return (
+                            <g key={i}>
+                              {/* Bar background */}
+                              <rect
+                                x={3 + i * 4.25}
+                                y={4}
+                                width={3.5}
+                                height={6}
+                                rx={1}
+                                fill="#4B5563"
+                              />
+                              {/* Bar fill (proportional) */}
+                              {fillRatio > 0 && (
+                                <rect
+                                  x={3 + i * 4.25}
+                                  y={4}
+                                  width={3.5 * fillRatio}
+                                  height={6}
+                                  rx={1}
+                                  fill={fillColor}
+                                />
+                              )}
+                            </g>
+                          );
+                        })}
+                      </svg>
+                      {Math.max(0, Math.min(100, Number(battery) || 0)).toFixed(
+                        0
+                      )}
+                      %
+                    </span>
+                    <span className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap">
+                      {/* Custom WiFi icon with all bars visible - inactive bars in gray */}
+                      {(() => {
+                        const rssiInput = sensor?.last_data?.rssi || 0;
+                        const isSatellite =
+                          deviceRole.toLowerCase() !== "master";
+
+                        let level: number;
+                        if (isSatellite && rssiInput < 0) {
+                          // Specific criteria for Satellite sensors (dBm)
+                          const rssi = Number(rssiInput);
+                          if (rssi === 0) level = 0;
+                          else if (rssi >= -70)
+                            level = 4; // Excellent: -30 to -70
+                          else if (rssi >= -80)
+                            level = 3; // Good: -71 to -80
+                          else if (rssi >= -90)
+                            level = 2; // Fair: -81 to -90
+                          else level = 1; // Weak: Below -90
+                        } else {
+                          // Fallback to existing logic for Master or if rssi is already a level (0-4)
+                          level = getSignalStrength(Number(rssiInput));
+                        }
+
+                        // Determine active color based on signal level
+                        let activeColor = "#9CA3AF"; // Gray for level 0
+                        if (level === 1)
+                          activeColor = "#EF4444"; // Red - Weak
+                        else if (level === 2)
+                          activeColor = "#FB923C"; // Orange - Fair
+                        else if (level >= 3) activeColor = "#00E200"; // Green - Good/Excellent
+
+                        const inactiveColor = "#4B5563"; // Gray-600 for inactive bars
+
+                        // Custom WiFi SVG with 3 arcs + dot (standard WiFi style)
+                        return (
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="w-3 h-3 sm:w-3.5 sm:h-3.5 2xl:w-4 2xl:h-4"
+                          >
+                            {/* Dot at bottom - always active color if level > 0 */}
+                            <circle
+                              cx="12"
+                              cy="19"
+                              r="2"
+                              fill={level >= 1 ? activeColor : inactiveColor}
+                              stroke="none"
+                            />
+
+                            {/* Arc 1 - smallest (level 2+) */}
+                            <path
+                              d="M9 15c1.5-1.5 4.5-1.5 6 0"
+                              stroke={level >= 2 ? activeColor : inactiveColor}
+                              fill="none"
+                            />
+
+                            {/* Arc 2 - middle (level 3+) */}
+                            <path
+                              d="M6 12c3-3 9-3 12 0"
+                              stroke={level >= 3 ? activeColor : inactiveColor}
+                              fill="none"
+                            />
+
+                            {/* Arc 3 - largest (level 4) */}
+                            <path
+                              d="M3 9c4.5-4.5 13.5-4.5 18 0"
+                              stroke={level >= 4 ? activeColor : inactiveColor}
+                              fill="none"
+                            />
+                          </svg>
+                        );
+                      })()}
+                    </span>
+                    <span className="shrink truncate min-w-0">
+                      {lastUpdateText}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Temperature spanning Row 2 and Row 3 on the right */}
+                <div
+                  className={`flex items-baseline gap-0.5 mt-0.5 shrink-0 whitespace-nowrap pr-1.5 sm:pr-2 2xl:pr-3 ${sensor.status === "lost" ? "text-[#404040]" : "text-white"}`}
+                >
+                  <span
+                    className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-bold leading-none"
+                    style={{ fontFamily: "Inter, sans-serif" }}
+                  >
+                    {sensor.status === "lost"
+                      ? "-"
+                      : (Number(temperature) || 0).toFixed(0)}
+                  </span>
+                  {sensor.status !== "lost" && (
+                    <span className="text-xs sm:text-sm lg:text-base 2xl:text-lg font-bold leading-none">
+                      °C
+                    </span>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-[#0B1121] border-[1.35px] border-[#374151] p-2"
+        >
+          {/* Axis data tooltip - single box with 3 axes */}
+          <div className="flex gap-2">
+            {/* Horizontal (H) */}
             <div
-              className={`text-[0.9rem] sm:text-base lg:text-lg 2xl:text-xl font-extrabold tracking-tight leading-tight truncate ${sensor.status === "lost" ? "text-[#404040]" : "text-white"}`}
+              className="rounded-lg p-2 min-w-[150px]"
+              style={{
+                backgroundColor: getAxisBadgeStyle(veloRmsH).backgroundColor,
+                border: "1px solid #000",
+              }}
             >
-              {deviceId}
-            </div>
-          </div>
-          <div className="flex items-center gap-1 shrink-0 mr-1.5 sm:mr-2 2xl:mr-3">
-            <span
-              className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
-              style={getAxisBadgeStyle(veloRmsH)}
-            >
-              H
-            </span>
-            <span
-              className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
-              style={getAxisBadgeStyle(veloRmsV)}
-            >
-              V
-            </span>
-            <span
-              className="flex items-center justify-center w-3 h-7 sm:w-4 sm:h-8 2xl:w-5 2xl:h-9 text-[0.7rem] sm:text-sm 2xl:text-base rounded-full font-bold leading-none shadow-sm"
-              style={getAxisBadgeStyle(veloRmsA)}
-            >
-              A
-            </span>
-          </div>
-        </div>
-        <div className="mt-1 2xl:mt-1.5 flex items-center justify-between gap-1 overflow-hidden">
-          {/* Left Column: Row 2 and Row 3 labels/stats */}
-          <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-            {/* Row 2: Area/Machine */}
-            <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-              <div
-                className={`text-[0.95rem] sm:text-lg lg:text-xl 2xl:text-2xl font-semibold truncate leading-tight ${sensor.status === "lost" ? "text-[#404040]" : "text-gray-300"}`}
-              >
-                {areaLabel} / {machineLabel}
+              <div className="text-black font-bold text-sm mb-1">
+                Horizontal (H)
+              </div>
+              <div className="flex justify-between text-black text-xs">
+                <span className="font-normal">Acceleration</span>
+                <span className="font-bold">
+                  {gRmsH !== undefined ? gRmsH.toFixed(2) : "-"}{" "}
+                  <span className="text-[10px] font-normal">G</span>
+                </span>
+              </div>
+              <div className="flex justify-between text-black text-xs">
+                <span className="font-normal">Velocity</span>
+                <span className="font-bold">
+                  {veloRmsH !== undefined ? veloRmsH.toFixed(2) : "-"}{" "}
+                  <span className="text-[10px] font-normal">mm/s</span>
+                </span>
               </div>
             </div>
 
-            {/* Row 3: Battery | Wifi | Time */}
+            {/* Vertical (V) */}
             <div
-              className="flex items-center gap-0.5 2xl:gap-1 text-[0.55rem] sm:text-[0.65rem] lg:text-[0.75rem] 2xl:text-xs overflow-hidden leading-tight"
-              style={{ color: "#7A8290" }}
+              className="rounded-lg p-2 min-w-[150px]"
+              style={{
+                backgroundColor: getAxisBadgeStyle(veloRmsV).backgroundColor,
+                border: "1px solid #000",
+              }}
             >
-              <span className="inline-flex items-center gap-0.5 shrink-0 whitespace-nowrap">
-                {/* Modern battery icon with 4 fill bars */}
-                <svg
-                  width="20"
-                  height="12"
-                  viewBox="0 0 24 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-3.5 h-1.5 sm:w-4.5 sm:h-2 lg:w-5 lg:h-2.5 2xl:w-6.5 2xl:h-3.5"
-                >
-                  <rect
-                    x="1"
-                    y="2"
-                    width="20"
-                    height="10"
-                    rx="3"
-                    fill="#374151"
-                    stroke="#9CA3AF"
-                    strokeWidth="1.2"
-                  />
-                  {/* Battery tip */}
-                  <rect
-                    x="22"
-                    y="5"
-                    width="2"
-                    height="4"
-                    rx="1"
-                    fill="#9CA3AF"
-                  />
-                  {/* 4 bars, fill based on battery level */}
-                  {Array.from({ length: 4 }).map((_, i) => {
-                    const percent = Math.max(
-                      0,
-                      Math.min(100, Number(battery) || 0)
-                    );
-                    // Each bar represents 25%
-                    const barStart = i * 25;
-                    // How much of this bar should be filled (0-1)
-                    const fillRatio =
-                      percent > barStart
-                        ? Math.min(1, (percent - barStart) / 25)
-                        : 0;
-                    // Bar color by overall percent
-                    const fillColor =
-                      percent > 50
-                        ? "#22C55E"
-                        : percent > 25
-                          ? "#FACC15"
-                          : "#EF4444";
-                    return (
-                      <g key={i}>
-                        {/* Bar background */}
-                        <rect
-                          x={3 + i * 4.25}
-                          y={4}
-                          width={3.5}
-                          height={6}
-                          rx={1}
-                          fill="#4B5563"
-                        />
-                        {/* Bar fill (proportional) */}
-                        {fillRatio > 0 && (
-                          <rect
-                            x={3 + i * 4.25}
-                            y={4}
-                            width={3.5 * fillRatio}
-                            height={6}
-                            rx={1}
-                            fill={fillColor}
-                          />
-                        )}
-                      </g>
-                    );
-                  })}
-                </svg>
-                {Math.max(0, Math.min(100, Number(battery) || 0)).toFixed(0)}%
-              </span>
-              <span className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap">
-                {/* Custom WiFi icon with all bars visible - inactive bars in gray */}
-                {(() => {
-                  const rssiInput = sensor?.last_data?.rssi || 0;
-                  const isSatellite = deviceRole.toLowerCase() !== "master";
+              <div className="text-black font-bold text-sm mb-1">
+                Vertical (V)
+              </div>
+              <div className="flex justify-between text-black text-xs">
+                <span className="font-normal">Acceleration</span>
+                <span className="font-bold">
+                  {gRmsV !== undefined ? gRmsV.toFixed(2) : "-"}{" "}
+                  <span className="text-[10px] font-normal">G</span>
+                </span>
+              </div>
+              <div className="flex justify-between text-black text-xs">
+                <span className="font-normal">Velocity</span>
+                <span className="font-bold">
+                  {veloRmsV !== undefined ? veloRmsV.toFixed(2) : "-"}{" "}
+                  <span className="text-[10px] font-normal">mm/s</span>
+                </span>
+              </div>
+            </div>
 
-                  let level: number;
-                  if (isSatellite && rssiInput < 0) {
-                    // Specific criteria for Satellite sensors (dBm)
-                    const rssi = Number(rssiInput);
-                    if (rssi === 0) level = 0;
-                    else if (rssi >= -70)
-                      level = 4; // Excellent: -30 to -70
-                    else if (rssi >= -80)
-                      level = 3; // Good: -71 to -80
-                    else if (rssi >= -90)
-                      level = 2; // Fair: -81 to -90
-                    else level = 1; // Weak: Below -90
-                  } else {
-                    // Fallback to existing logic for Master or if rssi is already a level (0-4)
-                    level = getSignalStrength(Number(rssiInput));
-                  }
-
-                  // Determine active color based on signal level
-                  let activeColor = "#9CA3AF"; // Gray for level 0
-                  if (level === 1)
-                    activeColor = "#EF4444"; // Red - Weak
-                  else if (level === 2)
-                    activeColor = "#FB923C"; // Orange - Fair
-                  else if (level >= 3) activeColor = "#00E200"; // Green - Good/Excellent
-
-                  const inactiveColor = "#4B5563"; // Gray-600 for inactive bars
-
-                  // Custom WiFi SVG with 3 arcs + dot (standard WiFi style)
-                  return (
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-3 h-3 sm:w-3.5 sm:h-3.5 2xl:w-4 2xl:h-4"
-                    >
-                      {/* Dot at bottom - always active color if level > 0 */}
-                      <circle
-                        cx="12"
-                        cy="19"
-                        r="2"
-                        fill={level >= 1 ? activeColor : inactiveColor}
-                        stroke="none"
-                      />
-
-                      {/* Arc 1 - smallest (level 2+) */}
-                      <path
-                        d="M9 15c1.5-1.5 4.5-1.5 6 0"
-                        stroke={level >= 2 ? activeColor : inactiveColor}
-                        fill="none"
-                      />
-
-                      {/* Arc 2 - middle (level 3+) */}
-                      <path
-                        d="M6 12c3-3 9-3 12 0"
-                        stroke={level >= 3 ? activeColor : inactiveColor}
-                        fill="none"
-                      />
-
-                      {/* Arc 3 - largest (level 4) */}
-                      <path
-                        d="M3 9c4.5-4.5 13.5-4.5 18 0"
-                        stroke={level >= 4 ? activeColor : inactiveColor}
-                        fill="none"
-                      />
-                    </svg>
-                  );
-                })()}
-              </span>
-              <span className="shrink truncate min-w-0">{lastUpdateText}</span>
+            {/* Axial (A) */}
+            <div
+              className="rounded-lg p-2 min-w-[150px]"
+              style={{
+                backgroundColor: getAxisBadgeStyle(veloRmsA).backgroundColor,
+                border: "1px solid #000",
+              }}
+            >
+              <div className="text-black font-bold text-sm mb-1">Axial (A)</div>
+              <div className="flex justify-between text-black text-xs">
+                <span className="font-normal">Acceleration</span>
+                <span className="font-bold">
+                  {gRmsA !== undefined ? gRmsA.toFixed(2) : "-"}{" "}
+                  <span className="text-[10px] font-normal">G</span>
+                </span>
+              </div>
+              <div className="flex justify-between text-black text-xs">
+                <span className="font-normal">Velocity</span>
+                <span className="font-bold">
+                  {veloRmsA !== undefined ? veloRmsA.toFixed(2) : "-"}{" "}
+                  <span className="text-[10px] font-normal">mm/s</span>
+                </span>
+              </div>
             </div>
           </div>
-
-          {/* Temperature spanning Row 2 and Row 3 on the right */}
-          <div
-            className={`flex items-baseline gap-0.5 mt-0.5 shrink-0 whitespace-nowrap pr-1.5 sm:pr-2 2xl:pr-3 ${sensor.status === "lost" ? "text-[#404040]" : "text-white"}`}
-          >
-            <span
-              className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-bold leading-none"
-              style={{ fontFamily: "Inter, sans-serif" }}
-            >
-              {sensor.status === "lost"
-                ? "-"
-                : (Number(temperature) || 0).toFixed(0)}
-            </span>
-            {sensor.status !== "lost" && (
-              <span className="text-xs sm:text-sm lg:text-base 2xl:text-lg font-bold leading-none">
-                °C
-              </span>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
