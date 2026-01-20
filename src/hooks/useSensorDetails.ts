@@ -65,7 +65,7 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
   const fetchSensorHistory = useCallback(async (id: string) => {
     try {
       const token = localStorage.getItem("auth_token");
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${id}/history?limit=10`;
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${id}/history?limit=1000000`;
       const response = await fetch(url, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -420,7 +420,7 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
       await fetchSensorDetails(sensorId);
       await fetchSensorHistory(sensorId);
 
-      const historyUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${sensorId}/history?limit=100`;
+      const historyUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${sensorId}/history?limit=1000000`;
       const token = localStorage.getItem("auth_token");
       const histResponse = await fetch(historyUrl, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},

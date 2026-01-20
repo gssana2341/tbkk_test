@@ -62,10 +62,13 @@ export default function SensorHistoryPage() {
       setError(null);
       try {
         const token = localStorage.getItem("auth_token");
-        let url = `/api/sensors/${params.id}/history?limit=100`; // Increased limit for export/analysis
-
-        if (dateStart) url += `&start_date=${dateStart}`;
-        if (dateEnd) url += `&end_date=${dateEnd}`;
+        let url = `/api/sensors/${params.id}/history`;
+        const queryParams = [`limit=1000000`];
+        if (dateStart) queryParams.push(`start_date=${dateStart}`);
+        if (dateEnd) queryParams.push(`end_date=${dateEnd}`);
+        if (queryParams.length > 0) {
+          url += `?${queryParams.join("&")}`;
+        }
 
         console.log("Fetching History from:", url);
 
@@ -373,11 +376,10 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
-                    selectedAxis === axis
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                    }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
@@ -526,7 +528,6 @@ export default function SensorHistoryPage() {
                         new Date(b.datetime).getTime() -
                         new Date(a.datetime).getTime()
                     ) // Latest to Oldest
-                    .slice(0, 10) // Top 10 latest
                     .map((item, i) => {
                       const getVal = (
                         item: HistoryItem,
