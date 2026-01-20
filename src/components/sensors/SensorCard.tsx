@@ -357,7 +357,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                 {Math.max(0, Math.min(100, Number(battery) || 0)).toFixed(0)}%
               </span>
               <span className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap">
-                {/* Tiered WiFi icon based on actual signal strength */}
+                {/* Custom WiFi icon with all bars visible - inactive bars in gray */}
                 {(() => {
                   const rssiInput = sensor?.last_data?.rssi || 0;
                   const isSatellite = deviceRole.toLowerCase() !== "master";
@@ -379,40 +379,57 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                     level = getSignalStrength(Number(rssiInput));
                   }
 
-                  const iconProps = {
-                    className: "w-3 h-3 sm:w-3.5 sm:h-3.5 2xl:w-4 2xl:h-4",
-                  };
+                  // Determine active color based on signal level
+                  let activeColor = "#9CA3AF"; // Gray for level 0
+                  if (level === 1)
+                    activeColor = "#EF4444"; // Red - Weak
+                  else if (level === 2)
+                    activeColor = "#FB923C"; // Orange - Fair
+                  else if (level >= 3) activeColor = "#00E200"; // Green - Good/Excellent
 
-                  let icon;
-                  let colorClass = "";
+                  const inactiveColor = "#4B5563"; // Gray-600 for inactive bars
 
-                  switch (level) {
-                    case 0:
-                      icon = <WifiOff {...iconProps} />;
-                      colorClass = "text-gray-400";
-                      break;
-                    case 1:
-                      icon = <WifiZero {...iconProps} />;
-                      colorClass = "text-red-500"; // Weak is Red in the image
-                      break;
-                    case 2:
-                      icon = <WifiLow {...iconProps} />;
-                      colorClass = "text-orange-400"; // Fair is Orange/Yellow in the image
-                      break;
-                    case 3:
-                      icon = <WifiHigh {...iconProps} />;
-                      colorClass = "text-[#00E200]"; // Good is Green
-                      break;
-                    case 4:
-                      icon = <Wifi {...iconProps} />;
-                      colorClass = "text-[#00E200]"; // Excellent is Green
-                      break;
-                    default:
-                      icon = <WifiOff {...iconProps} />;
-                      colorClass = "text-gray-400";
-                  }
+                  // Custom WiFi SVG with 3 arcs + dot (standard WiFi style)
+                  return (
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-3 h-3 sm:w-3.5 sm:h-3.5 2xl:w-4 2xl:h-4"
+                    >
+                      {/* Dot at bottom - always active color if level > 0 */}
+                      <circle
+                        cx="12"
+                        cy="19"
+                        r="2"
+                        fill={level >= 1 ? activeColor : inactiveColor}
+                        stroke="none"
+                      />
 
-                  return <span className={colorClass}>{icon}</span>;
+                      {/* Arc 1 - smallest (level 2+) */}
+                      <path
+                        d="M9 15c1.5-1.5 4.5-1.5 6 0"
+                        stroke={level >= 2 ? activeColor : inactiveColor}
+                        fill="none"
+                      />
+
+                      {/* Arc 2 - middle (level 3+) */}
+                      <path
+                        d="M6 12c3-3 9-3 12 0"
+                        stroke={level >= 3 ? activeColor : inactiveColor}
+                        fill="none"
+                      />
+
+                      {/* Arc 3 - largest (level 4) */}
+                      <path
+                        d="M3 9c4.5-4.5 13.5-4.5 18 0"
+                        stroke={level >= 4 ? activeColor : inactiveColor}
+                        fill="none"
+                      />
+                    </svg>
+                  );
                 })()}
               </span>
               <span className="shrink truncate min-w-0">{lastUpdateText}</span>
