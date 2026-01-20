@@ -52,6 +52,15 @@ export default function SensorHistoryPage() {
   const [selectedAxis, setSelectedAxis] = useState<"all" | "h" | "v" | "a">(
     "all"
   );
+  // Helper to get local date string YYYY-MM-DD
+  const getTodayString = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const [selectedUnit, setSelectedUnit] = useState("Velocity (mm/s)");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
@@ -65,7 +74,15 @@ export default function SensorHistoryPage() {
         let url = `/api/sensors/${params.id}/history`;
         const queryParams = [`limit=1000000`];
         if (dateStart) queryParams.push(`start_date=${dateStart}`);
-        if (dateEnd) queryParams.push(`end_date=${dateEnd}`);
+
+        // Smart API Query:
+        // Fetch up to the beginning of the next day to ensure all of today's records are included.
+        if (dateEnd) {
+          const d = new Date(dateEnd);
+          d.setDate(d.getDate() + 1);
+          const nextDay = d.toISOString().split("T")[0];
+          queryParams.push(`end_date=${nextDay}`);
+        }
         if (queryParams.length > 0) {
           url += `?${queryParams.join("&")}`;
         }
@@ -126,8 +143,24 @@ export default function SensorHistoryPage() {
           })
         );
 
+        // Strict frontend filtering by Local Date String
+        // This removes the "Next Day 00:00" records that spill over from the API's inclusive search.
+        const filteredHistory = mappedHistory.filter((item) => {
+          const itemDate = new Date(item.datetime);
+          const year = itemDate.getFullYear();
+          const month = String(itemDate.getMonth() + 1).padStart(2, "0");
+          const day = String(itemDate.getDate()).padStart(2, "0");
+          const itemDateStr = `${year}-${month}-${day}`;
+
+          let isValid = true;
+          if (dateStart && itemDateStr < dateStart) isValid = false;
+          if (dateEnd && itemDateStr > dateEnd) isValid = false;
+
+          return isValid;
+        });
+
         setHistory(
-          mappedHistory.sort(
+          filteredHistory.sort(
             (a, b) =>
               new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
           )
@@ -147,10 +180,8 @@ export default function SensorHistoryPage() {
 
     const labels = history.map((h) => {
       // Fix: Treat server time as Local by removing Z if present
-      const rawString = h.datetime.endsWith("Z")
-        ? h.datetime.slice(0, -1)
-        : h.datetime;
-      const d = new Date(rawString);
+      // Use native Date parsing which correctly handles the 'Z' (UTC) designator.
+      const d = new Date(h.datetime);
       return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
     });
 
@@ -376,10 +407,11 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
-                    ? "bg-blue-600 border-blue-500 text-white"
-                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                    }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
+                    selectedAxis === axis
+                      ? "bg-blue-600 border-blue-500 text-white"
+                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                  }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
@@ -551,10 +583,8 @@ export default function SensorHistoryPage() {
                             ? item.velo_rms_v
                             : item.velo_rms_a;
                       };
-                      const rawString = item.datetime.endsWith("Z")
-                        ? item.datetime.slice(0, -1)
-                        : item.datetime;
-                      const d = new Date(rawString);
+                      // Use native Date parsing for correct timezone conversion.
+                      const d = new Date(item.datetime);
                       const dateStr = d.toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "2-digit",

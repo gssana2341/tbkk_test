@@ -131,16 +131,16 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                 </h2>
                 {(user?.role?.toLowerCase() === "admin" ||
                   user?.role?.toLowerCase() === "editor") && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
-                      onClick={() => router.push(`/register?id=${params.id}`)}
-                    >
-                      <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
-                      Edit
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
+                    onClick={() => router.push(`/register?id=${params.id}`)}
+                  >
+                    <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
+                    Edit
+                  </Button>
+                )}
               </div>
 
               <div className="grid grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] gap-x-8 gap-y-1 text-base 2xl:text-xl">
@@ -407,8 +407,8 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                 <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
                   {sensor?.installationDate
                     ? formatDate(
-                      new Date(sensor.installationDate).toISOString()
-                    )
+                        new Date(sensor.installationDate).toISOString()
+                      )
                     : formatDate("2025-04-26")}
                 </span>
 
