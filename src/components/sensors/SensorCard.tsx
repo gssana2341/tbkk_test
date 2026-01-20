@@ -51,19 +51,19 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Use undefined for missing data to distinguish from 0 (which is valid data)
   const veloRmsH =
     sensor?.last_data?.velo_rms_h !== undefined &&
-      sensor?.last_data?.velo_rms_h !== null
+    sensor?.last_data?.velo_rms_h !== null
       ? Number(sensor.last_data.velo_rms_h)
       : undefined;
 
   const veloRmsV =
     sensor?.last_data?.velo_rms_v !== undefined &&
-      sensor?.last_data?.velo_rms_v !== null
+    sensor?.last_data?.velo_rms_v !== null
       ? Number(sensor.last_data.velo_rms_v)
       : undefined;
 
   const veloRmsA =
     sensor?.last_data?.velo_rms_a !== undefined &&
-      sensor?.last_data?.velo_rms_a !== null
+    sensor?.last_data?.velo_rms_a !== null
       ? Number(sensor.last_data.velo_rms_a)
       : undefined;
 
@@ -141,14 +141,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
   const lastUpdateText = lastUpdate
     ? lastUpdate.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    })
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
     : "-";
 
   // Determine card background color based on sensor status
@@ -367,9 +367,12 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                     // Specific criteria for Satellite sensors (dBm)
                     const rssi = Number(rssiInput);
                     if (rssi === 0) level = 0;
-                    else if (rssi >= -70) level = 4; // Excellent: -30 to -70
-                    else if (rssi >= -80) level = 3; // Good: -71 to -80
-                    else if (rssi >= -90) level = 2; // Fair: -81 to -90
+                    else if (rssi >= -70)
+                      level = 4; // Excellent: -30 to -70
+                    else if (rssi >= -80)
+                      level = 3; // Good: -71 to -80
+                    else if (rssi >= -90)
+                      level = 2; // Fair: -81 to -90
                     else level = 1; // Weak: Below -90
                   } else {
                     // Fallback to existing logic for Master or if rssi is already a level (0-4)
