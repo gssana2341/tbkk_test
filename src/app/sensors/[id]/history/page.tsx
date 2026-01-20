@@ -62,7 +62,7 @@ export default function SensorHistoryPage() {
   };
 
   const [selectedUnit, setSelectedUnit] = useState("Velocity (mm/s)");
-  const [dateStart, setDateStart] = useState("");
+  const [dateStart, setDateStart] = useState(getTodayString());
   const [dateEnd, setDateEnd] = useState("");
 
   useEffect(() => {
@@ -73,11 +73,10 @@ export default function SensorHistoryPage() {
         const token = localStorage.getItem("auth_token");
         let url = `/api/sensors/${params.id}/history`;
         const queryParams = [`limit=1000000`];
-        if (dateStart) queryParams.push(`start_date=${dateStart}`);
-
-        // Smart API Query:
-        // Fetch up to the beginning of the next day to ensure all of today's records are included.
-        if (dateEnd) {
+        if (dateStart && dateEnd) {
+          queryParams.push(`start_date=${dateStart}`);
+          // Smart API Query:
+          // Adjust end_date to be inclusive by fetching until the next day.
           const d = new Date(dateEnd);
           d.setDate(d.getDate() + 1);
           const nextDay = d.toISOString().split("T")[0];
@@ -125,9 +124,6 @@ export default function SensorHistoryPage() {
           }
         }
 
-        console.log("Extracted History Data:", historyData);
-        console.log("History Data Length:", historyData.length);
-
         const mappedHistory: HistoryItem[] = historyData.map(
           (item: HistoryItem) => ({
             datetime: item.datetime,
@@ -144,26 +140,41 @@ export default function SensorHistoryPage() {
         );
 
         // Strict frontend filtering by Local Date String
-        // This removes the "Next Day 00:00" records that spill over from the API's inclusive search.
+        // This removes "Next Day 00:00" data that spills over from the inclusive API query.
         const filteredHistory = mappedHistory.filter((item) => {
-          const itemDate = new Date(item.datetime);
+          // Fix: Treat server time as Local by removing Z for filtering too
+          // Use the raw string without Z to ensure we get the date intended by the backend
+          const rawString = item.datetime.endsWith("Z")
+            ? item.datetime.slice(0, -1)
+            : item.datetime;
+          const itemDate = new Date(rawString);
+
           const year = itemDate.getFullYear();
           const month = String(itemDate.getMonth() + 1).padStart(2, "0");
           const day = String(itemDate.getDate()).padStart(2, "0");
           const itemDateStr = `${year}-${month}-${day}`;
 
           let isValid = true;
-          if (dateStart && itemDateStr < dateStart) isValid = false;
+          if (dateStart && itemDateStr < dateStart) {
+            isValid = false;
+          }
           if (dateEnd && itemDateStr > dateEnd) isValid = false;
 
           return isValid;
         });
 
         setHistory(
-          filteredHistory.sort(
-            (a, b) =>
-              new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
-          )
+          filteredHistory.sort((a, b) => {
+            const rawStringA = a.datetime.endsWith("Z")
+              ? a.datetime.slice(0, -1)
+              : a.datetime;
+            const rawStringB = b.datetime.endsWith("Z")
+              ? b.datetime.slice(0, -1)
+              : b.datetime;
+            return (
+              new Date(rawStringA).getTime() - new Date(rawStringB).getTime()
+            );
+          })
         );
       } catch (err) {
         console.error("Fetch error:", err);
@@ -180,8 +191,10 @@ export default function SensorHistoryPage() {
 
     const labels = history.map((h) => {
       // Fix: Treat server time as Local by removing Z if present
-      // Use native Date parsing which correctly handles the 'Z' (UTC) designator.
-      const d = new Date(h.datetime);
+      const rawString = h.datetime.endsWith("Z")
+        ? h.datetime.slice(0, -1)
+        : h.datetime;
+      const d = new Date(rawString);
       return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
     });
 
@@ -555,11 +568,18 @@ export default function SensorHistoryPage() {
                 </thead>
                 <tbody className="text-gray-200">
                   {[...history]
-                    .sort(
-                      (a, b) =>
-                        new Date(b.datetime).getTime() -
-                        new Date(a.datetime).getTime()
-                    ) // Latest to Oldest
+                    .sort((a, b) => {
+                      const rawStringA = a.datetime.endsWith("Z")
+                        ? a.datetime.slice(0, -1)
+                        : a.datetime;
+                      const rawStringB = b.datetime.endsWith("Z")
+                        ? b.datetime.slice(0, -1)
+                        : b.datetime;
+                      return (
+                        new Date(rawStringB).getTime() -
+                        new Date(rawStringA).getTime()
+                      );
+                    }) // Latest to Oldest
                     .map((item, i) => {
                       const getVal = (
                         item: HistoryItem,
@@ -583,8 +603,11 @@ export default function SensorHistoryPage() {
                             ? item.velo_rms_v
                             : item.velo_rms_a;
                       };
-                      // Use native Date parsing for correct timezone conversion.
-                      const d = new Date(item.datetime);
+                      // Fix: Treat server time as Local by removing Z if present
+                      const rawString = item.datetime.endsWith("Z")
+                        ? item.datetime.slice(0, -1)
+                        : item.datetime;
+                      const d = new Date(rawString);
                       const dateStr = d.toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "2-digit",
