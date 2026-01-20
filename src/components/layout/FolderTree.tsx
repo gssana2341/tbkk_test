@@ -296,11 +296,25 @@ const FolderTree: React.FC<{
     onFilterChange(selectedArray, selectedSensors);
   }, [selectedIds, nodeMap, sensors, onFilterChange]);
 
-  const handleItemClick = (id: string, sensorId?: string) => {
-    setSelectedIds(new Set([id]));
-    if (pathname !== "/") router.push("/");
-    if (sensorId) setCollapsed(true);
-  };
+  const handleItemClick = useCallback(
+    (id: string, sensorId?: string) => {
+      setSelectedIds(new Set([id]));
+      if (pathname !== "/") router.push("/");
+      if (sensorId) setCollapsed(true);
+    },
+    [pathname, router, setCollapsed]
+  );
+
+  // Listen for external "Select All" trigger
+  useEffect(() => {
+    const handleSelectAll = () => {
+      handleItemClick("organization");
+    };
+    window.addEventListener("SELECT_ORGANIZATION", handleSelectAll);
+    return () => {
+      window.removeEventListener("SELECT_ORGANIZATION", handleSelectAll);
+    };
+  }, [handleItemClick]);
 
   // --- Popover (for summary) ---
   const [popover, setPopover] = useState<{

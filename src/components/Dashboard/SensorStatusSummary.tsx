@@ -122,22 +122,32 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
               </div>
             </div>
 
-            {/* Right: Buttons (If filter is active) */}
-            {activeSelectedStatuses.length > 0 && (
+            {/* Right: Buttons */}
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => {
-                  const empty: SensorStatusType[] = [];
-                  if (onStatusFilterChange) {
-                    onStatusFilterChange(empty);
-                  } else {
-                    setInternalSelectedStatuses(empty);
-                  }
-                }}
-                className="h-[32px] px-3 text-xs text-muted-foreground hover:text-foreground underline whitespace-nowrap"
+                onClick={() =>
+                  window.dispatchEvent(new CustomEvent("SELECT_ORGANIZATION"))
+                }
+                className="h-[40px] px-6 text-sm bg-black hover:bg-gray-900 text-white rounded-sm border-2 border-white transition-all duration-200 whitespace-nowrap font-bold shadow-[0_0_10px_rgba(255,255,255,0.1)]"
               >
-                Clear filters ({activeSelectedStatuses.length})
+                Select All
               </button>
-            )}
+              {activeSelectedStatuses.length > 0 && (
+                <button
+                  onClick={() => {
+                    const empty: SensorStatusType[] = [];
+                    if (onStatusFilterChange) {
+                      onStatusFilterChange(empty);
+                    } else {
+                      setInternalSelectedStatuses(empty);
+                    }
+                  }}
+                  className="h-[32px] px-3 text-xs text-muted-foreground hover:text-foreground underline whitespace-nowrap"
+                >
+                  Clear filters ({activeSelectedStatuses.length})
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -162,11 +172,11 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                     ? "border-[3px] border-black shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-105 z-10"
                     : "border-2 border-black",
                   activeSelectedStatuses.length > 0 &&
-                    !isSelected &&
-                    "opacity-40 scale-95 grayscale-[0.5]",
+                  !isSelected &&
+                  "opacity-40 scale-95 grayscale-[0.5]",
                   hasFilterFunction &&
-                    !isSelected &&
-                    "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
+                  !isSelected &&
+                  "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
                 )}
               >
                 <div className="flex items-center gap-2 w-full justify-center">
@@ -225,11 +235,11 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                     ? "border-[3px] border-black shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-105 z-10"
                     : "border-2 border-black",
                   activeSelectedStatuses.length > 0 &&
-                    !isSelected &&
-                    "opacity-40 scale-95 grayscale-[0.5]",
+                  !isSelected &&
+                  "opacity-40 scale-95 grayscale-[0.5]",
                   hasFilterFunction &&
-                    !isSelected &&
-                    "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
+                  !isSelected &&
+                  "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
                 )}
               >
                 <div className="flex items-center gap-2 w-full justify-center">
