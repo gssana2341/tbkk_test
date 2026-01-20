@@ -35,6 +35,7 @@ export interface Sensor {
   updated_at?: string;
   temperature_threshold_min?: number;
   temperature_threshold_max?: number;
+  mac_address?: string;
 }
 
 export interface SensorLastData {
@@ -62,6 +63,7 @@ export interface SensorLastData {
   temperature_threshold_min?: number;
   temperature_threshold_max?: number;
   image_url?: string | null;
+  mac_address?: string | null;
   data: {
     datetime: string;
     acc_h?: number[];
@@ -125,6 +127,7 @@ export interface WithLastDataSensor {
   temperature_threshold_min?: number;
   temperature_threshold_max?: number;
   image_url?: string | null;
+  mac_address?: string | null;
   last_data?: {
     datetime?: string;
     acc_h?: number[];
@@ -214,6 +217,7 @@ export interface SensorPageConfig {
   temperature_threshold_max?: number;
   notes: string;
   image_url: string;
+  mac_address?: string;
   hAxisEnabled: boolean;
   vAxisEnabled: boolean;
   aAxisEnabled: boolean;

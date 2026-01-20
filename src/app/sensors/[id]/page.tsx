@@ -387,19 +387,9 @@ export default function SensorDetailPage() {
                 configData.serialNumber ||
                 "Unnamed Sensor"}
             </h1>
-            <p className="text-gray-400">
-              {sensor.machine ||
-                sensor.machineName ||
-                "Monitoring Test Machine"}{" "}
-              • {sensor.area || sensor.location || "Test Location"}
-              {sensorLastData && (
-                <span className="ml-2 px-2 py-1 text-xs rounded-full bg-blue-900 text-blue-300">
-                  Live Data
-                </span>
-              )}
-            </p>
             <p className="text-sm text-gray-500">
-              Last updated: {formatThaiDate(String(currentData.datetime))}
+              MAC:{" "}
+              {sensorLastData?.mac_address || configData.mac_address || "-"}
             </p>
           </div>
         </div>

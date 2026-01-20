@@ -122,6 +122,7 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
           temperature_threshold_max: data.temperature_threshold_max,
           notes: data.note || prev.notes,
           image_url: data.image_url || prev.image_url,
+          mac_address: data.mac_address || prev.mac_address,
         }));
         return data;
       }
@@ -175,6 +176,7 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
             temperature_threshold_min: data.temperature_threshold_min,
             temperature_threshold_max: data.temperature_threshold_max,
             image_url: data.image_url,
+            mac_address: data.mac_address,
             data: {
               datetime: data.datetime || data.data?.datetime || "",
               acc_h: data.acc_h || data.data?.acc_h || [],
@@ -264,6 +266,7 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
               temperature_threshold_min: sensorData.temperature_threshold_min,
               temperature_threshold_max: sensorData.temperature_threshold_max,
               image_url: sensorData.image_url,
+              mac_address: sensorData.mac_address,
               data: {
                 datetime: sensorData.last_data?.datetime || "",
                 acc_h: sensorData.last_data?.acc_h,
@@ -347,6 +350,7 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
         image_url: data.image_url || prev.image_url,
         temperature_threshold_min: data.temperature_threshold_min,
         temperature_threshold_max: data.temperature_threshold_max,
+        mac_address: data.mac_address || prev.mac_address,
       }));
       return data;
     } catch (error) {
@@ -403,6 +407,7 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
                     sensorData.temperature_threshold_min,
                   temperature_threshold_max:
                     sensorData.temperature_threshold_max,
+                  mac_address: sensorData.mac_address,
                 };
               }
             }
