@@ -197,6 +197,41 @@ export function SensorFormContent({
                     placeholder="Enter serial number"
                     className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
                     {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      // Clear error when user types
+                      if (
+                        form.getFieldState(`sensors.${index}.serialNumber`)
+                          .invalid
+                      ) {
+                        form.clearErrors(`sensors.${index}.serialNumber`);
+                      }
+                    }}
+                    onBlur={async (e) => {
+                      field.onBlur();
+                      const value = e.target.value;
+                      if (!value) return;
+
+                      try {
+                        const { getSensors } = await import(
+                          "@/lib/data/sensors"
+                        );
+                        const { sensors } = await getSensors({ search: value });
+                        const exists = sensors.some(
+                          (s) =>
+                            s.serialNumber.toLowerCase() === value.toLowerCase()
+                        );
+                        if (exists) {
+                          form.setError(`sensors.${index}.serialNumber`, {
+                            type: "manual",
+                            message:
+                              "Serial Number นี้มีอยู่ในฐานข้อมูลอยู่แล้ว",
+                          });
+                        }
+                      } catch (err) {
+                        console.error("Error validating serial number:", err);
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

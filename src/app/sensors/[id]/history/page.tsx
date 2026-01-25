@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import dynamic from "next/dynamic";
 import { exportToCSV, exportToExcel } from "@/lib/exportUtils";
-import { MoreHorizontal, ArrowLeft } from "lucide-react";
+import { MoreHorizontal, ArrowLeft, Calendar } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,7 +63,7 @@ export default function SensorHistoryPage() {
 
   const [selectedUnit, setSelectedUnit] = useState("Velocity (mm/s)");
   const [dateStart, setDateStart] = useState(getTodayString());
-  const [dateEnd, setDateEnd] = useState("");
+  const [dateEnd, setDateEnd] = useState(getTodayString());
 
   useEffect(() => {
     async function fetchHistory() {
@@ -72,15 +72,20 @@ export default function SensorHistoryPage() {
       try {
         const token = localStorage.getItem("auth_token");
         let url = `/api/sensors/${params.id}/history`;
-        const queryParams = [`limit=1000000`];
+        // Optimization: Reduce limit from 1,000,000 to 5,000 points.
+        // ECharts can handle 5k points smoothly, and more points than pixels (approx 2000px width)
+        // adds little value without server-side aggregation.
+        const queryParams = [`limit=5000`];
+
         if (dateStart && dateEnd) {
-          queryParams.push(`start_date=${dateStart}`);
-          // Smart API Query:
+          const dStart = new Date(dateStart);
+          // Convert to Seconds (Unix Timestamp) to fit Backend i32/Target Type
+          queryParams.push(`start_date=${Math.floor(dStart.getTime() / 1000)}`);
+
           // Adjust end_date to be inclusive by fetching until the next day.
-          const d = new Date(dateEnd);
-          d.setDate(d.getDate() + 1);
-          const nextDay = d.toISOString().split("T")[0];
-          queryParams.push(`end_date=${nextDay}`);
+          const dEnd = new Date(dateEnd);
+          dEnd.setDate(dEnd.getDate() + 1);
+          queryParams.push(`end_date=${Math.floor(dEnd.getTime() / 1000)}`);
         }
         if (queryParams.length > 0) {
           url += `?${queryParams.join("&")}`;
@@ -93,7 +98,9 @@ export default function SensorHistoryPage() {
         });
 
         if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
+          const errorText = await response.text();
+          console.error("API Error Body:", errorText);
+          throw new Error(`API Error: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
@@ -139,11 +146,10 @@ export default function SensorHistoryPage() {
           })
         );
 
-        // Strict frontend filtering by Local Date String
-        // This removes "Next Day 00:00" data that spills over from the inclusive API query.
+        // Client-side filtering as safety net to ensure only selected date range is shown
+        // This handles cases where API might return slightly wider range or fallback
         const filteredHistory = mappedHistory.filter((item) => {
-          // Fix: Treat server time as Local by removing Z for filtering too
-          // Use the raw string without Z to ensure we get the date intended by the backend
+          // Parse item date
           const rawString = item.datetime.endsWith("Z")
             ? item.datetime.slice(0, -1)
             : item.datetime;
@@ -155,25 +161,19 @@ export default function SensorHistoryPage() {
           const itemDateStr = `${year}-${month}-${day}`;
 
           let isValid = true;
-          if (dateStart && itemDateStr < dateStart) {
-            isValid = false;
-          }
+          if (dateStart && itemDateStr < dateStart) isValid = false;
           if (dateEnd && itemDateStr > dateEnd) isValid = false;
 
           return isValid;
         });
 
+        // Sort Data (Oldest to Latest usually preferred for charts, but existing code had logic)
+        // Ensure consistent time-based sort
         setHistory(
           filteredHistory.sort((a, b) => {
-            const rawStringA = a.datetime.endsWith("Z")
-              ? a.datetime.slice(0, -1)
-              : a.datetime;
-            const rawStringB = b.datetime.endsWith("Z")
-              ? b.datetime.slice(0, -1)
-              : b.datetime;
-            return (
-              new Date(rawStringA).getTime() - new Date(rawStringB).getTime()
-            );
+            const timeA = new Date(a.datetime).getTime();
+            const timeB = new Date(b.datetime).getTime();
+            return timeA - timeB;
           })
         );
       } catch (err) {
@@ -195,7 +195,7 @@ export default function SensorHistoryPage() {
         ? h.datetime.slice(0, -1)
         : h.datetime;
       const d = new Date(rawString);
-      return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
+      return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
     });
 
     // Helper to get value
@@ -230,6 +230,7 @@ export default function SensorHistoryPage() {
         smooth: false,
         symbol: "none", // No point
         showSymbol: false,
+        sampling: "lttb", // Downsampling optimization
         lineStyle: { width: 3 },
       });
     }
@@ -243,6 +244,7 @@ export default function SensorHistoryPage() {
         smooth: false,
         symbol: "none",
         showSymbol: false,
+        sampling: "lttb", // Downsampling optimization
         lineStyle: { width: 3 },
       });
     }
@@ -256,6 +258,7 @@ export default function SensorHistoryPage() {
         smooth: false,
         symbol: "none",
         showSymbol: false,
+        sampling: "lttb", // Downsampling optimization
         lineStyle: { width: 3 },
       });
     }
@@ -312,6 +315,25 @@ export default function SensorHistoryPage() {
         textStyle: { color: "#fff" },
       },
       legend: { show: false }, // Hide default legend
+      toolbox: {
+        feature: {
+          dataZoom: {
+            yAxisIndex: "none",
+          },
+          restore: {},
+          saveAsImage: {},
+        },
+        iconStyle: {
+          borderColor: "#fff",
+        },
+      },
+      dataZoom: [
+        {
+          type: "inside",
+          start: 0,
+          end: 100,
+        },
+      ],
       grid: { left: "3%", right: "4%", bottom: "15%", containLabel: true },
       xAxis: {
         type: "category",
@@ -446,19 +468,40 @@ export default function SensorHistoryPage() {
 
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-300">Date:</span>
-              <input
-                type="date"
-                className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-blue-500"
-                value={dateStart}
-                onChange={(e) => setDateStart(e.target.value)}
-              />
+
+              {/* Start Date Custom Input */}
+              <div className="relative bg-[#0B1121] border-[1.35px] border-[#374151] rounded px-3 py-1.5 flex items-center gap-2 w-[150px] cursor-pointer hover:border-blue-500">
+                <span className="text-white text-sm flex-1">
+                  {dateStart
+                    ? dateStart.split("-").reverse().join("/")
+                    : "dd/mm/yyyy"}
+                </span>
+                <Calendar className="h-4 w-4 text-white" />
+                <input
+                  type="date"
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  value={dateStart}
+                  onChange={(e) => setDateStart(e.target.value)}
+                />
+              </div>
+
               <span className="text-gray-400">-</span>
-              <input
-                type="date"
-                className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white text-sm rounded px-3 py-1.5 focus:outline-none focus:border-blue-500"
-                value={dateEnd}
-                onChange={(e) => setDateEnd(e.target.value)}
-              />
+
+              {/* End Date Custom Input */}
+              <div className="relative bg-[#0B1121] border-[1.35px] border-[#374151] rounded px-3 py-1.5 flex items-center gap-2 w-[150px] cursor-pointer hover:border-blue-500">
+                <span className="text-white text-sm flex-1">
+                  {dateEnd
+                    ? dateEnd.split("-").reverse().join("/")
+                    : "dd/mm/yyyy"}
+                </span>
+                <Calendar className="h-4 w-4 text-white" />
+                <input
+                  type="date"
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  value={dateEnd}
+                  onChange={(e) => setDateEnd(e.target.value)}
+                />
+              </div>
             </div>
 
             <div className="flex gap-2 ml-auto">

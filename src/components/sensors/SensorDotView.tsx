@@ -244,39 +244,47 @@ export default function SensorDotView({
         </TooltipTrigger>
         <TooltipContent
           side="top"
-          className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white"
+          className="bg-[#0B1121] border-[1.35px] border-[#374151] text-white p-4 min-w-[200px]"
         >
-          <div className="space-y-1 text-xs">
-            <div className="font-semibold">
-              {sensor.name || sensor.sensor_name || "Unknown Sensor"}
+          <div className="space-y-3 text-base">
+            <div>
+              <div className="font-bold text-lg leading-tight">
+                {sensor.name || sensor.sensor_name || "Unknown Sensor"}
+              </div>
+              <div className="text-gray-300 text-sm mt-0.5">
+                {sensor.machineName || "Unknown Machine"}
+              </div>
             </div>
-            <div className="text-white">
-              {sensor.machineName || "Unknown Machine"} /{" "}
-              {sensor.name || sensor.sensor_name || "Unknown Sensor"}
+
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">Temp:</span>
+                <span className="font-mono">{temperature.toFixed(0)}°C</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">Battery:</span>
+                <span className="font-mono">
+                  {sensor.batteryLevel?.toFixed(0) ||
+                    sensor.last_data?.battery?.toFixed(0) ||
+                    "0"}
+                  %
+                </span>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <span>Temp: {temperature.toFixed(0)}°C</span>
-              <span>
-                Battery:{" "}
-                {sensor.batteryLevel?.toFixed(0) ||
-                  sensor.last_data?.battery?.toFixed(0) ||
-                  "0"}
-                %
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span>Vibration:</span>
-              <div className="flex space-x-1">
+
+            <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+              <span className="text-gray-400">Vibration:</span>
+              <div className="flex space-x-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${finalHColor.split(" ")[0]}`}
+                  className={`w-4 h-4 rounded-full ${finalHColor.split(" ")[0]}`}
                   title="Horizontal (H)"
                 />
                 <div
-                  className={`w-2 h-2 rounded-full ${finalVColor.split(" ")[0]}`}
+                  className={`w-4 h-4 rounded-full ${finalVColor.split(" ")[0]}`}
                   title="Vertical (V)"
                 />
                 <div
-                  className={`w-2 h-2 rounded-full ${finalAColor.split(" ")[0]}`}
+                  className={`w-4 h-4 rounded-full ${finalAColor.split(" ")[0]}`}
                   title="Axial (A)"
                 />
               </div>

@@ -513,6 +513,11 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
           side="top"
           className="bg-[#0B1121] border-[1.35px] border-[#374151] p-2"
         >
+          {/* MAC Address Display */}
+          <div className="text-gray-300 text-xs mb-2 font-mono border-b border-gray-700 pb-1">
+            MAC: {sensor.macAddress || sensor.serialNumber || "-"}
+          </div>
+
           {/* Axis data tooltip - single box with 3 axes */}
           <div className="flex gap-2">
             {/* Horizontal (H) */}

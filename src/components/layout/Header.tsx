@@ -227,11 +227,11 @@ export default function Header() {
         }
       });
 
-      // Limit stack size (e.g., 50 items)
-      if (notificationStack.length > 50) {
-        notificationStack = notificationStack.slice(0, 50);
-        stackChanged = true;
-      }
+      // Limit stack size (removed limit as requested)
+      // if (notificationStack.length > 50) {
+      //   notificationStack = notificationStack.slice(0, 50);
+      //   stackChanged = true;
+      // }
 
       if (stackChanged) {
         localStorage.setItem(

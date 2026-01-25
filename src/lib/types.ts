@@ -90,6 +90,7 @@ export interface SensorApiData {
   note?: string | null;
   temperature_threshold_min?: number;
   temperature_threshold_max?: number;
+  mac_address?: string | null;
   last_data: {
     datetime: string;
     acc_h?: number[];
@@ -152,6 +153,7 @@ export interface Sensor {
   area?: string | null;
   machine?: string | null;
   motor_start_time?: string | null;
+  macAddress?: string; // Mapped from mac_address
   // Store raw API data
   last_data?: {
     datetime?: string;
