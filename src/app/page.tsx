@@ -174,6 +174,9 @@ export default function SensorsPage() {
     if (selectedIds && selectedIds.length > 0) {
       const selectedSensorIds = new Set(selectedSensors.map((s) => s.id));
       result = sensors.filter((s) => selectedSensorIds.has(s.id));
+    } else if (selectedStatuses.length > 0) {
+      // If no folder selected but status filter is active, show all matching sensors
+      result = [...sensors];
     }
 
     // Filter by search query
@@ -333,18 +336,19 @@ export default function SensorsPage() {
         />
       </div>
 
-      {/* Only show Filters and Grid if any item is selected */}
-      {selectedIds && selectedIds.length > 0 && (
-        <>
-          {/* Filters */}
-          <SensorFilters />
+      {/* Only show Filters and Grid if any item is selected or status filter is active */}
+      {((selectedIds && selectedIds.length > 0) ||
+        selectedStatuses.length > 0) && (
+          <>
+            {/* Filters */}
+            <SensorFilters />
 
-          {/* Sensor Views */}
-          <Suspense fallback={<LoadingSkeleton />}>
-            {renderCurrentView()}
-          </Suspense>
-        </>
-      )}
+            {/* Sensor Views */}
+            <Suspense fallback={<LoadingSkeleton />}>
+              {renderCurrentView()}
+            </Suspense>
+          </>
+        )}
     </div>
   );
 }

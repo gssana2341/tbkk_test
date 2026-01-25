@@ -125,10 +125,40 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
             {/* Right: Buttons */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() =>
-                  window.dispatchEvent(new CustomEvent("SELECT_ORGANIZATION"))
-                }
-                className="h-[40px] px-6 text-sm bg-black hover:bg-gray-900 text-white rounded-sm border-2 border-white transition-all duration-200 whitespace-nowrap font-bold shadow-[0_0_10px_rgba(255,255,255,0.1)]"
+                onClick={() => {
+                  const allStatuses: SensorStatusType[] = [
+                    "normal",
+                    "warning",
+                    "concern",
+                    "critical",
+                    "standby",
+                    "lost",
+                  ];
+                  const isAllSelected = allStatuses.every((s) =>
+                    activeSelectedStatuses.includes(s)
+                  );
+
+                  const newSelected = isAllSelected ? [] : allStatuses;
+
+                  if (onStatusFilterChange) {
+                    onStatusFilterChange(newSelected);
+                  } else {
+                    setInternalSelectedStatuses(newSelected);
+                  }
+                }}
+                className={cn(
+                  "h-[40px] px-6 text-sm rounded-sm border-2 border-white transition-all duration-200 whitespace-nowrap font-bold shadow-[0_0_10px_rgba(255,255,255,0.1)]",
+                  [
+                    "normal",
+                    "warning",
+                    "concern",
+                    "critical",
+                    "standby",
+                    "lost",
+                  ].every((s) => activeSelectedStatuses.includes(s as SensorStatusType))
+                    ? "bg-white text-black hover:bg-gray-200"
+                    : "bg-black hover:bg-gray-900 text-white"
+                )}
               >
                 Select All
               </button>
@@ -172,11 +202,11 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                     ? "border-[3px] border-black shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-105 z-10"
                     : "border-2 border-black",
                   activeSelectedStatuses.length > 0 &&
-                    !isSelected &&
-                    "opacity-40 scale-95 grayscale-[0.5]",
+                  !isSelected &&
+                  "opacity-40 scale-95 grayscale-[0.5]",
                   hasFilterFunction &&
-                    !isSelected &&
-                    "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
+                  !isSelected &&
+                  "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
                 )}
               >
                 <div className="flex items-center gap-2 w-full justify-center">
@@ -235,11 +265,11 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
                     ? "border-[3px] border-black shadow-[0_8px_25px_rgba(0,0,0,0.9)] scale-105 z-10"
                     : "border-2 border-black",
                   activeSelectedStatuses.length > 0 &&
-                    !isSelected &&
-                    "opacity-40 scale-95 grayscale-[0.5]",
+                  !isSelected &&
+                  "opacity-40 scale-95 grayscale-[0.5]",
                   hasFilterFunction &&
-                    !isSelected &&
-                    "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
+                  !isSelected &&
+                  "cursor-pointer hover:shadow-md hover:-translate-y-1 hover:scale-105 hover:opacity-100 hover:grayscale-0"
                 )}
               >
                 <div className="flex items-center gap-2 w-full justify-center">
