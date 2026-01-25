@@ -18,6 +18,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getUserProfile } from "@/api/users/users";
+import { getOrganizationByOrgCode } from "@/api/organizations/organizeapi";
 import { getSensors } from "@/lib/data/sensors";
 import type { Sensor } from "@/lib/types";
 
@@ -60,6 +61,8 @@ export default function Header() {
   const pathname = usePathname();
   const pageTitle = getPageTitle(pathname);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [organizationName, setOrganizationName] =
+    useState<string>("VIBRATION-SZ");
   const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch notifications from API
@@ -291,6 +294,24 @@ export default function Header() {
     fetchUserProfile();
   }, [user, logout]);
 
+  // Fetch organization name based on user's org_code
+  useEffect(() => {
+    const fetchOrganizationName = async () => {
+      try {
+        if (user?.org_code) {
+          const org = await getOrganizationByOrgCode(user.org_code);
+          if (org?.name) {
+            setOrganizationName(org.name);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching organization:", error);
+      }
+    };
+
+    fetchOrganizationName();
+  }, [user]);
+
   // Fetch notifications on mount
   useEffect(() => {
     fetchNotifications();
@@ -342,7 +363,7 @@ export default function Header() {
       <div className="flex items-center justify-between">
         <div className="flex-1 flex items-center gap-3">
           <span className="text-lg 2xl:text-2xl font-medium text-white">
-            TBKK-Surazense
+            {organizationName}
           </span>
           <span className="text-gray-400 2xl:text-xl">/</span>
           <span className="text-gray-300 text-sm 2xl:text-lg">{pageTitle}</span>

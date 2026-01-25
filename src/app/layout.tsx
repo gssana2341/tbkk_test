@@ -9,8 +9,8 @@ import AuthWrapper from "@/components/auth/AuthWrapper";
 // const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "TBKK-Surazense",
-  description: "Monitor industrial sensors in real-time with TBKK-Surazense",
+  title: "VIBRATION-SZ",
+  description: "Monitor industrial sensors in real-time with VIBRATION-SZ",
   generator: "v0.dev",
 };
 

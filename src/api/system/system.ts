@@ -38,7 +38,7 @@ export async function getSystemInfo(): Promise<SystemInfo> {
     console.error("Error fetching system info:", error);
     // Return default values if API fails
     return {
-      system_name: "TBKK-Surazense",
+      system_name: "VIBRATION-SZ",
       system_version: "v1.0.0",
       database_status: "unknown",
       api_status: "unknown",

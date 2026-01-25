@@ -119,7 +119,7 @@ const SETTINGS_STORAGE_KEY = "app_settings";
 
 const defaultSettings: Settings = {
   system: {
-    system_name: "TBKK-Surazense",
+    system_name: "VIBRATION-SZ",
     timezone: "UTC",
     date_format: "MM/DD/YYYY",
     temperature_unit: "celsius",

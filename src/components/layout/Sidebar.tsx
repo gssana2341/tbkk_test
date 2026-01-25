@@ -84,7 +84,7 @@ export default function Sidebar() {
     >
       <div className="flex items-center justify-between p-4 border-b border-[#374151]">
         {!collapsed && (
-          <h1 className="text-xl font-bold text-white">TBKK-Surazense</h1>
+          <h1 className="text-xl font-bold text-white">VIBRATION-SZ</h1>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
