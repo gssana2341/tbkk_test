@@ -339,16 +339,16 @@ export default function SensorsPage() {
       {/* Only show Filters and Grid if any item is selected or status filter is active */}
       {((selectedIds && selectedIds.length > 0) ||
         selectedStatuses.length > 0) && (
-          <>
-            {/* Filters */}
-            <SensorFilters />
+        <>
+          {/* Filters */}
+          <SensorFilters />
 
-            {/* Sensor Views */}
-            <Suspense fallback={<LoadingSkeleton />}>
-              {renderCurrentView()}
-            </Suspense>
-          </>
-        )}
+          {/* Sensor Views */}
+          <Suspense fallback={<LoadingSkeleton />}>
+            {renderCurrentView()}
+          </Suspense>
+        </>
+      )}
     </div>
   );
 }

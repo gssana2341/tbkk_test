@@ -109,7 +109,9 @@ export function NotificationHistoryTable({
   // Use controlled page if provided, else internal
   const activePage = currentPage ?? internalPage;
 
-  const [selectedStatuses, setSelectedStatuses] = useState<NotificationStatus[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<
+    NotificationStatus[]
+  >([]);
 
   const toggleStatus = (status: NotificationStatus) => {
     setSelectedStatuses((prev) =>
@@ -248,10 +250,11 @@ export function NotificationHistoryTable({
                   <button
                     key={key}
                     onClick={() => toggleStatus(key as NotificationStatus)}
-                    className={`flex items-center gap-2 text-base 2xl:text-xl transition-all duration-200 ${selectedStatuses.length > 0 && !isSelected
+                    className={`flex items-center gap-2 text-base 2xl:text-xl transition-all duration-200 ${
+                      selectedStatuses.length > 0 && !isSelected
                         ? "opacity-40 grayscale"
                         : "opacity-100"
-                      }`}
+                    }`}
                   >
                     <span
                       className={`inline-block w-4 h-4 2xl:w-6 2xl:h-6 rounded-full border border-gray-300 ${val.dot}`}
@@ -417,10 +420,11 @@ export function NotificationHistoryTable({
                         <td key={axis} className="py-4 px-4">
                           <div className="flex items-center justify-center gap-2">
                             <span
-                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${colorCode !== undefined
-                                ? getAxisColorCode(colorCode)
-                                : "bg-gray-400"
-                                }`}
+                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${
+                                colorCode !== undefined
+                                  ? getAxisColorCode(colorCode)
+                                  : "bg-gray-400"
+                              }`}
                             />
                             <span className="font-medium text-gray-300">
                               {entry[axis] != null

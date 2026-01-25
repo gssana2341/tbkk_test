@@ -60,9 +60,7 @@ export default function NotificationHistoryPage() {
         hColor: log.h_vrms_color,
         vColor: log.v_vrms_color,
         aColor: log.a_vrms_color,
-        temperature: log.temperature
-          ? `${log.temperature.toFixed(0)}°C`
-          : null,
+        temperature: log.temperature ? `${log.temperature.toFixed(0)}°C` : null,
         battery: log.battery ? `${Math.round(log.battery)}%` : null,
         config: {
           thresholdMin: log.threshold_min ?? 2.0,
@@ -130,13 +128,16 @@ export default function NotificationHistoryPage() {
     const itemsNeededIndex = newPage * 20;
     const currentItemsCount = entries.length;
 
-    if (itemsNeededIndex > currentItemsCount && loadedApiPages < totalApiPages) {
+    if (
+      itemsNeededIndex > currentItemsCount &&
+      loadedApiPages < totalApiPages
+    ) {
       // We need to fetch next API page
       const nextApiPage = loadedApiPages + 1;
 
       try {
-        // Show mini loading? Or just fetch in background. 
-        // For UX, maybe keep old data visibly but disable interaction? 
+        // Show mini loading? Or just fetch in background.
+        // For UX, maybe keep old data visibly but disable interaction?
         // For now, allow async append.
 
         const response = await getNotificationLogs({
@@ -146,7 +147,7 @@ export default function NotificationHistoryPage() {
 
         if (response.data) {
           const newLogs = transformLogs(response.data);
-          setEntries(prev => {
+          setEntries((prev) => {
             const updated = [...prev, ...newLogs];
             updated.sort((a, b) => b.timestamp - a.timestamp);
             return updated;

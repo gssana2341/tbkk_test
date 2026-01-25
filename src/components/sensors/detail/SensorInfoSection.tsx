@@ -112,7 +112,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
   }, [sensor?.id]);
 
   return (
-    <Card className="bg-[#0B1121] border-[1.35px] border-[#374151]" >
+    <Card className="bg-[#0B1121] border-[1.35px] border-[#374151]">
       <CardContent className="p-4">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="shrink-0 flex justify-center">
@@ -139,16 +139,16 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                 </h2>
                 {(user?.role?.toLowerCase() === "admin" ||
                   user?.role?.toLowerCase() === "editor") && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
-                      onClick={() => router.push(`/register?id=${params.id}`)}
-                    >
-                      <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
-                      Edit
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-lg 2xl:px-4 2xl:py-2"
+                    onClick={() => router.push(`/register?id=${params.id}`)}
+                  >
+                    <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
+                    Edit
+                  </Button>
+                )}
               </div>
 
               <div className="grid grid-cols-[200px_1fr] 2xl:grid-cols-[250px_1fr] gap-x-8 gap-y-1 text-base 2xl:text-xl">
@@ -415,8 +415,8 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                 <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
                   {sensor?.installationDate
                     ? formatDate(
-                      new Date(sensor.installationDate).toISOString()
-                    )
+                        new Date(sensor.installationDate).toISOString()
+                      )
                     : formatDate("2025-04-26")}
                 </span>
 
@@ -450,11 +450,14 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                 className="bg-[#0B1121] rounded-md p-2 overflow-y-auto custom-scrollbar"
                 style={{ maxHeight: "280px" }}
                 onScroll={(e) => {
-                  const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+                  const { scrollTop, scrollHeight, clientHeight } =
+                    e.currentTarget;
                   // If scrolled to bottom (w/ small threshold)
                   if (scrollHeight - scrollTop <= clientHeight + 10) {
                     // Load next 20 items
-                    setVisibleCount((prev) => Math.min(prev + 20, sortedDatetimes.length));
+                    setVisibleCount((prev) =>
+                      Math.min(prev + 20, sortedDatetimes.length)
+                    );
                   }
                 }}
               >
@@ -490,7 +493,9 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                       </li>
                     ))}
                     {visibleCount < sortedDatetimes.length && (
-                      <li className="text-center py-2 text-gray-500 text-sm">Loading more...</li>
+                      <li className="text-center py-2 text-gray-500 text-sm">
+                        Loading more...
+                      </li>
                     )}
                   </ul>
                 ) : (
@@ -503,6 +508,6 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
           </div>
         </div>
       </CardContent>
-    </Card >
+    </Card>
   );
 };
