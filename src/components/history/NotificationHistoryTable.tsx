@@ -38,6 +38,9 @@ import SensorPagination from "../sensors/SensorPagination";
 
 interface NotificationHistoryTableProps {
   entries: NotificationEntry[];
+  totalServerItems?: number; // Total items on server, for calculating total pages
+  currentPage?: number; // Controlled current page
+  onPageChange?: (page: number) => void; // Callback for page change
 }
 
 const statusStyles: Record<
@@ -93,12 +96,33 @@ function getAxisColorCode(code: number | undefined) {
 
 export function NotificationHistoryTable({
   entries,
+  totalServerItems,
+  currentPage,
+  onPageChange,
 }: NotificationHistoryTableProps) {
   const [search, setSearch] = useState("");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
-  const [activePage, setActivePage] = useState(1);
+  const [internalPage, setInternalPage] = useState(1);
   const [data, setData] = useState(entries);
+
+  // Use controlled page if provided, else internal
+  const activePage = currentPage ?? internalPage;
+
+  const [selectedStatuses, setSelectedStatuses] = useState<NotificationStatus[]>([]);
+
+  const toggleStatus = (status: NotificationStatus) => {
+    setSelectedStatuses((prev) =>
+      prev.includes(status)
+        ? prev.filter((s) => s !== status)
+        : [...prev, status]
+    );
+  };
+
+  // Sync data when entries prop changes
+  React.useEffect(() => {
+    setData(entries);
+  }, [entries]);
 
   const [sortConfig, setSortConfig] = useState<{
     key: keyof NotificationEntry;
@@ -137,6 +161,11 @@ export function NotificationHistoryTable({
       filtered = filtered.filter((e) => e.timestamp <= end);
     }
 
+    // Status Filter
+    if (selectedStatuses.length > 0) {
+      filtered = filtered.filter((e) => selectedStatuses.includes(e.status));
+    }
+
     if (sortConfig !== null) {
       filtered.sort((a, b) => {
         let aValue = a[sortConfig.key];
@@ -162,11 +191,26 @@ export function NotificationHistoryTable({
     }
 
     return filtered;
-  }, [search, dateStart, dateEnd, data, sortConfig]);
+  }, [search, dateStart, dateEnd, data, sortConfig, selectedStatuses]);
 
   const hasEntries = rows.length > 0;
-  const totalPages = Math.max(1, Math.ceil(rows.length / 20));
+
+  // Calculate total pages: Use server total if provided, otherwise client-side filtered length
+  const totalPages = totalServerItems
+    ? Math.max(1, Math.ceil(totalServerItems / 20))
+    : Math.max(1, Math.ceil(rows.length / 20));
+
+  // If using server items, we assume the parent manages the data slice for the current page OR we have accumulated data
+  // But standard logic: slice the rows for the current page
   const pagedRows = rows.slice((activePage - 1) * 20, activePage * 20);
+
+  const handlePageChange = (page: number) => {
+    if (onPageChange) {
+      onPageChange(page);
+    } else {
+      setInternalPage(page);
+    }
+  };
 
   const getClassNamesFor = (name: keyof NotificationEntry) => {
     if (!sortConfig) return "";
@@ -196,17 +240,26 @@ export function NotificationHistoryTable({
               Notification History
             </h2>
             <div className="flex flex-wrap gap-6 items-center">
-              {Object.entries(statusStyles).map(([key, val]) => (
-                <div
-                  key={key}
-                  className="flex items-center gap-2 text-base 2xl:text-xl"
-                >
-                  <span
-                    className={`inline-block w-4 h-4 2xl:w-6 2xl:h-6 rounded-full border border-gray-300 ${val.dot}`}
-                  />
-                  <span className={val.color}>{val.label}</span>
-                </div>
-              ))}
+              {Object.entries(statusStyles).map(([key, val]) => {
+                const isSelected = selectedStatuses.includes(
+                  key as NotificationStatus
+                );
+                return (
+                  <button
+                    key={key}
+                    onClick={() => toggleStatus(key as NotificationStatus)}
+                    className={`flex items-center gap-2 text-base 2xl:text-xl transition-all duration-200 ${selectedStatuses.length > 0 && !isSelected
+                        ? "opacity-40 grayscale"
+                        : "opacity-100"
+                      }`}
+                  >
+                    <span
+                      className={`inline-block w-4 h-4 2xl:w-6 2xl:h-6 rounded-full border border-gray-300 ${val.dot}`}
+                    />
+                    <span className={val.color}>{val.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -364,11 +417,10 @@ export function NotificationHistoryTable({
                         <td key={axis} className="py-4 px-4">
                           <div className="flex items-center justify-center gap-2">
                             <span
-                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${
-                                colorCode !== undefined
-                                  ? getAxisColorCode(colorCode)
-                                  : "bg-gray-400"
-                              }`}
+                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${colorCode !== undefined
+                                ? getAxisColorCode(colorCode)
+                                : "bg-gray-400"
+                                }`}
                             />
                             <span className="font-medium text-gray-300">
                               {entry[axis] != null
@@ -407,7 +459,7 @@ export function NotificationHistoryTable({
         <SensorPagination
           currentPage={activePage}
           totalPages={totalPages}
-          onPageChange={setActivePage}
+          onPageChange={handlePageChange}
         />
       </CardContent>
     </Card>

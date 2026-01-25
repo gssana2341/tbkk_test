@@ -141,15 +141,15 @@ export default function Header() {
           // Add to display list
           const datetime = sensor.last_data?.datetime
             ? new Date(sensor.last_data.datetime.replace("Z", ""))
-                .toLocaleString("en-GB", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })
-                .replace(",", "")
+              .toLocaleString("en-GB", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })
+              .replace(",", "")
             : "-";
 
           let statusClass = "";
@@ -423,7 +423,7 @@ export default function Header() {
                 ) : (
                   notifications.map((item: NotificationItem) => (
                     <div
-                      key={item.id}
+                      key={`${item.id}-${item.status}-${item.datetime}`}
                       className="relative px-5 py-4 cursor-default hover:bg-[#374151] transition-colors"
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -494,11 +494,11 @@ export default function Header() {
                   <AvatarFallback className="bg-gray-600 text-gray-300 text-xs font-medium">
                     {user?.name
                       ? user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                          .slice(0, 2)
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
                       : "U"}
                   </AvatarFallback>
                 </Avatar>
