@@ -93,11 +93,15 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
 
   const fetchSensorDetails = useCallback(async (id: string) => {
     try {
+      const token = localStorage.getItem("auth_token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${id}`,
         {
           cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
+          headers: {
+            "Cache-Control": "no-cache",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
         }
       );
 
@@ -319,11 +323,15 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
 
   const fetchSensorConfig = useCallback(async (id: string) => {
     try {
+      const token = localStorage.getItem("auth_token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${id}/config`,
         {
           cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
+          headers: {
+            "Cache-Control": "no-cache",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
         }
       );
       if (!response.ok)
