@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useFolderTreeFilter } from "@/components/auth/AuthWrapper";
 
 export type SensorStatusType =
   | "normal"
@@ -76,6 +77,9 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
 }) => {
   const [internalSelectedStatuses, setInternalSelectedStatuses] =
     useState<SensorStatusType[]>(selectedStatuses);
+  const { selectedIds } = useFolderTreeFilter();
+
+  const isOrganizationSelected = selectedIds.includes("organization");
 
   const activeSelectedStatuses =
     onStatusFilterChange !== undefined
@@ -126,38 +130,11 @@ const SensorStatusSummary: React.FC<SensorStatusSummaryProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
-                  const allStatuses: SensorStatusType[] = [
-                    "normal",
-                    "warning",
-                    "concern",
-                    "critical",
-                    "standby",
-                    "lost",
-                  ];
-                  const isAllSelected = allStatuses.every((s) =>
-                    activeSelectedStatuses.includes(s)
-                  );
-
-                  const newSelected = isAllSelected ? [] : allStatuses;
-
-                  if (onStatusFilterChange) {
-                    onStatusFilterChange(newSelected);
-                  } else {
-                    setInternalSelectedStatuses(newSelected);
-                  }
+                  window.dispatchEvent(new CustomEvent("SELECT_ORGANIZATION"));
                 }}
                 className={cn(
                   "h-[40px] px-6 text-sm rounded-sm border-2 border-white transition-all duration-200 whitespace-nowrap font-bold shadow-[0_0_10px_rgba(255,255,255,0.1)]",
-                  [
-                    "normal",
-                    "warning",
-                    "concern",
-                    "critical",
-                    "standby",
-                    "lost",
-                  ].every((s) =>
-                    activeSelectedStatuses.includes(s as SensorStatusType)
-                  )
+                  isOrganizationSelected
                     ? "bg-white text-black hover:bg-gray-200"
                     : "bg-black hover:bg-gray-900 text-white"
                 )}

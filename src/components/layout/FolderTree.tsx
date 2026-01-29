@@ -137,7 +137,9 @@ const FolderTree: React.FC<{
 
   // Expansion and Selection state - Using Sets for O(1) performance
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    new Set(["organization"])
+  );
 
   // --- Data Fetching ---
   useEffect(() => {
@@ -307,14 +309,21 @@ const FolderTree: React.FC<{
 
   // Listen for external "Select All" trigger
   useEffect(() => {
-    const handleSelectAll = () => {
-      handleItemClick("organization");
+    const handleSelectAll = (e: any) => {
+      const isSelected = selectedIds.has("organization");
+      if (isSelected) {
+        // Toggle off
+        setSelectedIds(new Set());
+      } else {
+        // Toggle on
+        handleItemClick("organization");
+      }
     };
     window.addEventListener("SELECT_ORGANIZATION", handleSelectAll);
     return () => {
       window.removeEventListener("SELECT_ORGANIZATION", handleSelectAll);
     };
-  }, [handleItemClick]);
+  }, [handleItemClick, selectedIds]);
 
   // --- Popover (for summary) ---
   const [popover, setPopover] = useState<{
