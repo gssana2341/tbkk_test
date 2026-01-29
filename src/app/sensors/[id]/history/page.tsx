@@ -239,7 +239,7 @@ export default function SensorHistoryPage() {
       yAxisIndex: 0,
       // Change back to simple array of levels to match categories
       data: history.map((h) =>
-        h.status === "lost" ? 0 : getSignalStrength(h.rssi || 0)
+        h.status === "lost" ? null : getSignalStrength(h.rssi || 0)
       ),
       color: "#00E5FF",
       symbol: "circle",
@@ -254,7 +254,7 @@ export default function SensorHistoryPage() {
           if (item.status === "lost") {
             return `<div style="color: #fff; padding: 4px;">
               <span style="font-weight: bold; color: #00E5FF;">${params.seriesName}</span><br/>
-              <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+              <span style="color: #ff4d4d; font-weight: bold;">Sensor Lost</span>
             </div>`;
           }
           const levelLabel = getSignalStrengthLabel(params.value);
@@ -274,7 +274,7 @@ export default function SensorHistoryPage() {
       type: "line",
       xAxisIndex: 1,
       yAxisIndex: 1,
-      data: history.map((h) => (h.status === "lost" ? 0 : h.battery)),
+      data: history.map((h) => (h.status === "lost" ? null : h.battery)),
       color: "#4C6FFF",
       symbol: "none",
       sampling: "lttb",
@@ -286,7 +286,7 @@ export default function SensorHistoryPage() {
           if (item.status === "lost") {
             return `<div style="color: #fff; padding: 4px;">
               <span style="font-weight: bold; color: #4C6FFF;">${params.seriesName}</span><br/>
-              <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+              <span style="color: #ff4d4d; font-weight: bold;">Sensor Lost</span>
             </div>`;
           }
           return `<div style="color: #fff; padding: 4px;">
@@ -303,7 +303,7 @@ export default function SensorHistoryPage() {
       type: "line",
       xAxisIndex: 2,
       yAxisIndex: 2,
-      data: history.map((h) => (h.status === "lost" ? 0 : h.temperature)),
+      data: history.map((h) => (h.status === "lost" ? null : h.temperature)),
       color: "#C77DFF",
       symbol: "none",
       sampling: "lttb",
@@ -315,7 +315,7 @@ export default function SensorHistoryPage() {
           if (item.status === "lost") {
             return `<div style="color: #fff; padding: 4px;">
               <span style="font-weight: bold; color: #C77DFF;">${params.seriesName}</span><br/>
-              <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+              <span style="color: #ff4d4d; font-weight: bold;">Sensor Lost</span>
             </div>`;
           }
           return `<div style="color: #fff; padding: 4px;">
@@ -334,7 +334,7 @@ export default function SensorHistoryPage() {
         xAxisIndex: 3,
         yAxisIndex: 3,
         data: history.map((h) =>
-          h.status === "lost" ? 0 : getVal(h, "h").toFixed(2)
+          h.status === "lost" ? null : getVal(h, "h").toFixed(2)
         ),
         color: "#00E5FF",
         symbol: "none",
@@ -347,7 +347,7 @@ export default function SensorHistoryPage() {
             if (item.status === "lost") {
               return `<div style="color: #fff; padding: 4px;">
                 <span style="font-weight: bold; color: #00E5FF;">${params.seriesName}</span><br/>
-                <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+                <span style="color: #ff4d4d; font-weight: bold;">Sensor Lost</span>
               </div>`;
             }
             return `<div style="color: #fff; padding: 4px;">
@@ -365,7 +365,7 @@ export default function SensorHistoryPage() {
         xAxisIndex: 3,
         yAxisIndex: 3,
         data: history.map((h) =>
-          h.status === "lost" ? 0 : getVal(h, "v").toFixed(2)
+          h.status === "lost" ? null : getVal(h, "v").toFixed(2)
         ),
         color: "#4C6FFF",
         symbol: "none",
@@ -378,7 +378,7 @@ export default function SensorHistoryPage() {
             if (item.status === "lost") {
               return `<div style="color: #fff; padding: 4px;">
                 <span style="font-weight: bold; color: #4C6FFF;">${params.seriesName}</span><br/>
-                <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+                <span style="color: #ff4d4d; font-weight: bold;">Sensor Lost</span>
               </div>`;
             }
             return `<div style="color: #fff; padding: 4px;">
@@ -396,7 +396,7 @@ export default function SensorHistoryPage() {
         xAxisIndex: 3,
         yAxisIndex: 3,
         data: history.map((h) =>
-          h.status === "lost" ? 0 : getVal(h, "a").toFixed(2)
+          h.status === "lost" ? null : getVal(h, "a").toFixed(2)
         ),
         color: "#C77DFF",
         symbol: "none",
@@ -409,7 +409,7 @@ export default function SensorHistoryPage() {
             if (item.status === "lost") {
               return `<div style="color: #fff; padding: 4px;">
                 <span style="font-weight: bold; color: #C77DFF;">${params.seriesName}</span><br/>
-                <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+                <span style="color: #ff4d4d; font-weight: bold;">Sensor Lost</span>
               </div>`;
             }
             return `<div style="color: #fff; padding: 4px;">
@@ -664,11 +664,10 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
-                    selectedAxis === axis
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                    }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
@@ -692,7 +691,15 @@ export default function SensorHistoryPage() {
               <span className="text-sm font-medium text-gray-300">Date:</span>
 
               {/* Start Date Custom Input */}
-              <div className="relative bg-[#0B1121] border-[1.35px] border-[#374151] rounded px-3 py-1.5 flex items-center gap-2 w-[150px] cursor-pointer hover:border-blue-500">
+              <div
+                className="relative bg-[#0B1121] border-[1.35px] border-[#374151] rounded px-3 py-1.5 flex items-center gap-2 w-[150px] cursor-pointer hover:border-blue-500"
+                onClick={(e) => {
+                  const input = e.currentTarget.querySelector(
+                    'input[type="date"]'
+                  ) as HTMLInputElement;
+                  if (input) input.showPicker();
+                }}
+              >
                 <span className="text-white text-sm flex-1">
                   {dateStart
                     ? dateStart.split("-").reverse().join("/")
@@ -710,7 +717,15 @@ export default function SensorHistoryPage() {
               <span className="text-gray-400">-</span>
 
               {/* End Date Custom Input */}
-              <div className="relative bg-[#0B1121] border-[1.35px] border-[#374151] rounded px-3 py-1.5 flex items-center gap-2 w-[150px] cursor-pointer hover:border-blue-500">
+              <div
+                className="relative bg-[#0B1121] border-[1.35px] border-[#374151] rounded px-3 py-1.5 flex items-center gap-2 w-[150px] cursor-pointer hover:border-blue-500"
+                onClick={(e) => {
+                  const input = e.currentTarget.querySelector(
+                    'input[type="date"]'
+                  ) as HTMLInputElement;
+                  if (input) input.showPicker();
+                }}
+              >
                 <span className="text-white text-sm flex-1">
                   {dateEnd
                     ? dateEnd.split("-").reverse().join("/")
