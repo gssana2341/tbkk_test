@@ -136,23 +136,21 @@ export default function SensorHistoryPage() {
           }
         }
 
-        const mappedHistory: HistoryItem[] = historyData.map(
-          (item: any) => ({
-            datetime: item.datetime,
-            g_rms_h: item.g_rms_h || 0,
-            g_rms_v: item.g_rms_v || 0,
-            g_rms_a: item.g_rms_a || 0,
-            a_rms_h: item.a_rms_h || 0,
-            a_rms_v: item.a_rms_v || 0,
-            a_rms_a: item.a_rms_a || 0,
-            velo_rms_h: item.velo_rms_h || 0,
-            velo_rms_v: item.velo_rms_v || 0,
-            velo_rms_a: item.velo_rms_a || 0,
-            rssi: item.rssi || 0,
-            battery: item.battery || 0,
-            temperature: item.temperature || 0,
-          })
-        );
+        const mappedHistory: HistoryItem[] = historyData.map((item: any) => ({
+          datetime: item.datetime,
+          g_rms_h: item.g_rms_h || 0,
+          g_rms_v: item.g_rms_v || 0,
+          g_rms_a: item.g_rms_a || 0,
+          a_rms_h: item.a_rms_h || 0,
+          a_rms_v: item.a_rms_v || 0,
+          a_rms_a: item.a_rms_a || 0,
+          velo_rms_h: item.velo_rms_h || 0,
+          velo_rms_v: item.velo_rms_v || 0,
+          velo_rms_a: item.velo_rms_a || 0,
+          rssi: item.rssi || 0,
+          battery: item.battery || 0,
+          temperature: item.temperature || 0,
+        }));
 
         // Client-side filtering as safety net to ensure only selected date range is shown
         // This handles cases where API might return slightly wider range or fallback
@@ -207,10 +205,22 @@ export default function SensorHistoryPage() {
 
     const getVal = (item: HistoryItem, axis: "h" | "v" | "a") => {
       if (selectedUnit === "Acceleration RMS (G)")
-        return axis === "h" ? item.g_rms_h : axis === "v" ? item.g_rms_v : item.g_rms_a;
+        return axis === "h"
+          ? item.g_rms_h
+          : axis === "v"
+            ? item.g_rms_v
+            : item.g_rms_a;
       if (selectedUnit === "Acceleration(mm/s²)")
-        return axis === "h" ? item.a_rms_h : axis === "v" ? item.a_rms_v : item.a_rms_a;
-      return axis === "h" ? item.velo_rms_h : axis === "v" ? item.velo_rms_v : item.velo_rms_a;
+        return axis === "h"
+          ? item.a_rms_h
+          : axis === "v"
+            ? item.a_rms_v
+            : item.a_rms_a;
+      return axis === "h"
+        ? item.velo_rms_h
+        : axis === "v"
+          ? item.velo_rms_v
+          : item.velo_rms_a;
     };
 
     const series: any[] = [];
@@ -227,8 +237,9 @@ export default function SensorHistoryPage() {
       sampling: "lttb",
       lineStyle: { width: 3 },
       tooltip: {
-        valueFormatter: (value: any) => `${getSignalStrengthLabel(value)} (${value} dBm)`
-      }
+        valueFormatter: (value: any) =>
+          `${getSignalStrengthLabel(value)} (${value} dBm)`,
+      },
     });
 
     // --- Sub-Graph 1: Battery ---
@@ -254,7 +265,7 @@ export default function SensorHistoryPage() {
       color: "#C77DFF",
       symbol: "none",
       sampling: "lttb",
-      lineStyle: { width: 3 }
+      lineStyle: { width: 3 },
     });
 
     // --- Sub-Graph 3: RMS Vibration ---
@@ -299,51 +310,146 @@ export default function SensorHistoryPage() {
     }
 
     const maxRmsValue = Math.max(
-      ...series.filter(s => s.yAxisIndex === 3).flatMap((s) => s.data.map((d: any) => parseFloat(d) || 0)),
+      ...series
+        .filter((s) => s.yAxisIndex === 3)
+        .flatMap((s) => s.data.map((d: any) => parseFloat(d) || 0)),
       0
     );
-    const yAxisMaxRms = maxRmsValue > 0 ? parseFloat((maxRmsValue * 1.1).toFixed(2)) : THRESHOLDS.RED_START + 1;
+    const yAxisMaxRms =
+      maxRmsValue > 0
+        ? parseFloat((maxRmsValue * 1.1).toFixed(2))
+        : THRESHOLDS.RED_START + 1;
 
     // Background Threshold Areas for RMS only
     const markArea = {
       silent: true,
       data: [
-        [{ yAxis: 0, itemStyle: { color: "#72FF82" } }, { yAxis: THRESHOLDS.GREEN_LIMIT }],
-        [{ yAxis: THRESHOLDS.GREEN_LIMIT, itemStyle: { color: "#FFE666" } }, { yAxis: THRESHOLDS.YELLOW_LIMIT }],
-        [{ yAxis: THRESHOLDS.YELLOW_LIMIT, itemStyle: { color: "#FFB347" } }, { yAxis: THRESHOLDS.RED_START }],
-        [{ yAxis: THRESHOLDS.RED_START, itemStyle: { color: "#FF4D4D" } }, { yAxis: yAxisMaxRms }],
+        [
+          { yAxis: 0, itemStyle: { color: "#72FF82" } },
+          { yAxis: THRESHOLDS.GREEN_LIMIT },
+        ],
+        [
+          { yAxis: THRESHOLDS.GREEN_LIMIT, itemStyle: { color: "#FFE666" } },
+          { yAxis: THRESHOLDS.YELLOW_LIMIT },
+        ],
+        [
+          { yAxis: THRESHOLDS.YELLOW_LIMIT, itemStyle: { color: "#FFB347" } },
+          { yAxis: THRESHOLDS.RED_START },
+        ],
+        [
+          { yAxis: THRESHOLDS.RED_START, itemStyle: { color: "#FF4D4D" } },
+          { yAxis: yAxisMaxRms },
+        ],
       ],
     };
-    const rmsSeriesIndex = series.findIndex(s => s.yAxisIndex === 3);
+    const rmsSeriesIndex = series.findIndex((s) => s.yAxisIndex === 3);
     if (rmsSeriesIndex !== -1) {
       series[rmsSeriesIndex] = { ...series[rmsSeriesIndex], markArea };
     }
 
     return {
-      title: { text: `Sensor Name : ${sensorName}`, left: "center", textStyle: { color: "#fff", fontSize: 18, fontWeight: "bold" } },
-      tooltip: { trigger: "axis", axisPointer: { type: "cross", label: { backgroundColor: "#6a7985" } }, backgroundColor: "rgba(0,0,0,0.8)", textStyle: { color: "#fff" } },
+      title: {
+        text: `Sensor Name : ${sensorName}`,
+        left: "center",
+        textStyle: { color: "#fff", fontSize: 18, fontWeight: "bold" },
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "cross", label: { backgroundColor: "#6a7985" } },
+        backgroundColor: "rgba(0,0,0,0.8)",
+        textStyle: { color: "#fff" },
+      },
       grid: [
         { left: "5%", right: "4%", top: "8%", height: "14%" }, // WiFi
         { left: "5%", right: "4%", top: "28%", height: "14%" }, // Battery
         { left: "5%", right: "4%", top: "48%", height: "14%" }, // Temp
-        { left: "5%", right: "4%", top: "68%", height: "24%" }  // RMS
+        { left: "5%", right: "4%", top: "68%", height: "24%" }, // RMS
       ],
       xAxis: [
-        { gridIndex: 0, type: "category", boundaryGap: false, data: labels, axisLabel: { show: false }, axisLine: { lineStyle: { color: "#555" } } },
-        { gridIndex: 1, type: "category", boundaryGap: false, data: labels, axisLabel: { show: false }, axisLine: { lineStyle: { color: "#555" } } },
-        { gridIndex: 2, type: "category", boundaryGap: false, data: labels, axisLabel: { show: false }, axisLine: { lineStyle: { color: "#555" } } },
-        { gridIndex: 3, type: "category", boundaryGap: false, data: labels, axisLabel: { color: "#ccc", rotate: 45 }, axisLine: { lineStyle: { color: "#555" } }, name: "Timestamp", nameLocation: "middle", nameGap: 60 }
+        {
+          gridIndex: 0,
+          type: "category",
+          boundaryGap: false,
+          data: labels,
+          axisLabel: { show: false },
+          axisLine: { lineStyle: { color: "#555" } },
+        },
+        {
+          gridIndex: 1,
+          type: "category",
+          boundaryGap: false,
+          data: labels,
+          axisLabel: { show: false },
+          axisLine: { lineStyle: { color: "#555" } },
+        },
+        {
+          gridIndex: 2,
+          type: "category",
+          boundaryGap: false,
+          data: labels,
+          axisLabel: { show: false },
+          axisLine: { lineStyle: { color: "#555" } },
+        },
+        {
+          gridIndex: 3,
+          type: "category",
+          boundaryGap: false,
+          data: labels,
+          axisLabel: { color: "#ccc", rotate: 45 },
+          axisLine: { lineStyle: { color: "#555" } },
+          name: "Timestamp",
+          nameLocation: "middle",
+          nameGap: 60,
+        },
       ],
       yAxis: [
-        { gridIndex: 0, type: "value", name: "RSSI (dBm)", nameTextStyle: { color: "#aaa" }, axisLabel: { color: "#ccc" }, splitLine: { show: false } },
-        { gridIndex: 1, type: "value", name: "Battery (%)", min: 0, max: 100, nameTextStyle: { color: "#aaa" }, axisLabel: { color: "#ccc" }, splitLine: { show: false } },
-        { gridIndex: 2, type: "value", name: "Temp (°C)", nameTextStyle: { color: "#aaa" }, axisLabel: { color: "#ccc" }, splitLine: { show: false } },
-        { gridIndex: 3, type: "value", name: selectedUnit, max: yAxisMaxRms, nameTextStyle: { color: "#aaa" }, axisLabel: { color: "#ccc" }, splitLine: { show: false } }
+        {
+          gridIndex: 0,
+          type: "value",
+          name: "RSSI (dBm)",
+          nameTextStyle: { color: "#aaa" },
+          axisLabel: { color: "#ccc" },
+          splitLine: { show: false },
+        },
+        {
+          gridIndex: 1,
+          type: "value",
+          name: "Battery (%)",
+          min: 0,
+          max: 100,
+          nameTextStyle: { color: "#aaa" },
+          axisLabel: { color: "#ccc" },
+          splitLine: { show: false },
+        },
+        {
+          gridIndex: 2,
+          type: "value",
+          name: "Temp (°C)",
+          nameTextStyle: { color: "#aaa" },
+          axisLabel: { color: "#ccc" },
+          splitLine: { show: false },
+        },
+        {
+          gridIndex: 3,
+          type: "value",
+          name: selectedUnit,
+          max: yAxisMaxRms,
+          nameTextStyle: { color: "#aaa" },
+          axisLabel: { color: "#ccc" },
+          splitLine: { show: false },
+        },
       ],
       dataZoom: [
-        { type: "inside", xAxisIndex: [0, 1, 2, 3], start: 0, end: 100 }
+        { type: "inside", xAxisIndex: [0, 1, 2, 3], start: 0, end: 100 },
       ],
-      toolbox: { feature: { dataZoom: { yAxisIndex: "none" }, restore: {}, saveAsImage: {} }, iconStyle: { borderColor: "#fff" } },
+      toolbox: {
+        feature: {
+          dataZoom: { yAxisIndex: "none" },
+          restore: {},
+          saveAsImage: {},
+        },
+        iconStyle: { borderColor: "#fff" },
+      },
       series: series,
       backgroundColor: "#0B1121",
     };
@@ -352,13 +458,19 @@ export default function SensorHistoryPage() {
   const handleExportCSV = () => {
     if (history.length === 0) return;
     const exportData = prepareExportData();
-    exportToCSV(exportData, `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.csv`);
+    exportToCSV(
+      exportData,
+      `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.csv`
+    );
   };
 
   const handleExportExcel = () => {
     if (history.length === 0) return;
     const exportData = prepareExportData();
-    exportToExcel(exportData, `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.xlsx`);
+    exportToExcel(
+      exportData,
+      `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.xlsx`
+    );
   };
 
   const prepareExportData = () => {
@@ -428,10 +540,11 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
-                    ? "bg-blue-600 border-blue-500 text-white"
-                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                    }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
+                    selectedAxis === axis
+                      ? "bg-blue-600 border-blue-500 text-white"
+                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                  }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
@@ -614,7 +727,9 @@ export default function SensorHistoryPage() {
                         A ({selectedUnit})
                       </th>
                     )}
-                    <th className="py-3 font-medium text-[#00E5FF]">WIFI (RSSI)</th>
+                    <th className="py-3 font-medium text-[#00E5FF]">
+                      WIFI (RSSI)
+                    </th>
                     <th className="py-3 font-medium text-[#4C6FFF]">Battery</th>
                     <th className="py-3 font-medium text-[#C77DFF]">Temp</th>
                   </tr>
@@ -706,8 +821,12 @@ export default function SensorHistoryPage() {
                               </span>
                             </div>
                           </td>
-                          <td className="py-4 font-mono">{item.battery || 0}%</td>
-                          <td className="py-4 font-mono">{item.temperature || 0}°C</td>
+                          <td className="py-4 font-mono">
+                            {item.battery || 0}%
+                          </td>
+                          <td className="py-4 font-mono">
+                            {item.temperature || 0}°C
+                          </td>
                         </tr>
                       );
                     })}
