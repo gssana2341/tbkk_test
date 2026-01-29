@@ -5,9 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import {
   getStoredAreas,
+  getStoredInstallationPoints,
   getStoredMachineNames,
+  getStoredMachineNos,
+  getStoredSensorNames,
   storeArea,
+  storeInstallationPoint,
   storeMachineName,
+  storeMachineNo,
+  storeSensorName,
 } from "@/lib/registerStorage";
 import { getMachineClassCode } from "@/lib/iso10816-3";
 import { uploadSensorImage } from "@/lib/utils";
@@ -19,6 +25,8 @@ const DEFAULT_SENSOR_VALUES: SingleSensorValues = {
   area: "",
   motorStartTime: new Date(),
   machine: "",
+  machineNo: "",
+  installationPoint: "",
   machineClassEnabled: true,
   namePlaceEnabled: false,
   machineClass: "",
@@ -38,6 +46,7 @@ const DEFAULT_SENSOR_VALUES: SingleSensorValues = {
   namePlaceWarningThreshold: "",
   namePlaceConcernThreshold: "",
   namePlaceDamageThreshold: "",
+  name: "",
   id: "",
 };
 
@@ -60,6 +69,14 @@ export function useRegisterSensorForm() {
   const [machineNameSuggestions, setMachineNameSuggestions] = useState<
     string[]
   >([]);
+  const [machineNoSuggestions, setMachineNoSuggestions] = useState<string[]>(
+    []
+  );
+  const [installationPointSuggestions, setInstallationPointSuggestions] =
+    useState<string[]>([]);
+  const [sensorNameSuggestions, setSensorNameSuggestions] = useState<string[]>(
+    []
+  );
 
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -97,6 +114,9 @@ export function useRegisterSensorForm() {
   useEffect(() => {
     setAreaSuggestions(getStoredAreas());
     setMachineNameSuggestions(getStoredMachineNames());
+    setMachineNoSuggestions(getStoredMachineNos());
+    setInstallationPointSuggestions(getStoredInstallationPoints());
+    setSensorNameSuggestions(getStoredSensorNames());
   }, []);
 
   useEffect(() => {
@@ -123,6 +143,8 @@ export function useRegisterSensorForm() {
             ? parseCustomDate(data.motor_start_time)
             : new Date(),
           machine: data.machine || data.machine_no || "",
+          machineNo: data.machine_no || "",
+          installationPoint: data.installation_point || "",
           machineClassEnabled: true,
           namePlaceEnabled: false,
           machineClass: data.machine_class || "mediumFlexible",
@@ -142,6 +164,7 @@ export function useRegisterSensorForm() {
           highPass: data.high_pass?.toString() || "8",
           motorType: "",
           notes: data.note || "",
+          name: data.sensor_name || data.name || "",
           sensorType: data.sensor_type || "Master",
         };
 
@@ -244,6 +267,12 @@ export function useRegisterSensorForm() {
         const updates = values.sensors
           .filter((s) => s.serialNumber && s.serialNumber.trim() !== "")
           .map(async (sensorData, index) => {
+            if (sensorData.area) storeArea(sensorData.area);
+            if (sensorData.machine) storeMachineName(sensorData.machine);
+            if (sensorData.machineNo) storeMachineNo(sensorData.machineNo);
+            if (sensorData.installationPoint)
+              storeInstallationPoint(sensorData.installationPoint);
+            if (sensorData.name) storeSensorName(sensorData.name);
             const targetId = sensorData.id || (index === 0 ? editId : null);
             if (!targetId)
               return {
@@ -259,6 +288,9 @@ export function useRegisterSensorForm() {
                   ? (getMachineClassCode(sensorData.machineClass) ?? null)
                   : null,
               machine: sensorData.machine?.toUpperCase(),
+              machine_no: sensorData.machineNo?.toUpperCase(),
+              installation_point: sensorData.installationPoint?.toUpperCase(),
+              sensor_name: sensorData.name?.toUpperCase(),
               sensor_type: sensorData.sensorType,
               fmax: parseInt(sensorData.frequencyMax || "0"),
               lor: parseInt(sensorData.lor || "0"),
@@ -358,6 +390,10 @@ export function useRegisterSensorForm() {
       const payload = validSensors.map((sensorData) => {
         if (sensorData.area) storeArea(sensorData.area);
         if (sensorData.machine) storeMachineName(sensorData.machine);
+        if (sensorData.machineNo) storeMachineNo(sensorData.machineNo);
+        if (sensorData.installationPoint)
+          storeInstallationPoint(sensorData.installationPoint);
+        if (sensorData.name) storeSensorName(sensorData.name);
 
         return {
           mac_address: sensorData.serialNumber?.toUpperCase(),
@@ -367,6 +403,9 @@ export function useRegisterSensorForm() {
               ? (getMachineClassCode(sensorData.machineClass) ?? null)
               : null,
           machine: sensorData.machine?.toUpperCase(),
+          machine_no: sensorData.machineNo?.toUpperCase(),
+          installation_point: sensorData.installationPoint?.toUpperCase(),
+          sensor_name: sensorData.name?.toUpperCase(),
           sensor_type: sensorData.sensorType,
           motor_start_time: sensorData.motorStartTime
             ? formatMotorStartTime(sensorData.motorStartTime)
@@ -490,6 +529,9 @@ export function useRegisterSensorForm() {
     imagePreviews,
     areaSuggestions,
     machineNameSuggestions,
+    machineNoSuggestions,
+    installationPointSuggestions,
+    sensorNameSuggestions,
     showCropper,
     setShowCropper,
     cropImageSrc,

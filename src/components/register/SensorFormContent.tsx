@@ -34,7 +34,13 @@ import {
 } from "@/lib/iso10816-3";
 import Image from "next/image";
 import { useEffect } from "react";
-import { storeArea, storeMachineName } from "@/lib/registerStorage";
+import {
+  storeArea,
+  storeInstallationPoint,
+  storeMachineName,
+  storeMachineNo,
+  storeSensorName,
+} from "@/lib/registerStorage";
 
 interface SensorFormContentProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,6 +48,9 @@ interface SensorFormContentProps {
   index: number;
   areaSuggestions: string[];
   machineNameSuggestions: string[];
+  machineNoSuggestions: string[];
+  installationPointSuggestions: string[];
+  sensorNameSuggestions: string[];
   imagePreview: string | null;
   onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -51,6 +60,9 @@ export function SensorFormContent({
   index,
   areaSuggestions,
   machineNameSuggestions,
+  machineNoSuggestions,
+  installationPointSuggestions,
+  sensorNameSuggestions,
   imagePreview,
   onImageChange,
 }: SensorFormContentProps) {
@@ -134,184 +146,290 @@ export function SensorFormContent({
   return (
     <div className="space-y-6 py-4">
       {/* Sensor Information - Two Columns */}
+      {/* Row 1: Area, Serial Number, Sensor Name - Always 3 columns */}
+      <div className="grid grid-cols-3 gap-4">
+        <FormField
+          control={form.control}
+          name={`sensors.${index}.area`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
+                Area
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                      <p>Enter the area where the sensor is installed</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormLabel>
+              <FormControl>
+                <AutocompleteInput
+                  value={field.value}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    if (value) {
+                      storeArea(value);
+                    }
+                  }}
+                  suggestions={areaSuggestions}
+                  placeholder="Enter area"
+                  onStoreValue={storeArea}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`sensors.${index}.name`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
+                Sensor Name
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                      <p>Enter the sensor name</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormLabel>
+              <FormControl>
+                <AutocompleteInput
+                  value={field.value}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    if (value) {
+                      storeSensorName(value);
+                    }
+                  }}
+                  suggestions={sensorNameSuggestions}
+                  placeholder="Enter sensor name"
+                  onStoreValue={storeSensorName}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`sensors.${index}.serialNumber`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
+                Serial Number
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                      <p>Enter the serial number of the sensor</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter serial number"
+                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    if (
+                      form.getFieldState(`sensors.${index}.serialNumber`)
+                        .invalid
+                    ) {
+                      form.clearErrors(`sensors.${index}.serialNumber`);
+                    }
+                  }}
+                  onBlur={async (e) => {
+                    field.onBlur();
+                    const value = e.target.value;
+                    if (!value) return;
+
+                    try {
+                      const { getSensors } = await import("@/lib/data/sensors");
+                      const { sensors } = await getSensors({ search: value });
+                      const exists = sensors.some(
+                        (s) =>
+                          s.serialNumber.toLowerCase() === value.toLowerCase()
+                      );
+                      if (exists) {
+                        form.setError(`sensors.${index}.serialNumber`, {
+                          type: "manual",
+                          message: "Serial Number นี้มีอยู่ในฐานข้อมูลอยู่แล้ว",
+                        });
+                      }
+                    } catch (err) {
+                      console.error("Error validating serial number:", err);
+                    }
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      {/* Remaining Information - Responsive Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
-        {/* Left Column */}
-        <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name={`sensors.${index}.area`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
-                  Area
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
-                        <p>Enter the area where the sensor is installed</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </FormLabel>
-                <FormControl>
-                  <AutocompleteInput
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      if (value) {
-                        storeArea(value);
-                      }
-                    }}
-                    suggestions={areaSuggestions}
-                    placeholder="Enter area"
-                    onStoreValue={storeArea}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name={`sensors.${index}.machine`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
+                Machine
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                      <p>Enter the machine name</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormLabel>
+              <FormControl>
+                <AutocompleteInput
+                  value={field.value}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    if (value) {
+                      storeMachineName(value);
+                    }
+                  }}
+                  suggestions={machineNameSuggestions}
+                  placeholder="Enter machine name"
+                  onStoreValue={storeMachineName}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name={`sensors.${index}.serialNumber`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
-                  Serial Number
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
-                        <p>Enter the serial number of the sensor</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter serial number"
-                    className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
-                    {...field}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      // Clear error when user types
-                      if (
-                        form.getFieldState(`sensors.${index}.serialNumber`)
-                          .invalid
-                      ) {
-                        form.clearErrors(`sensors.${index}.serialNumber`);
-                      }
-                    }}
-                    onBlur={async (e) => {
-                      field.onBlur();
-                      const value = e.target.value;
-                      if (!value) return;
+        <FormField
+          control={form.control}
+          name={`sensors.${index}.machineNo`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
+                Machine Number
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                      <p>Enter the machine number</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormLabel>
+              <FormControl>
+                <AutocompleteInput
+                  value={field.value}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    if (value) {
+                      storeMachineNo(value);
+                    }
+                  }}
+                  suggestions={machineNoSuggestions}
+                  placeholder="Enter machine number"
+                  onStoreValue={storeMachineNo}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-                      try {
-                        const { getSensors } = await import(
-                          "@/lib/data/sensors"
-                        );
-                        const { sensors } = await getSensors({ search: value });
-                        const exists = sensors.some(
-                          (s) =>
-                            s.serialNumber.toLowerCase() === value.toLowerCase()
-                        );
-                        if (exists) {
-                          form.setError(`sensors.${index}.serialNumber`, {
-                            type: "manual",
-                            message:
-                              "Serial Number นี้มีอยู่ในฐานข้อมูลอยู่แล้ว",
-                          });
-                        }
-                      } catch (err) {
-                        console.error("Error validating serial number:", err);
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name={`sensors.${index}.motorStartTime`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
+                Motor Start Time
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                      <p>Select the motor start date and time</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormLabel>
+              <FormControl>
+                <MUIDateTimePicker
+                  value={field.value}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                  label=""
+                  className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        {/* Right Column */}
-        <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name={`sensors.${index}.machine`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
-                  Machine
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
-                        <p>Enter the machine name</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </FormLabel>
-                <FormControl>
-                  <AutocompleteInput
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      if (value) {
-                        storeMachineName(value);
-                      }
-                    }}
-                    suggestions={machineNameSuggestions}
-                    placeholder="Enter machine name"
-                    onStoreValue={storeMachineName}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name={`sensors.${index}.motorStartTime`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
-                  Motor Start Time
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-[#3B82F6] text-white border-none">
-                        <p>Select the motor start date and time</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </FormLabel>
-                <FormControl>
-                  <MUIDateTimePicker
-                    value={field.value}
-                    onChange={(date) => {
-                      field.onChange(date);
-                    }}
-                    label=""
-                    className="bg-[#080808] border-[1px] border-[#4B5563] text-white"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        {/* Installation Point */}
+        <FormField
+          control={form.control}
+          name={`sensors.${index}.installationPoint`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-lg 2xl:text-xl font-bold">
+                Installation Point
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#3B82F6] text-white border-none">
+                      <p>Enter the installation point</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormLabel>
+              <FormControl>
+                <AutocompleteInput
+                  value={field.value}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    if (value) {
+                      storeInstallationPoint(value);
+                    }
+                  }}
+                  suggestions={installationPointSuggestions}
+                  placeholder="Enter installation point"
+                  onStoreValue={storeInstallationPoint}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
 
       {/* Options - Machine Class and Name Place */}

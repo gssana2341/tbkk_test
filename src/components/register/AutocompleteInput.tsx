@@ -40,13 +40,20 @@ export function AutocompleteInput({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (value) {
-      const filtered = suggestions
-        .filter((s) => s.toLowerCase().includes(value.toLowerCase()))
+    if (typeof value === "string" && value) {
+      const filtered = (suggestions || [])
+        .filter(
+          (s) =>
+            typeof s === "string" &&
+            s.toLowerCase().includes(value.toLowerCase())
+        )
         .slice(0, 10);
       setFilteredSuggestions(filtered);
     } else {
-      setFilteredSuggestions(suggestions.slice(0, 10));
+      const safeSuggestions = (suggestions || [])
+        .filter((s) => typeof s === "string")
+        .slice(0, 10);
+      setFilteredSuggestions(safeSuggestions);
     }
   }, [value, suggestions]);
 

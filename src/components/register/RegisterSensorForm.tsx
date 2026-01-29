@@ -19,6 +19,9 @@ export default function RegisterSensorForm() {
     imagePreviews,
     areaSuggestions,
     machineNameSuggestions,
+    machineNoSuggestions,
+    installationPointSuggestions,
+    sensorNameSuggestions,
     showCropper,
     setShowCropper,
     cropImageSrc,
@@ -88,6 +91,11 @@ export default function RegisterSensorForm() {
                       index={tab.index}
                       areaSuggestions={areaSuggestions}
                       machineNameSuggestions={machineNameSuggestions}
+                      machineNoSuggestions={machineNoSuggestions}
+                      installationPointSuggestions={
+                        installationPointSuggestions
+                      }
+                      sensorNameSuggestions={sensorNameSuggestions}
                       imagePreview={imagePreviews[tab.index]}
                       onImageChange={(e) => handleImageChange(tab.index, e)}
                     />

@@ -5,7 +5,118 @@
 
 const AREA_STORAGE_KEY = "sensor_register_areas";
 const MACHINE_NAME_STORAGE_KEY = "sensor_register_machine_names";
+const MACHINE_NO_STORAGE_KEY = "sensor_register_machine_nos";
+const INSTALLATION_POINT_STORAGE_KEY = "sensor_register_installation_points";
+const SENSOR_NAME_STORAGE_KEY = "sensor_register_sensor_names";
 const MOTOR_TYPE_STORAGE_KEY = "sensor_register_motor_types";
+
+/**
+ * Get all stored installation points
+ */
+export function getStoredInstallationPoints(): string[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const stored = localStorage.getItem(INSTALLATION_POINT_STORAGE_KEY);
+    if (!stored) return [];
+    return JSON.parse(stored) as string[];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Store installation point (case-insensitive, unique)
+ */
+export function storeInstallationPoint(installationPoint: string): void {
+  if (typeof window === "undefined" || !installationPoint.trim()) return;
+
+  try {
+    const points = getStoredInstallationPoints();
+    const normalized = installationPoint.trim().toUpperCase();
+
+    if (!points.some((p) => p.toUpperCase() === normalized)) {
+      points.unshift(normalized);
+      const limited = points.slice(0, 50);
+      localStorage.setItem(
+        INSTALLATION_POINT_STORAGE_KEY,
+        JSON.stringify(limited)
+      );
+    }
+  } catch (error) {
+    console.error("Error storing installation point:", error);
+  }
+}
+
+/**
+ * Get all stored machine numbers
+ */
+export function getStoredMachineNos(): string[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const stored = localStorage.getItem(MACHINE_NO_STORAGE_KEY);
+    if (!stored) return [];
+    return JSON.parse(stored) as string[];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Store machine number (case-insensitive, unique)
+ */
+export function storeMachineNo(machineNo: string): void {
+  if (typeof window === "undefined" || !machineNo.trim()) return;
+
+  try {
+    const machineNos = getStoredMachineNos();
+    const normalizedNo = machineNo.trim().toUpperCase();
+
+    if (!machineNos.some((n) => n.toUpperCase() === normalizedNo)) {
+      machineNos.unshift(normalizedNo);
+      const limited = machineNos.slice(0, 50);
+      localStorage.setItem(MACHINE_NO_STORAGE_KEY, JSON.stringify(limited));
+    }
+  } catch (error) {
+    console.error("Error storing machine number:", error);
+  }
+}
+
+/**
+ * Get all stored sensor names
+ */
+export function getStoredSensorNames(): string[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const stored = localStorage.getItem(SENSOR_NAME_STORAGE_KEY);
+    if (!stored) return [];
+    return JSON.parse(stored) as string[];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Store sensor name (case-insensitive, unique)
+ */
+export function storeSensorName(sensorName: string): void {
+  if (typeof window === "undefined" || !sensorName.trim()) return;
+
+  try {
+    const sensorNames = getStoredSensorNames();
+    const normalizedName = sensorName.trim().toUpperCase();
+
+    if (!sensorNames.some((n) => n.toUpperCase() === normalizedName)) {
+      sensorNames.unshift(normalizedName);
+      const limited = sensorNames.slice(0, 50);
+      localStorage.setItem(SENSOR_NAME_STORAGE_KEY, JSON.stringify(limited));
+    }
+  } catch (error) {
+    console.error("Error storing sensor name:", error);
+  }
+}
 
 /**
  * Get all stored areas

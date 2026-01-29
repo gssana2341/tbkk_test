@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getSignalStrengthLabel } from "@/lib/utils";
+import { getSignalStrengthLabel, getSignalStrength, cn } from "@/lib/utils";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
 
@@ -36,6 +36,7 @@ interface HistoryItem {
   rssi?: number;
   battery?: number;
   temperature?: number;
+  status?: string;
 }
 
 // Thresholds
@@ -150,6 +151,7 @@ export default function SensorHistoryPage() {
           rssi: item.rssi || 0,
           battery: item.battery || 0,
           temperature: item.temperature || 0,
+          status: item.status || "",
         }));
 
         // Client-side filtering as safety net to ensure only selected date range is shown
@@ -224,21 +226,45 @@ export default function SensorHistoryPage() {
     };
 
     const series: any[] = [];
+    const isSatellite = sensorName.toLowerCase().includes("satellite");
+    const signalName = isSatellite
+      ? "Bluetooth Signal Strength"
+      : "Wifi Signal Strength";
 
     // --- Sub-Graph 0: WIFI (RSSI) ---
     series.push({
-      name: "WIFI (RSSI)",
+      name: `${signalName} (Levels)`,
       type: "line",
       xAxisIndex: 0,
       yAxisIndex: 0,
-      data: history.map((h) => h.rssi),
+      // Change back to simple array of levels to match categories
+      data: history.map((h) =>
+        h.status === "lost" ? 0 : getSignalStrength(h.rssi || 0)
+      ),
       color: "#00E5FF",
-      symbol: "none",
+      symbol: "circle",
+      symbolSize: 4,
+      showSymbol: true,
       sampling: "lttb",
       lineStyle: { width: 3 },
       tooltip: {
-        valueFormatter: (value: any) =>
-          `${getSignalStrengthLabel(value)} (${value} dBm)`,
+        formatter: (params: any) => {
+          const item = history[params.dataIndex];
+          if (!item) return "";
+          if (item.status === "lost") {
+            return `<div style="color: #fff; padding: 4px;">
+              <span style="font-weight: bold; color: #00E5FF;">${params.seriesName}</span><br/>
+              <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+            </div>`;
+          }
+          const levelLabel = getSignalStrengthLabel(params.value);
+          const rawRssi = item.rssi || 0;
+          return `<div style="color: #fff; padding: 4px;">
+            <span style="font-weight: bold; color: #00E5FF;">${params.seriesName}</span><br/>
+            Raw Data: <span style="font-weight: bold;">${rawRssi} dBm</span><br/>
+            Level: ${levelLabel}
+          </div>`;
+        },
       },
     });
 
@@ -248,11 +274,27 @@ export default function SensorHistoryPage() {
       type: "line",
       xAxisIndex: 1,
       yAxisIndex: 1,
-      data: history.map((h) => h.battery),
+      data: history.map((h) => (h.status === "lost" ? 0 : h.battery)),
       color: "#4C6FFF",
       symbol: "none",
       sampling: "lttb",
       lineStyle: { width: 3 },
+      tooltip: {
+        formatter: (params: any) => {
+          const item = history[params.dataIndex];
+          if (!item) return "";
+          if (item.status === "lost") {
+            return `<div style="color: #fff; padding: 4px;">
+              <span style="font-weight: bold; color: #4C6FFF;">${params.seriesName}</span><br/>
+              <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+            </div>`;
+          }
+          return `<div style="color: #fff; padding: 4px;">
+            <span style="font-weight: bold; color: #4C6FFF;">${params.seriesName}</span><br/>
+            Value: <span style="font-weight: bold;">${params.value}%</span>
+          </div>`;
+        },
+      },
     });
 
     // --- Sub-Graph 2: Temperature ---
@@ -261,11 +303,27 @@ export default function SensorHistoryPage() {
       type: "line",
       xAxisIndex: 2,
       yAxisIndex: 2,
-      data: history.map((h) => h.temperature),
+      data: history.map((h) => (h.status === "lost" ? 0 : h.temperature)),
       color: "#C77DFF",
       symbol: "none",
       sampling: "lttb",
       lineStyle: { width: 3 },
+      tooltip: {
+        formatter: (params: any) => {
+          const item = history[params.dataIndex];
+          if (!item) return "";
+          if (item.status === "lost") {
+            return `<div style="color: #fff; padding: 4px;">
+              <span style="font-weight: bold; color: #C77DFF;">${params.seriesName}</span><br/>
+              <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+            </div>`;
+          }
+          return `<div style="color: #fff; padding: 4px;">
+            <span style="font-weight: bold; color: #C77DFF;">${params.seriesName}</span><br/>
+            Value: <span style="font-weight: bold;">${params.value}°C</span>
+          </div>`;
+        },
+      },
     });
 
     // --- Sub-Graph 3: RMS Vibration ---
@@ -275,11 +333,29 @@ export default function SensorHistoryPage() {
         type: "line",
         xAxisIndex: 3,
         yAxisIndex: 3,
-        data: history.map((h) => getVal(h, "h").toFixed(2)),
+        data: history.map((h) =>
+          h.status === "lost" ? 0 : getVal(h, "h").toFixed(2)
+        ),
         color: "#00E5FF",
         symbol: "none",
         sampling: "lttb",
         lineStyle: { width: 3 },
+        tooltip: {
+          formatter: (params: any) => {
+            const item = history[params.dataIndex];
+            if (!item) return "";
+            if (item.status === "lost") {
+              return `<div style="color: #fff; padding: 4px;">
+                <span style="font-weight: bold; color: #00E5FF;">${params.seriesName}</span><br/>
+                <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+              </div>`;
+            }
+            return `<div style="color: #fff; padding: 4px;">
+              <span style="font-weight: bold; color: #00E5FF;">${params.seriesName}</span><br/>
+              Value: <span style="font-weight: bold;">${params.value} ${selectedUnit}</span>
+            </div>`;
+          },
+        },
       });
     }
     if (selectedAxis === "all" || selectedAxis === "v") {
@@ -288,11 +364,29 @@ export default function SensorHistoryPage() {
         type: "line",
         xAxisIndex: 3,
         yAxisIndex: 3,
-        data: history.map((h) => getVal(h, "v").toFixed(2)),
+        data: history.map((h) =>
+          h.status === "lost" ? 0 : getVal(h, "v").toFixed(2)
+        ),
         color: "#4C6FFF",
         symbol: "none",
         sampling: "lttb",
         lineStyle: { width: 3 },
+        tooltip: {
+          formatter: (params: any) => {
+            const item = history[params.dataIndex];
+            if (!item) return "";
+            if (item.status === "lost") {
+              return `<div style="color: #fff; padding: 4px;">
+                <span style="font-weight: bold; color: #4C6FFF;">${params.seriesName}</span><br/>
+                <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+              </div>`;
+            }
+            return `<div style="color: #fff; padding: 4px;">
+              <span style="font-weight: bold; color: #4C6FFF;">${params.seriesName}</span><br/>
+              Value: <span style="font-weight: bold;">${params.value} ${selectedUnit}</span>
+            </div>`;
+          },
+        },
       });
     }
     if (selectedAxis === "all" || selectedAxis === "a") {
@@ -301,11 +395,29 @@ export default function SensorHistoryPage() {
         type: "line",
         xAxisIndex: 3,
         yAxisIndex: 3,
-        data: history.map((h) => getVal(h, "a").toFixed(2)),
+        data: history.map((h) =>
+          h.status === "lost" ? 0 : getVal(h, "a").toFixed(2)
+        ),
         color: "#C77DFF",
         symbol: "none",
         sampling: "lttb",
         lineStyle: { width: 3 },
+        tooltip: {
+          formatter: (params: any) => {
+            const item = history[params.dataIndex];
+            if (!item) return "";
+            if (item.status === "lost") {
+              return `<div style="color: #fff; padding: 4px;">
+                <span style="font-weight: bold; color: #C77DFF;">${params.seriesName}</span><br/>
+                <span style="color: #ff4d4d; font-weight: bold;">sensor lost</span>
+              </div>`;
+            }
+            return `<div style="color: #fff; padding: 4px;">
+              <span style="font-weight: bold; color: #C77DFF;">${params.seriesName}</span><br/>
+              Value: <span style="font-weight: bold;">${params.value} ${selectedUnit}</span>
+            </div>`;
+          },
+        },
       });
     }
 
@@ -406,10 +518,22 @@ export default function SensorHistoryPage() {
         {
           gridIndex: 0,
           type: "value",
-          name: "RSSI (dBm)",
+          name: `${signalName.toLowerCase()} (levels)`,
+          min: 0,
+          max: 4,
+          interval: 1,
           nameTextStyle: { color: "#aaa" },
-          axisLabel: { color: "#ccc" },
-          splitLine: { show: false },
+          axisLabel: {
+            color: "#ccc",
+            formatter: (value: number) => {
+              const labels = ["None", "Poor", "Fair", "Good", "Excellent"];
+              return labels[value] || value;
+            },
+          },
+          splitLine: {
+            show: true,
+            lineStyle: { color: "#333", type: "dashed" },
+          },
         },
         {
           gridIndex: 1,
@@ -678,25 +802,6 @@ export default function SensorHistoryPage() {
                         A-axis
                       </span>
                     </div>
-                    {/* WiFi, Battery, Temp Legend */}
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="w-24 h-1 bg-[#00E5FF] rounded-full"></div>
-                      <span className="text-sm font-bold text-white uppercase tracking-wider">
-                        WiFi
-                      </span>
-                    </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="w-24 h-1 bg-[#4C6FFF] rounded-full"></div>
-                      <span className="text-sm font-bold text-white uppercase tracking-wider">
-                        Battery
-                      </span>
-                    </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="w-24 h-1 bg-[#C77DFF] rounded-full"></div>
-                      <span className="text-sm font-bold text-white uppercase tracking-wider">
-                        Temp
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -791,41 +896,55 @@ export default function SensorHistoryPage() {
                           <td className="py-4 font-mono">{dateStr}</td>
                           <td className="py-4 font-mono">{timeStr}</td>
                           {(selectedAxis === "all" || selectedAxis === "h") && (
-                            <>
-                              <td className="py-4 font-mono">
-                                {getVal(item, "h").toFixed(2)}
-                              </td>
-                            </>
+                            <td className="py-4 font-mono">
+                              {item.status === "lost"
+                                ? "0.00"
+                                : getVal(item, "h").toFixed(2)}
+                            </td>
                           )}
                           {(selectedAxis === "all" || selectedAxis === "v") && (
-                            <>
-                              <td className="py-4 font-mono">
-                                {getVal(item, "v").toFixed(2)}
-                              </td>
-                            </>
+                            <td className="py-4 font-mono">
+                              {item.status === "lost"
+                                ? "0.00"
+                                : getVal(item, "v").toFixed(2)}
+                            </td>
                           )}
                           {(selectedAxis === "all" || selectedAxis === "a") && (
-                            <>
-                              <td className="py-4 font-mono">
-                                {getVal(item, "a").toFixed(2)}
-                              </td>
-                            </>
+                            <td className="py-4 font-mono">
+                              {item.status === "lost"
+                                ? "0.00"
+                                : getVal(item, "a").toFixed(2)}
+                            </td>
                           )}
                           <td className="py-4 font-mono">
                             <div className="flex flex-col">
-                              <span className="font-bold text-[#00E5FF]">
-                                {getSignalStrengthLabel(item.rssi || 0)}
+                              <span
+                                className={cn(
+                                  "font-bold",
+                                  item.status === "lost"
+                                    ? "text-red-500"
+                                    : "text-[#00E5FF]"
+                                )}
+                              >
+                                {item.status === "lost"
+                                  ? "Sensor Lost"
+                                  : getSignalStrengthLabel(item.rssi || 0)}
                               </span>
                               <span className="text-xs text-gray-500">
-                                {item.rssi} dBm
+                                {item.status === "lost"
+                                  ? "-"
+                                  : `${item.rssi} dBm`}
                               </span>
                             </div>
                           </td>
                           <td className="py-4 font-mono">
-                            {item.battery || 0}%
+                            {item.status === "lost" ? "0" : item.battery || 0}%
                           </td>
                           <td className="py-4 font-mono">
-                            {item.temperature || 0}°C
+                            {item.status === "lost"
+                              ? "0"
+                              : item.temperature || 0}
+                            °C
                           </td>
                         </tr>
                       );

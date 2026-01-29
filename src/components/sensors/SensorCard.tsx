@@ -408,25 +408,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
                       {/* Custom WiFi icon with all bars visible - inactive bars in gray */}
                       {(() => {
                         const rssiInput = sensor?.last_data?.rssi || 0;
-                        const isSatellite =
-                          deviceRole.toLowerCase() !== "master";
-
-                        let level: number;
-                        if (isSatellite && rssiInput < 0) {
-                          // Specific criteria for Satellite sensors (dBm)
-                          const rssi = Number(rssiInput);
-                          if (rssi === 0) level = 0;
-                          else if (rssi >= -70)
-                            level = 4; // Excellent: -30 to -70
-                          else if (rssi >= -80)
-                            level = 3; // Good: -71 to -80
-                          else if (rssi >= -90)
-                            level = 2; // Fair: -81 to -90
-                          else level = 1; // Weak: Below -90
-                        } else {
-                          // Fallback to existing logic for Master or if rssi is already a level (0-4)
-                          level = getSignalStrength(Number(rssiInput));
-                        }
+                        const level = getSignalStrength(Number(rssiInput));
 
                         // Determine active color based on signal level
                         let activeColor = "#9CA3AF"; // Gray for level 0

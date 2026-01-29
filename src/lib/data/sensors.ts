@@ -20,6 +20,83 @@ let realSensorsCache: Sensor[] | null = null;
 let lastFetchTime = 0;
 const CACHE_DURATION = 5000; // Cache for 5 seconds to deduplicate requests
 
+// Helper to send "Lost" status notification to backend
+async function sendLostNotification(apiSensor: any) {
+  const token = getToken();
+  const sensorId = apiSensor.id;
+  const lastUpdated =
+    apiSensor.last_data?.datetime || apiSensor.updated_at || "";
+
+  // Deduplication: Only send once per "Lost" event for each sensor
+  // We store the sensor ID and the last known data timestamp to know if it's the same "Lost" state
+  const storageKey = `lost_notif_${sensorId}`;
+  const alreadyNotified = localStorage.getItem(storageKey);
+
+  if (alreadyNotified === lastUpdated) {
+    // console.log(`Notification already sent for sensor ${sensorId} at ${lastUpdated}`);
+    return;
+  }
+
+  try {
+    const payload = {
+      sensor_id: sensorId,
+      status: "lost",
+      alert_type: "lost",
+      datetime: lastUpdated || new Date().toISOString(),
+      mac_address: apiSensor.mac_address || "",
+      area: apiSensor.area || "",
+      sensor_name: apiSensor.sensor_name || apiSensor.name || "",
+      machine_no: apiSensor.machine_no || apiSensor.machine_number || "",
+      installation_point:
+        apiSensor.installed_point || apiSensor.installation_point || "",
+      machine_class: 0,
+      machine: apiSensor.machine || "",
+      sensor_type: apiSensor.sensor_type || "Master",
+      motor_start_time: apiSensor.motor_start_time || "",
+      time_interval: 0,
+      high_pass: 0,
+      g_scale: 0,
+      lor: 0,
+      max_frequency: 0,
+      note: apiSensor.note || "Lost Status Detected",
+      threshold_min: 0,
+      threshold_medium: 0,
+      threshold_max: 0,
+      temperature_threshold_min: 0,
+      temperature_threshold_max: 0,
+    };
+
+    const url = `${"/api"}/notification-logs`;
+    console.log("Sending Lost notification for sensor:", sensorId, "to", url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      localStorage.setItem(storageKey, lastUpdated);
+      console.log(`Lost notification sent successfully for sensor ${sensorId}`);
+    } else {
+      const errorText = await response.text();
+      console.error(
+        `Failed to send Lost notification for sensor ${sensorId}:`,
+        response.status,
+        errorText
+      );
+    }
+  } catch (error) {
+    console.error(
+      `Error sending Lost notification for sensor ${sensorId}:`,
+      error
+    );
+  }
+}
+
 // Function to fetch real sensors from API
 export async function fetchRealSensors(): Promise<Sensor[]> {
   // Check cache first
@@ -250,6 +327,10 @@ export async function fetchRealSensors(): Promise<Sensor[]> {
 
       if (isLost && operationalStatus !== "standby") {
         status = "lost";
+        // Trigger notification for Lost status (async, don't await to not block rendering)
+        if (typeof window !== "undefined") {
+          sendLostNotification(apiSensor);
+        }
       } else {
         // Calculate status from Vibration RMS
         const maxRms = Math.max(veloRmsH, veloRmsV, veloRmsA);

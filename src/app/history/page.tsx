@@ -34,7 +34,7 @@ export default function NotificationHistoryPage() {
       };
       const finalStatus = statusMap[apiStatus] || "Normal";
 
-      const dateObj = new Date(log.datetime);
+      const dateObj = new Date(log.created_at);
       const datetime = dateObj
         .toLocaleString("en-GB", {
           year: "numeric",
