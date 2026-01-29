@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getSignalStrengthLabel } from "@/lib/utils";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
 
@@ -31,6 +32,10 @@ interface HistoryItem {
   velo_rms_h: number;
   velo_rms_v: number;
   velo_rms_a: number;
+  // New fields
+  rssi?: number;
+  battery?: number;
+  temperature?: number;
 }
 
 // Thresholds
@@ -132,7 +137,7 @@ export default function SensorHistoryPage() {
         }
 
         const mappedHistory: HistoryItem[] = historyData.map(
-          (item: HistoryItem) => ({
+          (item: any) => ({
             datetime: item.datetime,
             g_rms_h: item.g_rms_h || 0,
             g_rms_v: item.g_rms_v || 0,
@@ -143,6 +148,9 @@ export default function SensorHistoryPage() {
             velo_rms_h: item.velo_rms_h || 0,
             velo_rms_v: item.velo_rms_v || 0,
             velo_rms_a: item.velo_rms_a || 0,
+            rssi: item.rssi || 0,
+            battery: item.battery || 0,
+            temperature: item.temperature || 0,
           })
         );
 
@@ -190,7 +198,6 @@ export default function SensorHistoryPage() {
     if (!history.length) return null;
 
     const labels = history.map((h) => {
-      // Fix: Treat server time as Local by removing Z if present
       const rawString = h.datetime.endsWith("Z")
         ? h.datetime.slice(0, -1)
         : h.datetime;
@@ -198,190 +205,169 @@ export default function SensorHistoryPage() {
       return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
     });
 
-    // Helper to get value
     const getVal = (item: HistoryItem, axis: "h" | "v" | "a") => {
       if (selectedUnit === "Acceleration RMS (G)")
-        return axis === "h"
-          ? item.g_rms_h
-          : axis === "v"
-            ? item.g_rms_v
-            : item.g_rms_a;
+        return axis === "h" ? item.g_rms_h : axis === "v" ? item.g_rms_v : item.g_rms_a;
       if (selectedUnit === "Acceleration(mm/s²)")
-        return axis === "h"
-          ? item.a_rms_h
-          : axis === "v"
-            ? item.a_rms_v
-            : item.a_rms_a;
-      return axis === "h"
-        ? item.velo_rms_h
-        : axis === "v"
-          ? item.velo_rms_v
-          : item.velo_rms_a; // Velocity
+        return axis === "h" ? item.a_rms_h : axis === "v" ? item.a_rms_v : item.a_rms_a;
+      return axis === "h" ? item.velo_rms_h : axis === "v" ? item.velo_rms_v : item.velo_rms_a;
     };
 
-    const series = [];
+    const series: any[] = [];
 
+    // --- Sub-Graph 0: WIFI (RSSI) ---
+    series.push({
+      name: "WIFI (RSSI)",
+      type: "line",
+      xAxisIndex: 0,
+      yAxisIndex: 0,
+      data: history.map((h) => h.rssi),
+      color: "#00E5FF",
+      symbol: "none",
+      sampling: "lttb",
+      lineStyle: { width: 3 },
+      tooltip: {
+        valueFormatter: (value: any) => `${getSignalStrengthLabel(value)} (${value} dBm)`
+      }
+    });
+
+    // --- Sub-Graph 1: Battery ---
+    series.push({
+      name: "Battery",
+      type: "line",
+      xAxisIndex: 1,
+      yAxisIndex: 1,
+      data: history.map((h) => h.battery),
+      color: "#4C6FFF",
+      symbol: "none",
+      sampling: "lttb",
+      lineStyle: { width: 3 },
+    });
+
+    // --- Sub-Graph 2: Temperature ---
+    series.push({
+      name: "Temperature",
+      type: "line",
+      xAxisIndex: 2,
+      yAxisIndex: 2,
+      data: history.map((h) => h.temperature),
+      color: "#C77DFF",
+      symbol: "none",
+      sampling: "lttb",
+      lineStyle: { width: 3 }
+    });
+
+    // --- Sub-Graph 3: RMS Vibration ---
     if (selectedAxis === "all" || selectedAxis === "h") {
       series.push({
         name: "H-axis",
         type: "line",
+        xAxisIndex: 3,
+        yAxisIndex: 3,
         data: history.map((h) => getVal(h, "h").toFixed(2)),
         color: "#00E5FF",
-        smooth: false,
-        symbol: "none", // No point
-        showSymbol: false,
-        sampling: "lttb", // Downsampling optimization
+        symbol: "none",
+        sampling: "lttb",
         lineStyle: { width: 3 },
       });
     }
-
     if (selectedAxis === "all" || selectedAxis === "v") {
       series.push({
         name: "V-axis",
         type: "line",
+        xAxisIndex: 3,
+        yAxisIndex: 3,
         data: history.map((h) => getVal(h, "v").toFixed(2)),
         color: "#4C6FFF",
-        smooth: false,
         symbol: "none",
-        showSymbol: false,
-        sampling: "lttb", // Downsampling optimization
+        sampling: "lttb",
         lineStyle: { width: 3 },
       });
     }
-
     if (selectedAxis === "all" || selectedAxis === "a") {
       series.push({
         name: "A-axis",
         type: "line",
+        xAxisIndex: 3,
+        yAxisIndex: 3,
         data: history.map((h) => getVal(h, "a").toFixed(2)),
         color: "#C77DFF",
-        smooth: false,
         symbol: "none",
-        showSymbol: false,
-        sampling: "lttb", // Downsampling optimization
+        sampling: "lttb",
         lineStyle: { width: 3 },
       });
     }
 
-    // Calculate max value from data to set dynamic Y-axis max
-    const maxDataValue = Math.max(
-      ...series.flatMap((s) => s.data.map((d: any) => parseFloat(d) || 0)),
+    const maxRmsValue = Math.max(
+      ...series.filter(s => s.yAxisIndex === 3).flatMap((s) => s.data.map((d: any) => parseFloat(d) || 0)),
       0
     );
+    const yAxisMaxRms = maxRmsValue > 0 ? parseFloat((maxRmsValue * 1.1).toFixed(2)) : THRESHOLDS.RED_START + 1;
 
-    // Auto scale: exactly 10% above max data value
-    const yAxisMax =
-      maxDataValue > 0
-        ? parseFloat((maxDataValue * 1.1).toFixed(2))
-        : THRESHOLDS.RED_START + 1; // Fallback if no data
-
+    // Background Threshold Areas for RMS only
     const markArea = {
       silent: true,
       data: [
-        [
-          { yAxis: 0, itemStyle: { color: "#72FF82" } },
-          { yAxis: THRESHOLDS.GREEN_LIMIT },
-        ],
-        [
-          { yAxis: THRESHOLDS.GREEN_LIMIT, itemStyle: { color: "#FFE666" } },
-          { yAxis: THRESHOLDS.YELLOW_LIMIT },
-        ],
-        [
-          { yAxis: THRESHOLDS.YELLOW_LIMIT, itemStyle: { color: "#FFB347" } },
-          { yAxis: THRESHOLDS.RED_START },
-        ],
-        // Extend red zone to cover the full range
-        [
-          { yAxis: THRESHOLDS.RED_START, itemStyle: { color: "#FF4D4D" } },
-          { yAxis: yAxisMax },
-        ],
+        [{ yAxis: 0, itemStyle: { color: "#72FF82" } }, { yAxis: THRESHOLDS.GREEN_LIMIT }],
+        [{ yAxis: THRESHOLDS.GREEN_LIMIT, itemStyle: { color: "#FFE666" } }, { yAxis: THRESHOLDS.YELLOW_LIMIT }],
+        [{ yAxis: THRESHOLDS.YELLOW_LIMIT, itemStyle: { color: "#FFB347" } }, { yAxis: THRESHOLDS.RED_START }],
+        [{ yAxis: THRESHOLDS.RED_START, itemStyle: { color: "#FF4D4D" } }, { yAxis: yAxisMaxRms }],
       ],
     };
-
-    if (series.length > 0) {
-      series[0] = { ...series[0], markArea };
+    const rmsSeriesIndex = series.findIndex(s => s.yAxisIndex === 3);
+    if (rmsSeriesIndex !== -1) {
+      series[rmsSeriesIndex] = { ...series[rmsSeriesIndex], markArea };
     }
 
     return {
-      title: {
-        text: `Sensor Name : ${sensorName}`,
-        left: "center",
-        textStyle: { color: "#fff", fontSize: 18, fontWeight: "bold" },
-      },
-      tooltip: {
-        trigger: "axis",
-        backgroundColor: "rgba(0,0,0,0.8)",
-        borderColor: "#777",
-        textStyle: { color: "#fff" },
-      },
-      legend: { show: false }, // Hide default legend
-      toolbox: {
-        feature: {
-          dataZoom: {
-            yAxisIndex: "none",
-          },
-          restore: {},
-          saveAsImage: {},
-        },
-        iconStyle: {
-          borderColor: "#fff",
-        },
-      },
-      dataZoom: [
-        {
-          type: "inside",
-          start: 0,
-          end: 100,
-        },
+      title: { text: `Sensor Name : ${sensorName}`, left: "center", textStyle: { color: "#fff", fontSize: 18, fontWeight: "bold" } },
+      tooltip: { trigger: "axis", axisPointer: { type: "cross", label: { backgroundColor: "#6a7985" } }, backgroundColor: "rgba(0,0,0,0.8)", textStyle: { color: "#fff" } },
+      grid: [
+        { left: "5%", right: "4%", top: "8%", height: "14%" }, // WiFi
+        { left: "5%", right: "4%", top: "28%", height: "14%" }, // Battery
+        { left: "5%", right: "4%", top: "48%", height: "14%" }, // Temp
+        { left: "5%", right: "4%", top: "68%", height: "24%" }  // RMS
       ],
-      grid: { left: "3%", right: "4%", bottom: "15%", containLabel: true },
-      xAxis: {
-        type: "category",
-        boundaryGap: false,
-        data: labels,
-        axisLabel: {
-          color: "#ccc",
-          rotate: 45,
-        },
-        axisLine: { lineStyle: { color: "#555" } },
-        name: "Timestamp",
-      },
-      yAxis: {
-        type: "value",
-        name: selectedUnit,
-        nameTextStyle: { color: "#aaa", padding: [0, 0, 0, 20] },
-        axisLabel: { color: "#ccc" },
-        splitLine: { show: false },
-        min: 0,
-        max: yAxisMax, // Use dynamic max
-      },
+      xAxis: [
+        { gridIndex: 0, type: "category", boundaryGap: false, data: labels, axisLabel: { show: false }, axisLine: { lineStyle: { color: "#555" } } },
+        { gridIndex: 1, type: "category", boundaryGap: false, data: labels, axisLabel: { show: false }, axisLine: { lineStyle: { color: "#555" } } },
+        { gridIndex: 2, type: "category", boundaryGap: false, data: labels, axisLabel: { show: false }, axisLine: { lineStyle: { color: "#555" } } },
+        { gridIndex: 3, type: "category", boundaryGap: false, data: labels, axisLabel: { color: "#ccc", rotate: 45 }, axisLine: { lineStyle: { color: "#555" } }, name: "Timestamp", nameLocation: "middle", nameGap: 60 }
+      ],
+      yAxis: [
+        { gridIndex: 0, type: "value", name: "RSSI (dBm)", nameTextStyle: { color: "#aaa" }, axisLabel: { color: "#ccc" }, splitLine: { show: false } },
+        { gridIndex: 1, type: "value", name: "Battery (%)", min: 0, max: 100, nameTextStyle: { color: "#aaa" }, axisLabel: { color: "#ccc" }, splitLine: { show: false } },
+        { gridIndex: 2, type: "value", name: "Temp (°C)", nameTextStyle: { color: "#aaa" }, axisLabel: { color: "#ccc" }, splitLine: { show: false } },
+        { gridIndex: 3, type: "value", name: selectedUnit, max: yAxisMaxRms, nameTextStyle: { color: "#aaa" }, axisLabel: { color: "#ccc" }, splitLine: { show: false } }
+      ],
+      dataZoom: [
+        { type: "inside", xAxisIndex: [0, 1, 2, 3], start: 0, end: 100 }
+      ],
+      toolbox: { feature: { dataZoom: { yAxisIndex: "none" }, restore: {}, saveAsImage: {} }, iconStyle: { borderColor: "#fff" } },
       series: series,
-      backgroundColor: "transparent",
+      backgroundColor: "#0B1121",
     };
   }, [history, selectedAxis, selectedUnit, sensorName]);
 
   const handleExportCSV = () => {
     if (history.length === 0) return;
     const exportData = prepareExportData();
-    exportToCSV(
-      exportData,
-      `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.csv`
-    );
+    exportToCSV(exportData, `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.csv`);
   };
 
   const handleExportExcel = () => {
     if (history.length === 0) return;
     const exportData = prepareExportData();
-    exportToExcel(
-      exportData,
-      `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.xlsx`
-    );
+    exportToExcel(exportData, `sensor_history_${params.id}_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
 
   const prepareExportData = () => {
     return history.map((item) => {
       const row: any = {
         DateTime: item.datetime,
+        RSSI: item.rssi,
+        Battery: item.battery,
+        Temperature: item.temperature,
       };
 
       if (selectedAxis === "all" || selectedAxis === "h") {
@@ -442,11 +428,10 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
-                    selectedAxis === axis
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                    }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
@@ -550,33 +535,55 @@ export default function SensorHistoryPage() {
               </div>
             )}
             {!loading && history.length > 0 && chartOption && (
-              <div className="space-y-4">
-                <ReactECharts
-                  option={chartOption}
-                  style={{ height: "400px", width: "100%" }}
-                  theme="dark"
-                  notMerge={true}
-                />
+              <div className="space-y-8">
+                {/* Single Combined Multi-Grid Graph */}
+                <div className="pt-4">
+                  <ReactECharts
+                    option={chartOption}
+                    style={{ height: "950px", width: "100%" }}
+                    theme="dark"
+                    notMerge={true}
+                  />
 
-                {/* Custom Legend UI */}
-                <div className="flex justify-center gap-12 mt-8">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-48 h-1 bg-[#00E5FF] rounded-full"></div>
-                    <span className="text-lg font-bold text-white uppercase tracking-wider">
-                      H-axis
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-48 h-1 bg-[#4C6FFF] rounded-full"></div>
-                    <span className="text-lg font-bold text-white uppercase tracking-wider">
-                      V-axis
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-48 h-1 bg-[#C77DFF] rounded-full"></div>
-                    <span className="text-lg font-bold text-white uppercase tracking-wider">
-                      A-axis
-                    </span>
+                  {/* Custom Legend UI for RMS Vibration */}
+                  <div className="flex justify-center gap-12 mt-4 pb-8">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-24 h-1 bg-[#00E5FF] rounded-full"></div>
+                      <span className="text-sm font-bold text-white uppercase tracking-wider">
+                        H-axis
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-24 h-1 bg-[#4C6FFF] rounded-full"></div>
+                      <span className="text-sm font-bold text-white uppercase tracking-wider">
+                        V-axis
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-24 h-1 bg-[#C77DFF] rounded-full"></div>
+                      <span className="text-sm font-bold text-white uppercase tracking-wider">
+                        A-axis
+                      </span>
+                    </div>
+                    {/* WiFi, Battery, Temp Legend */}
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-24 h-1 bg-[#00E5FF] rounded-full"></div>
+                      <span className="text-sm font-bold text-white uppercase tracking-wider">
+                        WiFi
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-24 h-1 bg-[#4C6FFF] rounded-full"></div>
+                      <span className="text-sm font-bold text-white uppercase tracking-wider">
+                        Battery
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-24 h-1 bg-[#C77DFF] rounded-full"></div>
+                      <span className="text-sm font-bold text-white uppercase tracking-wider">
+                        Temp
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -607,6 +614,9 @@ export default function SensorHistoryPage() {
                         A ({selectedUnit})
                       </th>
                     )}
+                    <th className="py-3 font-medium text-[#00E5FF]">WIFI (RSSI)</th>
+                    <th className="py-3 font-medium text-[#4C6FFF]">Battery</th>
+                    <th className="py-3 font-medium text-[#C77DFF]">Temp</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-200">
@@ -686,6 +696,18 @@ export default function SensorHistoryPage() {
                               </td>
                             </>
                           )}
+                          <td className="py-4 font-mono">
+                            <div className="flex flex-col">
+                              <span className="font-bold text-[#00E5FF]">
+                                {getSignalStrengthLabel(item.rssi || 0)}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {item.rssi} dBm
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4 font-mono">{item.battery || 0}%</td>
+                          <td className="py-4 font-mono">{item.temperature || 0}°C</td>
                         </tr>
                       );
                     })}

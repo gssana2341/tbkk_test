@@ -83,7 +83,20 @@ export function generateId(): string {
 }
 
 // Convert RSSI to signal strength level (0-4)
-export function getSignalStrength(rssi: number): number {
+// This function handles both raw dBm values (negative) and pre-calculated levels (0-4)
+export function getSignalStrength(rssiInput: number): number {
+  const rssi = Number(rssiInput);
+
+  // If rssi is negative, it's likely dBm (dBm values are typically -30 to -100)
+  if (rssi < 0) {
+    if (rssi >= -70) return 4; // Excellent
+    if (rssi >= -80) return 3; // Good
+    if (rssi >= -90) return 2; // Fair
+    if (rssi >= -100) return 1; // Poor
+    return 0; // No Signal
+  }
+
+  // If rssi is positive or 0, it's likely already a level (0-4)
   if (rssi === 0) return 0;
   if (rssi <= 1) return 1;
   if (rssi <= 2) return 2;
@@ -91,14 +104,14 @@ export function getSignalStrength(rssi: number): number {
   return 4;
 }
 
-// Get signal strength label
+// Get signal strength label in English
 export function getSignalStrengthLabel(rssi: number): string {
   const level = getSignalStrength(rssi);
   switch (level) {
     case 0:
       return "No Signal";
     case 1:
-      return "Weak";
+      return "Poor";
     case 2:
       return "Fair";
     case 3:
@@ -106,7 +119,7 @@ export function getSignalStrengthLabel(rssi: number): string {
     case 4:
       return "Excellent";
     default:
-      return "Unknown";
+      return "N/A";
   }
 }
 
