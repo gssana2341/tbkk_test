@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Calendar } from "lucide-react";
 
 type NotificationStatus =
   | "Normal"
@@ -242,27 +242,28 @@ export function NotificationHistoryTable({
               Notification History
             </h2>
             <div className="flex flex-wrap gap-6 items-center">
-              {Object.entries(statusStyles).map(([key, val]) => {
-                const isSelected = selectedStatuses.includes(
-                  key as NotificationStatus
-                );
-                return (
-                  <button
-                    key={key}
-                    onClick={() => toggleStatus(key as NotificationStatus)}
-                    className={`flex items-center gap-2 text-base 2xl:text-xl transition-all duration-200 ${
-                      selectedStatuses.length > 0 && !isSelected
+              {Object.entries(statusStyles)
+                .filter(([key]) => key !== "Normal" && key !== "Standby")
+                .map(([key, val]) => {
+                  const isSelected = selectedStatuses.includes(
+                    key as NotificationStatus
+                  );
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => toggleStatus(key as NotificationStatus)}
+                      className={`flex items-center gap-2 text-base 2xl:text-xl transition-all duration-200 ${selectedStatuses.length > 0 && !isSelected
                         ? "opacity-40 grayscale"
                         : "opacity-100"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block w-4 h-4 2xl:w-6 2xl:h-6 rounded-full border border-gray-300 ${val.dot}`}
-                    />
-                    <span className={val.color}>{val.label}</span>
-                  </button>
-                );
-              })}
+                        }`}
+                    >
+                      <span
+                        className={`inline-block w-4 h-4 2xl:w-6 2xl:h-6 rounded-full border border-gray-300 ${val.dot}`}
+                      />
+                      <span className={val.color}>{val.label}</span>
+                    </button>
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -279,19 +280,53 @@ export function NotificationHistoryTable({
           <span className="ml-2 text-base 2xl:text-xl text-gray-300">
             Date:
           </span>
-          <input
-            type="date"
-            className="border border-gray-600 rounded-md px-2 py-2 text-base 2xl:text-xl bg-[#11171F] text-white [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
-            value={dateStart}
-            onChange={(e) => setDateStart(e.target.value)}
-          />
-          <span className="mx-1 text-lg 2xl:text-2xl">-</span>
-          <input
-            type="date"
-            className="border border-gray-600 rounded-md px-2 py-2 text-base 2xl:text-xl bg-[#11171F] text-white [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
-            value={dateEnd}
-            onChange={(e) => setDateEnd(e.target.value)}
-          />
+          {/* Start Date Custom Input */}
+          <div
+            className="relative bg-[#11171F] border border-gray-600 rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer hover:border-blue-500 transition-colors w-[200px] 2xl:w-[250px]"
+            onClick={(e) => {
+              const input = e.currentTarget.querySelector(
+                'input[type="date"]'
+              ) as HTMLInputElement;
+              if (input) input.showPicker();
+            }}
+          >
+            <span className="text-white text-base 2xl:text-xl flex-1">
+              {dateStart
+                ? dateStart.split("-").reverse().join("/")
+                : "dd/mm/yyyy"}
+            </span>
+            <Calendar className="h-5 w-5 text-gray-400" />
+            <input
+              type="date"
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+              value={dateStart}
+              onChange={(e) => setDateStart(e.target.value)}
+            />
+          </div>
+
+          <span className="mx-1 text-lg 2xl:text-2xl text-gray-400">-</span>
+
+          {/* End Date Custom Input */}
+          <div
+            className="relative bg-[#11171F] border border-gray-600 rounded-md px-3 py-2 flex items-center gap-2 cursor-pointer hover:border-blue-500 transition-colors w-[200px] 2xl:w-[250px]"
+            onClick={(e) => {
+              const input = e.currentTarget.querySelector(
+                'input[type="date"]'
+              ) as HTMLInputElement;
+              if (input) input.showPicker();
+            }}
+          >
+            <span className="text-white text-base 2xl:text-xl flex-1">
+              {dateEnd ? dateEnd.split("-").reverse().join("/") : "dd/mm/yyyy"}
+            </span>
+            <Calendar className="h-5 w-5 text-gray-400" />
+            <input
+              type="date"
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+              value={dateEnd}
+              onChange={(e) => setDateEnd(e.target.value)}
+            />
+          </div>
         </div>
 
         {/* Table */}
@@ -420,11 +455,10 @@ export function NotificationHistoryTable({
                         <td key={axis} className="py-4 px-4">
                           <div className="flex items-center justify-center gap-2">
                             <span
-                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${
-                                colorCode !== undefined
-                                  ? getAxisColorCode(colorCode)
-                                  : "bg-gray-400"
-                              }`}
+                              className={`inline-block w-3 h-3 2xl:w-5 2xl:h-5 rounded-full ${colorCode !== undefined
+                                ? getAxisColorCode(colorCode)
+                                : "bg-gray-400"
+                                }`}
                             />
                             <span className="font-medium text-gray-300">
                               {entry[axis] != null
