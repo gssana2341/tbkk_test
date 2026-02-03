@@ -417,18 +417,18 @@ export default function SensorDetailPage() {
             >
               {(user?.role?.toLowerCase() === "admin" ||
                 user?.role?.toLowerCase() === "editor") && (
-                <DropdownMenuItem
-                  className="text-white"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    router.push("/register");
-                  }}
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  Configure Sensor
-                </DropdownMenuItem>
-              )}
+                  <DropdownMenuItem
+                    className="text-white"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push("/register");
+                    }}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Configure Sensor
+                  </DropdownMenuItem>
+                )}
               <DropdownMenuItem
                 className="text-white cursor-pointer"
                 onClick={handleExportCSV}
@@ -456,35 +456,35 @@ export default function SensorDetailPage() {
               </DropdownMenuItem>
               {(user?.role?.toLowerCase() === "admin" ||
                 user?.role?.toLowerCase() === "editor") && (
-                <DropdownMenuItem
-                  className="text-red-500 cursor-pointer"
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    console.log("Delete selected for sensor:", params.id);
+                  <DropdownMenuItem
+                    className="text-red-500 cursor-pointer"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      console.log("Delete selected for sensor:", params.id);
 
-                    setTimeout(async () => {
-                      if (
-                        confirm(
-                          "Are you sure you want to delete this sensor? This action cannot be undone."
-                        )
-                      ) {
-                        console.log("User confirmed delete");
-                        const success = await deleteSensor(params.id);
-                        console.log("Delete result:", success);
-                        if (success) {
-                          router.push("/");
+                      setTimeout(async () => {
+                        if (
+                          confirm(
+                            "Are you sure you want to delete this sensor? This action cannot be undone."
+                          )
+                        ) {
+                          console.log("User confirmed delete");
+                          const success = await deleteSensor(params.id);
+                          console.log("Delete result:", success);
+                          if (success) {
+                            router.push("/");
+                          } else {
+                            alert("Failed to delete sensor");
+                          }
                         } else {
-                          alert("Failed to delete sensor");
+                          console.log("User cancelled delete");
                         }
-                      } else {
-                        console.log("User cancelled delete");
-                      }
-                    }, 0);
-                  }}
-                >
-                  Delete
-                </DropdownMenuItem>
-              )}
+                      }, 0);
+                    }}
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -526,6 +526,9 @@ export default function SensorDetailPage() {
           }}
           setSensorLastData={setSensorLastData}
           setError={setError}
+          history={history}
+          selectedAxis={selectedAxis}
+          selectedUnit={selectedUnit}
         />
 
         <VibrationAnalysisSection
@@ -536,6 +539,7 @@ export default function SensorDetailPage() {
           setSelectedUnit={setSelectedUnit}
           vibrationData={vibrationData}
           history={history}
+          allChartData={allChartData}
         />
       </div>
     </div>
