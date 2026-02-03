@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,11 @@ export default function SensorHistoryPage() {
   const [loading, setLoading] = useState(false);
   const [sensorName, setSensorName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const chartRef = useRef<any>(null);
+  const [selectedDataIndex, setSelectedDataIndex] = useState<number | null>(
+    null
+  );
+  const [isChartReady, setIsChartReady] = useState(false);
 
   // Filters
   const [selectedAxis, setSelectedAxis] = useState<"all" | "h" | "v" | "a">(
@@ -70,6 +75,10 @@ export default function SensorHistoryPage() {
   const [selectedUnit, setSelectedUnit] = useState("Velocity (mm/s)");
   const [dateStart, setDateStart] = useState(getTodayString());
   const [dateEnd, setDateEnd] = useState(getTodayString());
+
+  useEffect(() => {
+    setSelectedDataIndex(null);
+  }, [dateStart, dateEnd, selectedAxis, selectedUnit, params.id]);
 
   useEffect(() => {
     async function fetchHistory() {
@@ -194,6 +203,43 @@ export default function SensorHistoryPage() {
     fetchHistory();
   }, [params.id, dateStart, dateEnd]);
 
+  useEffect(() => {
+    const chartInstance = chartRef.current;
+    if (!chartInstance) return;
+
+    const handleZrClick = (params: any) => {
+      const pointInPixel = [params.offsetX, params.offsetY];
+
+      try {
+        // Multi-grid robust conversion: try all 4 grids (indices 0-3)
+        let xIndex = -1;
+        for (let i = 0; i < 4; i++) {
+          const result = chartInstance.convertFromPixel({ xAxisIndex: i }, pointInPixel);
+          if (result && result[0] !== undefined && !isNaN(result[0])) {
+            const tempIndex = Math.round(result[0]);
+            if (tempIndex >= 0 && tempIndex < history.length) {
+              xIndex = tempIndex;
+              break;
+            }
+          }
+        }
+
+        if (xIndex !== -1) {
+          setSelectedDataIndex(xIndex);
+        }
+      } catch (e) {
+        console.error("Coordinate conversion failed:", e);
+      }
+    };
+
+    const zr = chartInstance.getZr();
+    zr.on("click", handleZrClick);
+
+    return () => {
+      zr.off("click", handleZrClick);
+    };
+  }, [history, isChartReady]);
+
   const chartOption = useMemo(() => {
     if (!history.length) return null;
 
@@ -276,7 +322,9 @@ export default function SensorHistoryPage() {
       yAxisIndex: 1,
       data: history.map((h) => (h.status === "lost" ? null : h.battery)),
       color: "#4C6FFF",
-      symbol: "none",
+      symbol: "circle",
+      symbolSize: 4,
+      showSymbol: true,
       sampling: "lttb",
       lineStyle: { width: 3 },
       tooltip: {
@@ -305,7 +353,9 @@ export default function SensorHistoryPage() {
       yAxisIndex: 2,
       data: history.map((h) => (h.status === "lost" ? null : h.temperature)),
       color: "#C77DFF",
-      symbol: "none",
+      symbol: "circle",
+      symbolSize: 4,
+      showSymbol: true,
       sampling: "lttb",
       lineStyle: { width: 3 },
       tooltip: {
@@ -337,7 +387,9 @@ export default function SensorHistoryPage() {
           h.status === "lost" ? null : getVal(h, "h").toFixed(2)
         ),
         color: "#00E5FF",
-        symbol: "none",
+        symbol: "circle",
+        symbolSize: 4,
+        showSymbol: true,
         sampling: "lttb",
         lineStyle: { width: 3 },
         tooltip: {
@@ -368,7 +420,9 @@ export default function SensorHistoryPage() {
           h.status === "lost" ? null : getVal(h, "v").toFixed(2)
         ),
         color: "#4C6FFF",
-        symbol: "none",
+        symbol: "circle",
+        symbolSize: 4,
+        showSymbol: true,
         sampling: "lttb",
         lineStyle: { width: 3 },
         tooltip: {
@@ -399,7 +453,9 @@ export default function SensorHistoryPage() {
           h.status === "lost" ? null : getVal(h, "a").toFixed(2)
         ),
         color: "#C77DFF",
-        symbol: "none",
+        symbol: "circle",
+        symbolSize: 4,
+        showSymbol: true,
         sampling: "lttb",
         lineStyle: { width: 3 },
         tooltip: {
@@ -418,6 +474,69 @@ export default function SensorHistoryPage() {
             </div>`;
           },
         },
+      });
+    }
+
+    // --- Highlighting Scatter Series (Red Dots) ---
+    if (selectedDataIndex !== null) {
+      const hItem = history[selectedDataIndex];
+      // Grid 0: WiFi
+      series.push({
+        name: "Highlight WiFi",
+        type: "scatter",
+        xAxisIndex: 0,
+        yAxisIndex: 0,
+        data: [[selectedDataIndex, getSignalStrength(hItem.rssi || 0)]],
+        symbolSize: 12,
+        itemStyle: { color: "#FF4D4D", borderColor: "#fff", borderWidth: 2 },
+        tooltip: { show: false },
+        z: 10,
+      });
+      // Grid 1: Battery
+      series.push({
+        name: "Highlight Battery",
+        type: "scatter",
+        xAxisIndex: 1,
+        yAxisIndex: 1,
+        data: [[selectedDataIndex, hItem.battery]],
+        symbolSize: 12,
+        itemStyle: { color: "#FF4D4D", borderColor: "#fff", borderWidth: 2 },
+        tooltip: { show: false },
+        z: 10,
+      });
+      // Grid 2: Temperature
+      series.push({
+        name: "Highlight Temp",
+        type: "scatter",
+        xAxisIndex: 2,
+        yAxisIndex: 2,
+        data: [[selectedDataIndex, hItem.temperature]],
+        symbolSize: 12,
+        itemStyle: { color: "#FF4D4D", borderColor: "#fff", borderWidth: 2 },
+        tooltip: { show: false },
+        z: 10,
+      });
+      // Grid 3: RMS (Highest level of current axes to stay on top)
+      let rmsVal = 0;
+      if (selectedAxis === "all") {
+        rmsVal = Math.max(
+          getVal(hItem, "h"),
+          getVal(hItem, "v"),
+          getVal(hItem, "a")
+        );
+      } else {
+        rmsVal = getVal(hItem, selectedAxis as any);
+      }
+      series.push({
+        name: "Highlight RMS",
+        type: "scatter",
+        xAxisIndex: 3,
+        yAxisIndex: 3,
+        data: [[selectedDataIndex, rmsVal.toFixed(2)]],
+        symbolSize: 12,
+        itemStyle: { color: "#FF4D4D", borderColor: "#fff", borderWidth: 2 },
+        tooltip: { show: false },
+        z: 10,
       });
     }
 
@@ -576,8 +695,9 @@ export default function SensorHistoryPage() {
       },
       series: series,
       backgroundColor: "#0B1121",
+      animationDurationUpdate: 0,
     };
-  }, [history, selectedAxis, selectedUnit, sensorName]);
+  }, [history, selectedAxis, selectedUnit, sensorName, selectedDataIndex]);
 
   const handleExportCSV = () => {
     if (history.length === 0) return;
@@ -795,6 +915,17 @@ export default function SensorHistoryPage() {
                     style={{ height: "950px", width: "100%" }}
                     theme="dark"
                     notMerge={true}
+                    onChartReady={(instance) => {
+                      chartRef.current = instance;
+                      setIsChartReady(true);
+                    }}
+                    onEvents={{
+                      click: (params: any) => {
+                        if (params.dataIndex !== undefined) {
+                          setSelectedDataIndex(params.dataIndex);
+                        }
+                      },
+                    }}
                   />
 
                   {/* Custom Legend UI for RMS Vibration */}
