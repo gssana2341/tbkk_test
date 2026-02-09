@@ -17,6 +17,7 @@ const getAxiosInstance = () => {
     baseURL: API_BASE_URL,
     headers: {
       "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
   });
@@ -119,9 +120,11 @@ export async function getThresholdSettings(): Promise<ThresholdSettings> {
       if (error && typeof error === "object" && "message" in error) {
         console.error("Error details:", {
           message: (error as { message?: string }).message,
-          response: (error as { response?: { data?: unknown; status?: number } })
-            .response?.data,
-          status: (error as { response?: { status?: number } }).response?.status,
+          response: (
+            error as { response?: { data?: unknown; status?: number } }
+          ).response?.data,
+          status: (error as { response?: { status?: number } }).response
+            ?.status,
         });
       }
       // Fallback to localStorage if API fails - don't throw error

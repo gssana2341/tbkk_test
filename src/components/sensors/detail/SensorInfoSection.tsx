@@ -168,16 +168,16 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               </h2>
               {(user?.role?.toLowerCase() === "admin" ||
                 user?.role?.toLowerCase() === "editor") && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-base 2xl:px-3 2xl:py-1"
-                    onClick={() => router.push(`/register?id=${params.id}`)}
-                  >
-                    <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
-                    Edit
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-base 2xl:px-3 2xl:py-1"
+                  onClick={() => router.push(`/register?id=${params.id}`)}
+                >
+                  <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
+                  Edit
+                </Button>
+              )}
             </div>
 
             <div className="grid grid-cols-[140px_1fr] 2xl:grid-cols-[160px_1fr] gap-x-2 gap-y-1 text-base 2xl:text-lg">
@@ -211,9 +211,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               <span
                 className={cn(
                   "text-lg 2xl:text-xl",
-                  configData.installationPoint
-                    ? "text-white"
-                    : "text-gray-500"
+                  configData.installationPoint ? "text-white" : "text-gray-500"
                 )}
               >
                 {configData.installationPoint || "Not Set"}
@@ -259,9 +257,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                         ? parseCustomDate(dateVal)
                         : new Date(dateVal);
                     const now = new Date();
-                    const diffTime = Math.abs(
-                      now.getTime() - start.getTime()
-                    );
+                    const diffTime = Math.abs(now.getTime() - start.getTime());
                     const diffDays = Math.floor(
                       diffTime / (1000 * 60 * 60 * 24)
                     );
@@ -386,40 +382,28 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                       return (
                         <WifiZero
                           {...iconProps}
-                          className={cn(
-                            iconProps.className,
-                            "text-yellow-400"
-                          )}
+                          className={cn(iconProps.className, "text-yellow-400")}
                         />
                       );
                     case 2:
                       return (
                         <WifiLow
                           {...iconProps}
-                          className={cn(
-                            iconProps.className,
-                            "text-yellow-400"
-                          )}
+                          className={cn(iconProps.className, "text-yellow-400")}
                         />
                       );
                     case 3:
                       return (
                         <WifiHigh
                           {...iconProps}
-                          className={cn(
-                            iconProps.className,
-                            "text-[#00E200]"
-                          )}
+                          className={cn(iconProps.className, "text-[#00E200]")}
                         />
                       );
                     case 4:
                       return (
                         <Wifi
                           {...iconProps}
-                          className={cn(
-                            iconProps.className,
-                            "text-[#00E200]"
-                          )}
+                          className={cn(iconProps.className, "text-[#00E200]")}
                         />
                       );
                     default:
@@ -444,9 +428,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               <span className="text-gray-400">Sensor Installation Date</span>
               <span className="text-lg 2xl:text-xl text-white">
                 {sensor?.installationDate
-                  ? formatDate(
-                    new Date(sensor.installationDate).toISOString()
-                  )
+                  ? formatDate(new Date(sensor.installationDate).toISOString())
                   : formatDate("2025-04-26")}
               </span>
 
@@ -522,7 +504,9 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                           }
                         }}
                       >
-                        <span className="shrink-0">{formatDateTimeDayFirst(datetime)}</span>
+                        <span className="shrink-0">
+                          {formatDateTimeDayFirst(datetime)}
+                        </span>
                         <span className="text-white mr-1 text-right truncate">
                           {rmsLookup[datetime] || ""}
                         </span>

@@ -44,7 +44,9 @@ export async function getUserProfile(): Promise<UserProfileResponse> {
       throw error;
     } finally {
       // Clear after small delay to catch simultaneous bursts
-      setTimeout(() => { profilePromise = null; }, 500);
+      setTimeout(() => {
+        profilePromise = null;
+      }, 500);
     }
   })();
 

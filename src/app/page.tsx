@@ -110,27 +110,33 @@ export default function SensorsPage() {
     });
   }, []);
 
-  const fetchSensors = useCallback(async (silent = false) => {
-    try {
-      if (!silent) setLoading(true);
-      const { sensors: fetchedSensors } = await getSensors({
-        limit: 1000,
-        isShort: true
-      });
+  const fetchSensors = useCallback(
+    async (silent = false) => {
+      try {
+        if (!silent) setLoading(true);
+        const { sensors: fetchedSensors } = await getSensors({
+          limit: 1000,
+          isShort: true,
+        });
 
-      setSensors(fetchedSensors);
-      updateSensorStatusData(fetchedSensors);
+        setSensors(fetchedSensors);
+        updateSensorStatusData(fetchedSensors);
 
-      // Cache for next initial load
-      if (fetchedSensors.length > 0) {
-        localStorage.setItem("cached_sensors", JSON.stringify(fetchedSensors));
+        // Cache for next initial load
+        if (fetchedSensors.length > 0) {
+          localStorage.setItem(
+            "cached_sensors",
+            JSON.stringify(fetchedSensors)
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching sensors:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching sensors:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [updateSensorStatusData]);
+    },
+    [updateSensorStatusData]
+  );
 
   const updateSensorData = useCallback(async () => {
     try {
@@ -359,16 +365,16 @@ export default function SensorsPage() {
       {/* Only show Filters and Grid if any item is selected or status filter is active */}
       {((selectedIds && selectedIds.length > 0) ||
         selectedStatuses.length > 0) && (
-          <>
-            {/* Filters */}
-            <SensorFilters />
+        <>
+          {/* Filters */}
+          <SensorFilters />
 
-            {/* Sensor Views */}
-            <Suspense fallback={<LoadingSkeleton />}>
-              {renderCurrentView()}
-            </Suspense>
-          </>
-        )}
+          {/* Sensor Views */}
+          <Suspense fallback={<LoadingSkeleton />}>
+            {renderCurrentView()}
+          </Suspense>
+        </>
+      )}
     </div>
   );
 }

@@ -6,9 +6,7 @@ import {
   WithLastDataSensor,
   ChartConfigData,
 } from "@/lib/types/sensor-data";
-import {
-  prepareChartData,
-} from "@/lib/utils/sensor-charts";
+import { prepareChartData } from "@/lib/utils/sensor-charts";
 import {
   accelerationGToMmPerSecSquared,
   calculateVelocityFromFrequency,
@@ -22,7 +20,11 @@ const detailsInflight = new Map<string, Promise<any>>();
 const historyInflight = new Map<string, Promise<any>>();
 const imageInflight = new Map<string, Promise<any>>();
 
-function withDedupe(map: Map<string, Promise<any>>, key: string, fetcher: () => Promise<any>) {
+function withDedupe(
+  map: Map<string, Promise<any>>,
+  key: string,
+  fetcher: () => Promise<any>
+) {
   if (map.has(key)) return map.get(key)!;
   const promise = fetcher().finally(() => {
     // Clear after a small delay to catch near-simultaneous calls
@@ -38,7 +40,10 @@ interface UseSensorDetailsProps {
   selectedAxis?: string;
 }
 
-export function useSensorDetails({ sensorId, selectedUnit }: UseSensorDetailsProps) {
+export function useSensorDetails({
+  sensorId,
+  selectedUnit,
+}: UseSensorDetailsProps) {
   const [sensor, setSensor] = useState<Sensor | null>(null);
   const [sensorLastData, setSensorLastData] = useState<SensorLastData | null>(
     null

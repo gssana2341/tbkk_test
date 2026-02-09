@@ -138,7 +138,9 @@ export default function SensorHistoryPage() {
           processHistoryData(data);
         } finally {
           // Clear after small delay to catch simultaneous bursts
-          setTimeout(() => { historyInflight.delete(url); }, 500);
+          setTimeout(() => {
+            historyInflight.delete(url);
+          }, 500);
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -238,7 +240,10 @@ export default function SensorHistoryPage() {
         // Multi-grid robust conversion: try all 4 grids (indices 0-3)
         let xIndex = -1;
         for (let i = 0; i < 4; i++) {
-          const result = chartInstance.convertFromPixel({ xAxisIndex: i }, pointInPixel);
+          const result = chartInstance.convertFromPixel(
+            { xAxisIndex: i },
+            pointInPixel
+          );
           if (result && result[0] !== undefined && !isNaN(result[0])) {
             const tempIndex = Math.round(result[0]);
             if (tempIndex >= 0 && tempIndex < history.length) {
@@ -808,10 +813,11 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
-                    ? "bg-blue-600 border-blue-500 text-white"
-                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                    }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
+                    selectedAxis === axis
+                      ? "bg-blue-600 border-blue-500 text-white"
+                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                  }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>

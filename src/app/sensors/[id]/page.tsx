@@ -447,35 +447,35 @@ export default function SensorDetailPage() {
               </DropdownMenuItem>
               {(user?.role?.toLowerCase() === "admin" ||
                 user?.role?.toLowerCase() === "editor") && (
-                  <DropdownMenuItem
-                    className="text-red-500 cursor-pointer"
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      console.log("Delete selected for sensor:", params.id);
+                <DropdownMenuItem
+                  className="text-red-500 cursor-pointer"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    console.log("Delete selected for sensor:", params.id);
 
-                      setTimeout(async () => {
-                        if (
-                          confirm(
-                            "Are you sure you want to delete this sensor? This action cannot be undone."
-                          )
-                        ) {
-                          console.log("User confirmed delete");
-                          const success = await deleteSensor(params.id);
-                          console.log("Delete result:", success);
-                          if (success) {
-                            router.push("/");
-                          } else {
-                            alert("Failed to delete sensor");
-                          }
+                    setTimeout(async () => {
+                      if (
+                        confirm(
+                          "Are you sure you want to delete this sensor? This action cannot be undone."
+                        )
+                      ) {
+                        console.log("User confirmed delete");
+                        const success = await deleteSensor(params.id);
+                        console.log("Delete result:", success);
+                        if (success) {
+                          router.push("/");
                         } else {
-                          console.log("User cancelled delete");
+                          alert("Failed to delete sensor");
                         }
-                      }, 0);
-                    }}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                )}
+                      } else {
+                        console.log("User cancelled delete");
+                      }
+                    }, 0);
+                  }}
+                >
+                  Delete
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

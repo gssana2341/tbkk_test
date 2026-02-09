@@ -29,336 +29,437 @@ export const VibrationAnalysisSection: React.FC<
   history,
   allChartData,
 }) => {
-    const hasData = vibrationData.hasData;
-    const hFreqChartRef = useRef<any>(null);
-    const vFreqChartRef = useRef<any>(null);
-    const aFreqChartRef = useRef<any>(null);
+  const hasData = vibrationData.hasData;
+  const hFreqChartRef = useRef<any>(null);
+  const vFreqChartRef = useRef<any>(null);
+  const aFreqChartRef = useRef<any>(null);
 
-    const getTop10Peaks = (dataObj: any) => {
-      if (!dataObj?.hasData || !dataObj.freqData?.datasets?.[0]?.data) return [];
+  const getTop10Peaks = (dataObj: any) => {
+    if (!dataObj?.hasData || !dataObj.freqData?.datasets?.[0]?.data) return [];
 
-      const data = dataObj.freqData.datasets[0].data;
-      const labels = dataObj.freqData.labels;
+    const data = dataObj.freqData.datasets[0].data;
+    const labels = dataObj.freqData.labels;
 
-      // Find all local maxima
-      const peaks: { index: number; value: number }[] = [];
-      for (let i = 1; i < data.length - 1; i++) {
-        if (data[i] > data[i - 1] && data[i] > data[i + 1]) {
-          peaks.push({ index: i, value: data[i] });
-        }
+    // Find all local maxima
+    const peaks: { index: number; value: number }[] = [];
+    for (let i = 1; i < data.length - 1; i++) {
+      if (data[i] > data[i - 1] && data[i] > data[i + 1]) {
+        peaks.push({ index: i, value: data[i] });
       }
+    }
 
-      // Sort by value and take top 10
-      return peaks
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 10)
-        .map(p => ({
-          name: `${labels[p.index]} Hz`,
-          coord: [p.index, p.value],
-          value: p.value,
-          freq: labels[p.index],
-          coordIndex: p.index
-        }));
-    };
+    // Sort by value and take top 10
+    return peaks
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10)
+      .map((p) => ({
+        name: `${labels[p.index]} Hz`,
+        coord: [p.index, p.value],
+        value: p.value,
+        freq: labels[p.index],
+        coordIndex: p.index,
+      }));
+  };
 
-    return (
-      <Card className="bg-transparent border-none shadow-none">
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-6">
-            {/* Axis and Unit Selection within Time Domain Section */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-2">
-              <h2 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
-                Vibration Frequency Analysis
-              </h2>
+  return (
+    <Card className="bg-transparent border-none shadow-none">
+      <CardContent className="p-6">
+        <div className="flex flex-col gap-6">
+          {/* Axis and Unit Selection within Time Domain Section */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-2">
+            <h2 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+              Vibration Frequency Analysis
+            </h2>
 
-              <div className="flex flex-wrap items-center gap-6 bg-[#1f2937]/30 p-3 rounded-lg border border-[#374151]">
-                {/* Axis Selection */}
-                <div className="flex items-center gap-4 pr-4 border-r border-[#374151]">
-                  <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Axis:</span>
-                  {configData.hAxisEnabled && (
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={selectedAxis === "H-axis"}
-                        onChange={() => setSelectedAxis("H-axis")}
-                        className="w-4 h-4 accent-blue-600"
-                      />
-                      <span className={cn("text-lg font-bold group-hover:text-blue-400 transition-colors", selectedAxis === "H-axis" ? "text-blue-500" : "text-white")}>H</span>
-                    </label>
-                  )}
-                  {configData.vAxisEnabled && (
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={selectedAxis === "V-axis"}
-                        onChange={() => setSelectedAxis("V-axis")}
-                        className="w-4 h-4 accent-blue-600"
-                      />
-                      <span className={cn("text-lg font-bold group-hover:text-blue-400 transition-colors", selectedAxis === "V-axis" ? "text-blue-500" : "text-white")}>V</span>
-                    </label>
-                  )}
-                  {configData.aAxisEnabled && (
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={selectedAxis === "A-axis"}
-                        onChange={() => setSelectedAxis("A-axis")}
-                        className="w-4 h-4 accent-blue-600"
-                      />
-                      <span className={cn("text-lg font-bold group-hover:text-blue-400 transition-colors", selectedAxis === "A-axis" ? "text-blue-500" : "text-white")}>A</span>
-                    </label>
-                  )}
+            <div className="flex flex-wrap items-center gap-6 bg-[#1f2937]/30 p-3 rounded-lg border border-[#374151]">
+              {/* Axis Selection */}
+              <div className="flex items-center gap-4 pr-4 border-r border-[#374151]">
+                <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                  Axis:
+                </span>
+                {configData.hAxisEnabled && (
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={selectedAxis === "H-axis"}
+                      onChange={() => setSelectedAxis("H-axis")}
+                      className="w-4 h-4 accent-blue-600"
+                    />
+                    <span
+                      className={cn(
+                        "text-lg font-bold group-hover:text-blue-400 transition-colors",
+                        selectedAxis === "H-axis"
+                          ? "text-blue-500"
+                          : "text-white"
+                      )}
+                    >
+                      H
+                    </span>
+                  </label>
+                )}
+                {configData.vAxisEnabled && (
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={selectedAxis === "V-axis"}
+                      onChange={() => setSelectedAxis("V-axis")}
+                      className="w-4 h-4 accent-blue-600"
+                    />
+                    <span
+                      className={cn(
+                        "text-lg font-bold group-hover:text-blue-400 transition-colors",
+                        selectedAxis === "V-axis"
+                          ? "text-blue-500"
+                          : "text-white"
+                      )}
+                    >
+                      V
+                    </span>
+                  </label>
+                )}
+                {configData.aAxisEnabled && (
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={selectedAxis === "A-axis"}
+                      onChange={() => setSelectedAxis("A-axis")}
+                      className="w-4 h-4 accent-blue-600"
+                    />
+                    <span
+                      className={cn(
+                        "text-lg font-bold group-hover:text-blue-400 transition-colors",
+                        selectedAxis === "A-axis"
+                          ? "text-blue-500"
+                          : "text-white"
+                      )}
+                    >
+                      A
+                    </span>
+                  </label>
+                )}
+              </div>
+
+              {/* Unit Selection */}
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={selectedUnit === "Acceleration (G)"}
+                    onChange={() => setSelectedUnit("Acceleration (G)")}
+                    className="w-4 h-4 accent-blue-600"
+                  />
+                  <span
+                    className={cn(
+                      "text-lg font-bold group-hover:text-blue-400 transition-colors",
+                      selectedUnit === "Acceleration (G)"
+                        ? "text-blue-500"
+                        : "text-white"
+                    )}
+                  >
+                    G
+                  </span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={selectedUnit === "Acceleration (mm/s²)"}
+                    onChange={() => setSelectedUnit("Acceleration (mm/s²)")}
+                    className="w-4 h-4 accent-blue-600"
+                  />
+                  <span
+                    className={cn(
+                      "text-lg font-bold group-hover:text-blue-400 transition-colors",
+                      selectedUnit === "Acceleration (mm/s²)"
+                        ? "text-blue-500"
+                        : "text-white"
+                    )}
+                  >
+                    mm/s²
+                  </span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={selectedUnit === "Velocity (mm/s)"}
+                    onChange={() => setSelectedUnit("Velocity (mm/s)")}
+                    className="w-4 h-4 accent-blue-600"
+                  />
+                  <span
+                    className={cn(
+                      "text-lg font-bold group-hover:text-blue-400 transition-colors",
+                      selectedUnit === "Velocity (mm/s)"
+                        ? "text-blue-500"
+                        : "text-white"
+                    )}
+                  >
+                    mm/s
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {/* RMS Overall + Time Domain Section */}
+            <div className="flex flex-col lg:flex-row gap-4">
+              {/* Left Column: RMS Overall + Top 5 Peaks (30%) */}
+              <div className="w-full lg:w-[30%] bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
+                <div className="flex flex-col items-center justify-center mb-8 gap-y-1">
+                  <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white whitespace-nowrap">
+                    {selectedUnit.split(" ")[0]} RMS Overall
+                  </h4>
+                  <div className="flex items-center gap-x-2">
+                    <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+                      {hasData ? vibrationData.rmsValue : "-"}
+                    </span>
+                    <span className="text-base md:text-lg lg:text-xl font-bold text-gray-400">
+                      {hasData ? selectedUnit.match(/\(([^)]+)\)/)?.[1] : ""}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Unit Selection */}
-                <div className="flex items-center gap-4">
+                <h5 className="text-xl font-bold text-white mb-6 text-center">
+                  Top 5 Peaks
+                </h5>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 pb-3 border-b-2 border-[#374151]">
+                    <div className="text-base font-bold text-white pl-2">
+                      RMS ({selectedUnit.match(/\(([^)]+)\)/)?.[1]})
+                    </div>
+                    <div className="text-base font-bold text-white text-right">
+                      Frequency
+                    </div>
+                  </div>
+                  {hasData && vibrationData.topPeaks ? (
+                    vibrationData.topPeaks.map((row: any, i: number) => (
+                      <div key={i} className="grid grid-cols-2 gap-4">
+                        <div className="text-lg font-medium text-white pl-2">
+                          {row.rms}{" "}
+                          <span className="text-white text-base">
+                            {selectedUnit.match(/\(([^)]+)\)/)?.[1]}
+                          </span>
+                        </div>
+                        <div className="text-lg font-medium text-white text-right">
+                          {row.frequency} Hz
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-8 text-center text-gray-300 text-base">
+                      No data available
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Time Domain Graph (70%) */}
+              <div className="w-full lg:w-[70%] bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
+                <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white mb-8 text-center">
+                  Time Domain :{" "}
+                  {selectedAxis === "H-axis"
+                    ? "Horizontal (H)"
+                    : selectedAxis === "V-axis"
+                      ? "Vertical (V)"
+                      : "Axial (A)"}
+                </h4>
+                <div className="h-80 w-full">
+                  {hasData && vibrationData.timeData ? (
+                    <ReactECharts
+                      option={{
+                        backgroundColor: "transparent",
+                        grid: { left: 60, right: 30, top: 30, bottom: 60 },
+                        tooltip: {
+                          trigger: "axis",
+                          axisPointer: { type: "line" },
+                          formatter: (params: any) => {
+                            if (params && params.length > 0) {
+                              const time = params[0].axisValue;
+                              const value = params[0].value;
+                              return `F(ts) ${time} s<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(2)}`;
+                            }
+                            return "";
+                          },
+                        },
+                        xAxis: {
+                          type: "category",
+                          data: vibrationData.timeData.labels,
+                          axisLabel: { color: "#fff", fontWeight: 500 },
+                          axisLine: { lineStyle: { color: "#fff" } },
+                          splitLine: {
+                            show: true,
+                            lineStyle: {
+                              color: "rgba(255,255,255,0.1)",
+                              width: 1,
+                              type: "solid",
+                            },
+                          },
+                        },
+                        graphic: [
+                          {
+                            type: "text",
+                            right: 10,
+                            bottom: 20,
+                            z: 10,
+                            style: {
+                              text: "Time (s)",
+                              fill: "#fff",
+                              fontWeight: 500,
+                              fontSize: 12,
+                            },
+                          },
+                        ],
+                        yAxis: {
+                          type: "value",
+                          name: (vibrationData.yAxisLabel || selectedUnit)
+                            .replace("Acceleration ", "")
+                            .replace("Velocity ", "")
+                            .replace("(", "")
+                            .replace(")", ""),
+                          nameTextStyle: { color: "#fff", fontWeight: 500 },
+                          axisLabel: { color: "#fff", fontWeight: 500 },
+                          axisLine: { lineStyle: { color: "#fff" } },
+                          splitLine: {
+                            show: true,
+                            lineStyle: {
+                              color: "rgba(255,255,255,0.1)",
+                              width: 1,
+                              type: "solid",
+                            },
+                          },
+                        },
+                        dataZoom: [
+                          { type: "inside", xAxisIndex: 0, filterMode: "none" },
+                        ],
+                        toolbox: {
+                          show: true,
+                          feature: {
+                            restore: { show: true },
+                            dataZoom: {
+                              show: true,
+                              title: { zoom: "Zoom", back: "Reset" },
+                            },
+                          },
+                          right: 20,
+                        },
+                        series: [
+                          {
+                            name: (vibrationData.yAxisLabel || selectedUnit)
+                              .replace("Acceleration ", "")
+                              .replace("Velocity ", "")
+                              .replace("(", "")
+                              .replace(")", ""),
+                            type: "line",
+                            data: vibrationData.timeData.datasets[0].data,
+                            smooth: true,
+                            symbol: "none",
+                            lineStyle: { width: 2, color: "#2563eb" },
+                            areaStyle: { color: "rgba(37,99,235,0.08)" },
+                            large: true,
+                            sampling: "lttb",
+                            progressive: 3000,
+                          },
+                        ],
+                        legend: { show: false },
+                      }}
+                      style={{ height: "100%", width: "100%" }}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-sm text-gray-300">No data available</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Frequency Domain Section */}
+            <div className="!mt-2">
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-3">
+                <h3 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+                  Frequency Domain
+                </h3>
+                <div className="flex items-center gap-4 bg-[#1f2937]/30 p-3 rounded-lg border border-[#374151]">
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={selectedUnit === "Acceleration (G)"}
                       onChange={() => setSelectedUnit("Acceleration (G)")}
-                      className="w-4 h-4 accent-blue-600"
+                      className="w-4 h-4 accent-yellow-500"
                     />
-                    <span className={cn("text-lg font-bold group-hover:text-blue-400 transition-colors", selectedUnit === "Acceleration (G)" ? "text-blue-500" : "text-white")}>G</span>
+                    <span
+                      className={cn(
+                        "text-lg font-bold group-hover:text-yellow-400 transition-colors",
+                        selectedUnit === "Acceleration (G)"
+                          ? "text-yellow-500"
+                          : "text-white"
+                      )}
+                    >
+                      G
+                    </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={selectedUnit === "Acceleration (mm/s²)"}
                       onChange={() => setSelectedUnit("Acceleration (mm/s²)")}
-                      className="w-4 h-4 accent-blue-600"
+                      className="w-4 h-4 accent-yellow-500"
                     />
-                    <span className={cn("text-lg font-bold group-hover:text-blue-400 transition-colors", selectedUnit === "Acceleration (mm/s²)" ? "text-blue-500" : "text-white")}>mm/s²</span>
+                    <span
+                      className={cn(
+                        "text-lg font-bold group-hover:text-yellow-400 transition-colors",
+                        selectedUnit === "Acceleration (mm/s²)"
+                          ? "text-yellow-500"
+                          : "text-white"
+                      )}
+                    >
+                      mm/s²
+                    </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={selectedUnit === "Velocity (mm/s)"}
                       onChange={() => setSelectedUnit("Velocity (mm/s)")}
-                      className="w-4 h-4 accent-blue-600"
+                      className="w-4 h-4 accent-yellow-500"
                     />
-                    <span className={cn("text-lg font-bold group-hover:text-blue-400 transition-colors", selectedUnit === "Velocity (mm/s)" ? "text-blue-500" : "text-white")}>mm/s</span>
+                    <span
+                      className={cn(
+                        "text-lg font-bold group-hover:text-yellow-400 transition-colors",
+                        selectedUnit === "Velocity (mm/s)"
+                          ? "text-yellow-500"
+                          : "text-white"
+                      )}
+                    >
+                      mm/s
+                    </span>
                   </label>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-6">
-              {/* RMS Overall + Time Domain Section */}
-              <div className="flex flex-col lg:flex-row gap-4">
-                {/* Left Column: RMS Overall + Top 5 Peaks (30%) */}
-                <div className="w-full lg:w-[30%] bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
-                  <div className="flex flex-col items-center justify-center mb-8 gap-y-1">
-                    <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white whitespace-nowrap">
-                      {selectedUnit.split(" ")[0]} RMS Overall
-                    </h4>
-                    <div className="flex items-center gap-x-2">
-                      <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
-                        {hasData ? vibrationData.rmsValue : "-"}
-                      </span>
-                      <span className="text-base md:text-lg lg:text-xl font-bold text-gray-400">
-                        {hasData ? selectedUnit.match(/\(([^)]+)\)/)?.[1] : ""}
-                      </span>
-                    </div>
-                  </div>
-
-                  <h5 className="text-xl font-bold text-white mb-6 text-center">Top 5 Peaks</h5>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 pb-3 border-b-2 border-[#374151]">
-                      <div className="text-base font-bold text-white pl-2">
-                        RMS ({selectedUnit.match(/\(([^)]+)\)/)?.[1]})
-                      </div>
-                      <div className="text-base font-bold text-white text-right">
-                        Frequency
-                      </div>
-                    </div>
-                    {hasData && vibrationData.topPeaks ? (
-                      vibrationData.topPeaks.map((row: any, i: number) => (
-                        <div key={i} className="grid grid-cols-2 gap-4">
-                          <div className="text-lg font-medium text-white pl-2">
-                            {row.rms}{" "}
-                            <span className="text-white text-base">
-                              {selectedUnit.match(/\(([^)]+)\)/)?.[1]}
-                            </span>
-                          </div>
-                          <div className="text-lg font-medium text-white text-right">
-                            {row.frequency} Hz
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="py-8 text-center text-gray-300 text-base">
-                        No data available
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right Column: Time Domain Graph (70%) */}
-                <div className="w-full lg:w-[70%] bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
-                  <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white mb-8 text-center">
-                    Time Domain :{" "}
-                    {selectedAxis === "H-axis"
-                      ? "Horizontal (H)"
-                      : selectedAxis === "V-axis"
-                        ? "Vertical (V)"
-                        : "Axial (A)"}
-                  </h4>
-                  <div className="h-80 w-full">
-                    {hasData && vibrationData.timeData ? (
-                      <ReactECharts
-                        option={{
-                          backgroundColor: "transparent",
-                          grid: { left: 60, right: 30, top: 30, bottom: 60 },
-                          tooltip: {
-                            trigger: "axis",
-                            axisPointer: { type: "line" },
-                            formatter: (params: any) => {
-                              if (params && params.length > 0) {
-                                const time = params[0].axisValue;
-                                const value = params[0].value;
-                                return `F(ts) ${time} s<br/>${params[0].marker} ${params[0].seriesName}: ${Number(value).toFixed(2)}`;
-                              }
-                              return "";
-                            },
-                          },
-                          xAxis: {
-                            type: "category",
-                            data: vibrationData.timeData.labels,
-                            axisLabel: { color: "#fff", fontWeight: 500 },
-                            axisLine: { lineStyle: { color: "#fff" } },
-                            splitLine: {
-                              show: true,
-                              lineStyle: {
-                                color: "rgba(255,255,255,0.1)",
-                                width: 1,
-                                type: "solid",
-                              },
-                            },
-                          },
-                          graphic: [
-                            {
-                              type: "text",
-                              right: 10,
-                              bottom: 20,
-                              z: 10,
-                              style: {
-                                text: "Time (s)",
-                                fill: "#fff",
-                                fontWeight: 500,
-                                fontSize: 12,
-                              },
-                            },
-                          ],
-                          yAxis: {
-                            type: "value",
-                            name: (vibrationData.yAxisLabel || selectedUnit)
-                              .replace("Acceleration ", "")
-                              .replace("Velocity ", "")
-                              .replace("(", "")
-                              .replace(")", ""),
-                            nameTextStyle: { color: "#fff", fontWeight: 500 },
-                            axisLabel: { color: "#fff", fontWeight: 500 },
-                            axisLine: { lineStyle: { color: "#fff" } },
-                            splitLine: {
-                              show: true,
-                              lineStyle: {
-                                color: "rgba(255,255,255,0.1)",
-                                width: 1,
-                                type: "solid",
-                              },
-                            },
-                          },
-                          dataZoom: [
-                            { type: "inside", xAxisIndex: 0, filterMode: "none" },
-                          ],
-                          toolbox: {
-                            show: true,
-                            feature: {
-                              restore: { show: true },
-                              dataZoom: {
-                                show: true,
-                                title: { zoom: "Zoom", back: "Reset" },
-                              },
-                            },
-                            right: 20,
-                          },
-                          series: [
-                            {
-                              name: (vibrationData.yAxisLabel || selectedUnit)
-                                .replace("Acceleration ", "")
-                                .replace("Velocity ", "")
-                                .replace("(", "")
-                                .replace(")", ""),
-                              type: "line",
-                              data: vibrationData.timeData.datasets[0].data,
-                              smooth: true,
-                              symbol: "none",
-                              lineStyle: { width: 2, color: "#2563eb" },
-                              areaStyle: { color: "rgba(37,99,235,0.08)" },
-                              large: true,
-                              sampling: "lttb",
-                              progressive: 3000,
-                            },
-                          ],
-                          legend: { show: false },
-                        }}
-                        style={{ height: "100%", width: "100%" }}
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <p className="text-sm text-gray-300">No data available</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Frequency Domain Section */}
-              <div className="!mt-2">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-3">
-                  <h3 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
-                    Frequency Domain
-                  </h3>
-                  <div className="flex items-center gap-4 bg-[#1f2937]/30 p-3 rounded-lg border border-[#374151]">
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={selectedUnit === "Acceleration (G)"}
-                        onChange={() => setSelectedUnit("Acceleration (G)")}
-                        className="w-4 h-4 accent-yellow-500"
-                      />
-                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", selectedUnit === "Acceleration (G)" ? "text-yellow-500" : "text-white")}>G</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={selectedUnit === "Acceleration (mm/s²)"}
-                        onChange={() => setSelectedUnit("Acceleration (mm/s²)")}
-                        className="w-4 h-4 accent-yellow-500"
-                      />
-                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", selectedUnit === "Acceleration (mm/s²)" ? "text-yellow-500" : "text-white")}>mm/s²</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={selectedUnit === "Velocity (mm/s)"}
-                        onChange={() => setSelectedUnit("Velocity (mm/s)")}
-                        className="w-4 h-4 accent-yellow-500"
-                      />
-                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", selectedUnit === "Velocity (mm/s)" ? "text-yellow-500" : "text-white")}>mm/s</span>
-                    </label>
-                  </div>
-
-                </div>
-
-                <div className="space-y-4">
-                  {/* Loop through H, V, A axes */}
-                  {[
-                    { key: 'h', label: 'Horizontal (H)', ref: hFreqChartRef, enabled: configData.hAxisEnabled },
-                    { key: 'v', label: 'Vertical (V)', ref: vFreqChartRef, enabled: configData.vAxisEnabled },
-                    { key: 'a', label: 'Axial (A)', ref: aFreqChartRef, enabled: configData.aAxisEnabled }
-                  ].filter(axis => axis.enabled).map((axis) => {
+              <div className="space-y-4">
+                {/* Loop through H, V, A axes */}
+                {[
+                  {
+                    key: "h",
+                    label: "Horizontal (H)",
+                    ref: hFreqChartRef,
+                    enabled: configData.hAxisEnabled,
+                  },
+                  {
+                    key: "v",
+                    label: "Vertical (V)",
+                    ref: vFreqChartRef,
+                    enabled: configData.vAxisEnabled,
+                  },
+                  {
+                    key: "a",
+                    label: "Axial (A)",
+                    ref: aFreqChartRef,
+                    enabled: configData.aAxisEnabled,
+                  },
+                ]
+                  .filter((axis) => axis.enabled)
+                  .map((axis) => {
                     const axisData = allChartData[axis.key]?.[selectedUnit];
                     const axisHasData = axisData?.hasData;
 
@@ -369,29 +470,38 @@ export const VibrationAnalysisSection: React.FC<
                           {axis.label}
                         </h4>
                         <div className="h-[300px] w-full bg-[#030616] border-[1.35px] border-[#374151] rounded-lg p-4 relative">
-                          {axisHasData && axisData.freqData?.labels?.length > 0 ? (
+                          {axisHasData &&
+                          axisData.freqData?.labels?.length > 0 ? (
                             <ReactECharts
                               onChartReady={(instance) => {
                                 axis.ref.current = instance;
                               }}
                               onEvents={{
                                 click: (params: any) => {
-                                  if (params.componentType === 'markPoint' && axis.ref.current) {
+                                  if (
+                                    params.componentType === "markPoint" &&
+                                    axis.ref.current
+                                  ) {
                                     const index = params.data.coordIndex;
                                     const chartInstance = axis.ref.current;
                                     const startValue = Math.max(0, index - 250);
                                     const endValue = index + 250;
                                     chartInstance.dispatchAction({
-                                      type: 'dataZoom',
+                                      type: "dataZoom",
                                       startValue: startValue,
-                                      endValue: endValue
+                                      endValue: endValue,
                                     });
                                   }
-                                }
+                                },
                               }}
                               option={{
                                 backgroundColor: "transparent",
-                                grid: { left: 60, right: 80, top: 40, bottom: 50 },
+                                grid: {
+                                  left: 60,
+                                  right: 80,
+                                  top: 40,
+                                  bottom: 50,
+                                },
                                 tooltip: {
                                   trigger: "axis",
                                   axisPointer: { type: "shadow" },
@@ -413,22 +523,36 @@ export const VibrationAnalysisSection: React.FC<
                                   name: "Frequency (Hz)",
                                   nameLocation: "end",
                                   nameGap: 10,
-                                  nameTextStyle: { color: "#ffffff", fontSize: 11 },
+                                  nameTextStyle: {
+                                    color: "#ffffff",
+                                    fontSize: 11,
+                                  },
                                   axisLabel: {
                                     color: "#ffffff",
                                     fontSize: 10,
-                                    formatter: (value: string) => parseFloat(value).toFixed(2),
+                                    formatter: (value: string) =>
+                                      parseFloat(value).toFixed(2),
                                   },
-                                  axisLine: { lineStyle: { color: "#ffffff", width: 1.5 } },
-                                  axisTick: { show: true, lineStyle: { color: "#ffffff" } },
+                                  axisLine: {
+                                    lineStyle: { color: "#ffffff", width: 1.5 },
+                                  },
+                                  axisTick: {
+                                    show: true,
+                                    lineStyle: { color: "#ffffff" },
+                                  },
                                   splitLine: {
                                     show: true,
-                                    lineStyle: { color: "rgba(255,255,255,0.03)", width: 1 },
+                                    lineStyle: {
+                                      color: "rgba(255,255,255,0.03)",
+                                      width: 1,
+                                    },
                                   },
                                 },
                                 yAxis: {
                                   type: "value",
-                                  name: selectedUnit.match(/\(([^)]+)\)/)?.[1] || selectedUnit,
+                                  name:
+                                    selectedUnit.match(/\(([^)]+)\)/)?.[1] ||
+                                    selectedUnit,
                                   nameLocation: "end",
                                   nameTextStyle: {
                                     color: "#ffffff",
@@ -441,15 +565,25 @@ export const VibrationAnalysisSection: React.FC<
                                   axisTick: { show: false },
                                   splitLine: {
                                     show: true,
-                                    lineStyle: { color: "rgba(255,255,255,0.05)", width: 1, type: "dashed" },
+                                    lineStyle: {
+                                      color: "rgba(255,255,255,0.05)",
+                                      width: 1,
+                                      type: "dashed",
+                                    },
                                   },
                                 },
                                 dataZoom: [{ type: "inside", xAxisIndex: 0 }],
                                 toolbox: {
                                   show: true,
                                   feature: {
-                                    restore: { show: true, iconStyle: { borderColor: "#9ca3af" } },
-                                    dataZoom: { show: true, iconStyle: { borderColor: "#9ca3af" } },
+                                    restore: {
+                                      show: true,
+                                      iconStyle: { borderColor: "#9ca3af" },
+                                    },
+                                    dataZoom: {
+                                      show: true,
+                                      iconStyle: { borderColor: "#9ca3af" },
+                                    },
                                   },
                                   right: 10,
                                   top: 0,
@@ -458,7 +592,8 @@ export const VibrationAnalysisSection: React.FC<
                                   {
                                     name: "FFT Magnitude",
                                     type: "line",
-                                    data: axisData.freqData.datasets[0]?.data || [],
+                                    data:
+                                      axisData.freqData.datasets[0]?.data || [],
                                     smooth: true,
                                     symbol: "none",
                                     lineStyle: { width: 1.5, color: "#eab308" },
@@ -468,10 +603,19 @@ export const VibrationAnalysisSection: React.FC<
                                     areaStyle: {
                                       color: {
                                         type: "linear",
-                                        x: 0, y: 0, x2: 0, y2: 1,
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
                                         colorStops: [
-                                          { offset: 0, color: "rgba(234,179,8,0.3)" },
-                                          { offset: 1, color: "rgba(234,179,8,0)" },
+                                          {
+                                            offset: 0,
+                                            color: "rgba(234,179,8,0.3)",
+                                          },
+                                          {
+                                            offset: 1,
+                                            color: "rgba(234,179,8,0)",
+                                          },
                                         ],
                                       },
                                     },
@@ -484,14 +628,18 @@ export const VibrationAnalysisSection: React.FC<
                                         borderWidth: 1,
                                         opacity: 0,
                                         shadowBlur: 5,
-                                        shadowColor: "rgba(0,0,0,0.5)"
+                                        shadowColor: "rgba(0,0,0,0.5)",
                                       },
                                       label: { show: false },
                                       emphasis: {
-                                        itemStyle: { opacity: 1, scale: 1.5, borderWidth: 2 }
+                                        itemStyle: {
+                                          opacity: 1,
+                                          scale: 1.5,
+                                          borderWidth: 2,
+                                        },
                                       },
-                                      data: getTop10Peaks(axisData)
-                                    }
+                                      data: getTop10Peaks(axisData),
+                                    },
                                   },
                                 ],
                               }}
@@ -499,18 +647,20 @@ export const VibrationAnalysisSection: React.FC<
                             />
                           ) : (
                             <div className="flex items-center justify-center h-full">
-                              <p className="text-sm text-gray-300">No data available for {axis.label}</p>
+                              <p className="text-sm text-gray-300">
+                                No data available for {axis.label}
+                              </p>
                             </div>
                           )}
                         </div>
                       </div>
                     );
                   })}
-                </div>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
-    );
-  };
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

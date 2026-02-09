@@ -45,7 +45,9 @@ export async function getOrganizations(): Promise<OrganizationResponse[]> {
       console.error("Error fetching organizations:", error);
       throw error;
     } finally {
-      setTimeout(() => { organizationsPromise = null; }, 500);
+      setTimeout(() => {
+        organizationsPromise = null;
+      }, 500);
     }
   })();
 

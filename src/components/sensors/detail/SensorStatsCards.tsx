@@ -54,30 +54,34 @@ export const SensorStatsCards: React.FC<SensorStatsCardsProps> = ({
         <CardContent className="p-4 2xl:p-6">
           <div className="flex flex-col w-full h-full">
             <h3
-              className={`mb-1 font-extrabold text-lg md:text-xl 2xl:text-3xl ${isTempWarning ? "text-gray-900" : "text-white"
-                }`}
+              className={`mb-1 font-extrabold text-lg md:text-xl 2xl:text-3xl ${
+                isTempWarning ? "text-gray-900" : "text-white"
+              }`}
             >
               Temperature
             </h3>
 
             <div className="flex justify-between items-center mb-1">
               <div
-                className={`text-2xl md:text-3xl 2xl:text-5xl font-extrabold ${isTempWarning ? "text-gray-900" : "text-white"
-                  }`}
+                className={`text-2xl md:text-3xl 2xl:text-5xl font-extrabold ${
+                  isTempWarning ? "text-gray-900" : "text-white"
+                }`}
               >
                 {safeTemp.toFixed(0)}°C
               </div>
               <div
-                className={`text-lg 2xl:text-3xl font-bold ${isTempWarning ? "text-gray-900" : "text-white"
-                  }`}
+                className={`text-lg 2xl:text-3xl font-bold ${
+                  isTempWarning ? "text-gray-900" : "text-white"
+                }`}
               >
                 {isTempWarning ? "Warning" : "Normal"}
               </div>
             </div>
 
             <div
-              className={`mt-auto text-sm 2xl:text-xl font-medium ${isTempWarning ? "text-gray-700" : "text-gray-300"
-                }`}
+              className={`mt-auto text-sm 2xl:text-xl font-medium ${
+                isTempWarning ? "text-gray-700" : "text-gray-300"
+              }`}
             >
               Threshold max: {tempThresholdMax.toFixed(0)} °C
             </div>
@@ -113,33 +117,36 @@ export const SensorStatsCards: React.FC<SensorStatsCardsProps> = ({
           >
             <CardContent className="p-4 2xl:p-6">
               <h3
-                className={`mb-1 font-extrabold text-lg md:text-xl 2xl:text-3xl ${shouldTextBeWhite(
-                  getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
-                )
+                className={`mb-1 font-extrabold text-lg md:text-xl 2xl:text-3xl ${
+                  shouldTextBeWhite(
+                    getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                  )
                     ? "!text-white"
                     : "!text-black"
-                  }`}
+                }`}
               >
                 {axis.label}
               </h3>
               <div className="grid grid-cols-[1fr_auto] 2xl:grid-cols-[1.2fr_1fr] gap-x-2 2xl:gap-x-4 items-baseline mt-2">
                 <span
-                  className={`font-bold text-base md:text-lg 2xl:text-2xl ${shouldTextBeWhite(
-                    getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
-                  )
+                  className={`font-bold text-base md:text-lg 2xl:text-2xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                    )
                       ? "!text-white"
                       : "!text-black"
-                    }`}
+                  }`}
                 >
                   Acceleration
                 </span>
                 <span
-                  className={`font-bold text-base md:text-lg 2xl:text-2xl ${shouldTextBeWhite(
-                    getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
-                  )
+                  className={`font-bold text-base md:text-lg 2xl:text-2xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                    )
                       ? "!text-white"
                       : "!text-black"
-                    }`}
+                  }`}
                 >
                   {axis.stats.accelTopPeak}{" "}
                   <span className="text-sm md:text-base 2xl:text-2xl opacity-80 ml-1">
@@ -148,22 +155,24 @@ export const SensorStatsCards: React.FC<SensorStatsCardsProps> = ({
                 </span>
 
                 <span
-                  className={`font-bold text-base md:text-lg 2xl:text-2xl ${shouldTextBeWhite(
-                    getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
-                  )
+                  className={`font-bold text-base md:text-lg 2xl:text-2xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                    )
                       ? "!text-white"
                       : "!text-black"
-                    }`}
+                  }`}
                 >
                   Velocity
                 </span>
                 <span
-                  className={`font-bold text-base md:text-lg 2xl:text-2xl ${shouldTextBeWhite(
-                    getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
-                  )
+                  className={`font-bold text-base md:text-lg 2xl:text-2xl ${
+                    shouldTextBeWhite(
+                      getDetailCardColor(parseFloat(axis.stats.velocityTopPeak))
+                    )
                       ? "!text-white"
                       : "!text-black"
-                    }`}
+                  }`}
                 >
                   {axis.stats.velocityTopPeak}{" "}
                   <span className="text-sm md:text-base 2xl:text-2xl opacity-80 ml-1">
