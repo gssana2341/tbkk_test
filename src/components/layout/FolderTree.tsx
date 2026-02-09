@@ -146,7 +146,7 @@ const FolderTree: React.FC<{
     const fetchAll = async () => {
       try {
         setLoading(true);
-        const data = await fetchRealSensors();
+        const data = await fetchRealSensors(true);
         setSensors(data);
       } catch (e) {
         console.error("Fetch error:", e);

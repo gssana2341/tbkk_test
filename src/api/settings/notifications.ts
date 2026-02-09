@@ -22,18 +22,32 @@ const getAxiosInstance = () => {
   });
 };
 
+// Global inflight promise for deduplication
+let notificationSettingsPromise: Promise<NotificationSettings> | null = null;
+
 // Get all notification settings
 export async function getNotificationSettings(): Promise<NotificationSettings> {
-  try {
-    const axiosInstance = getAxiosInstance();
-    const response = await axiosInstance.get<NotificationSettingsResponse>(
-      "/settings/notifications"
-    );
-    return response.data.settings;
-  } catch {
-    // Fallback to localStorage if API fails
-    return getNotificationSettingsFromLocalStorage();
-  }
+  if (notificationSettingsPromise) return notificationSettingsPromise;
+
+  notificationSettingsPromise = (async () => {
+    try {
+      const axiosInstance = getAxiosInstance();
+      const response = await axiosInstance.get<NotificationSettingsResponse>(
+        "/settings/notifications"
+      );
+      return response.data.settings;
+    } catch {
+      // Fallback to localStorage if API fails
+      return getNotificationSettingsFromLocalStorage();
+    } finally {
+      // Clear after small delay to catch simultaneous bursts
+      setTimeout(() => {
+        notificationSettingsPromise = null;
+      }, 500);
+    }
+  })();
+
+  return notificationSettingsPromise;
 }
 
 // Update email notification settings

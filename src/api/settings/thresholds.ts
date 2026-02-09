@@ -22,110 +22,124 @@ const getAxiosInstance = () => {
   });
 };
 
+// Global inflight promise for deduplication
+let thresholdsPromise: Promise<ThresholdSettings> | null = null;
+
 // Get all threshold settings
 export async function getThresholdSettings(): Promise<ThresholdSettings> {
-  try {
-    const axiosInstance = getAxiosInstance();
-    const response = await axiosInstance.get<
-      ThresholdSettingsResponse | ThresholdSettings
-    >("/settings/thresholds");
+  if (thresholdsPromise) return thresholdsPromise;
 
-    console.log("Threshold settings API response:", response.data);
+  thresholdsPromise = (async () => {
+    try {
+      const axiosInstance = getAxiosInstance();
+      const response = await axiosInstance.get<
+        ThresholdSettingsResponse | ThresholdSettings
+      >("/settings/thresholds");
 
-    // Handle different response formats
-    let settings: Partial<ThresholdSettings> | null = null;
+      console.log("Threshold settings API response:", response.data);
 
-    // Check if response has nested settings property
-    if (
-      response.data &&
-      typeof response.data === "object" &&
-      "settings" in response.data
-    ) {
-      settings = (response.data as ThresholdSettingsResponse).settings;
-      console.log("Found settings in response.data.settings");
-    }
-    // Check if response.data is already the settings object
-    else if (
-      response.data &&
-      typeof response.data === "object" &&
-      ("temperature" in response.data ||
-        "vibration" in response.data ||
-        "machine_overrides" in response.data)
-    ) {
-      settings = response.data as Partial<ThresholdSettings>;
-      console.log("Found settings directly in response.data");
-    }
-    // Fallback to default if response structure is unexpected
-    else {
-      console.warn("Unexpected response format from /settings/thresholds:", {
-        responseData: response.data,
-        responseStatus: response.status,
-        responseHeaders: response.headers,
-      });
-      // Return localStorage or default instead of throwing error
-      return getThresholdSettingsFromLocalStorage();
-    }
+      // Handle different response formats
+      let settings: Partial<ThresholdSettings> | null = null;
 
-    // Ensure all required properties exist with defaults
-    const normalizedSettings: ThresholdSettings = {
-      temperature: {
-        warning:
-          settings?.temperature?.warning ??
-          defaultThresholdSettings.temperature.warning,
-        critical:
-          settings?.temperature?.critical ??
-          defaultThresholdSettings.temperature.critical,
-      },
-      vibration: {
-        warning:
-          settings?.vibration?.warning ??
-          defaultThresholdSettings.vibration.warning,
-        critical:
-          settings?.vibration?.critical ??
-          defaultThresholdSettings.vibration.critical,
-        x_axis_warning:
-          settings?.vibration?.x_axis_warning ??
-          defaultThresholdSettings.vibration.x_axis_warning,
-        y_axis_warning:
-          settings?.vibration?.y_axis_warning ??
-          defaultThresholdSettings.vibration.y_axis_warning,
-        z_axis_warning:
-          settings?.vibration?.z_axis_warning ??
-          defaultThresholdSettings.vibration.z_axis_warning,
-      },
-      machine_overrides: Array.isArray(settings?.machine_overrides)
-        ? settings.machine_overrides.filter(
+      // Check if response has nested settings property
+      if (
+        response.data &&
+        typeof response.data === "object" &&
+        "settings" in response.data
+      ) {
+        settings = (response.data as ThresholdSettingsResponse).settings;
+        console.log("Found settings in response.data.settings");
+      }
+      // Check if response.data is already the settings object
+      else if (
+        response.data &&
+        typeof response.data === "object" &&
+        ("temperature" in response.data ||
+          "vibration" in response.data ||
+          "machine_overrides" in response.data)
+      ) {
+        settings = response.data as Partial<ThresholdSettings>;
+        console.log("Found settings directly in response.data");
+      }
+      // Fallback to default if response structure is unexpected
+      else {
+        console.warn("Unexpected response format from /settings/thresholds:", {
+          responseData: response.data,
+          responseStatus: response.status,
+          responseHeaders: response.headers,
+        });
+        // Return localStorage or default instead of throwing error
+        return getThresholdSettingsFromLocalStorage();
+      }
+
+      // Ensure all required properties exist with defaults
+      const normalizedSettings: ThresholdSettings = {
+        temperature: {
+          warning:
+            settings?.temperature?.warning ??
+            defaultThresholdSettings.temperature.warning,
+          critical:
+            settings?.temperature?.critical ??
+            defaultThresholdSettings.temperature.critical,
+        },
+        vibration: {
+          warning:
+            settings?.vibration?.warning ??
+            defaultThresholdSettings.vibration.warning,
+          critical:
+            settings?.vibration?.critical ??
+            defaultThresholdSettings.vibration.critical,
+          x_axis_warning:
+            settings?.vibration?.x_axis_warning ??
+            defaultThresholdSettings.vibration.x_axis_warning,
+          y_axis_warning:
+            settings?.vibration?.y_axis_warning ??
+            defaultThresholdSettings.vibration.y_axis_warning,
+          z_axis_warning:
+            settings?.vibration?.z_axis_warning ??
+            defaultThresholdSettings.vibration.z_axis_warning,
+        },
+        machine_overrides: Array.isArray(settings?.machine_overrides)
+          ? settings.machine_overrides.filter(
             (
               override: MachineThresholdOverride | null | undefined
             ): override is MachineThresholdOverride => override != null
           )
-        : [],
-    };
+          : [],
+      };
 
-    console.log("Normalized threshold settings:", normalizedSettings);
+      console.log("Normalized threshold settings:", normalizedSettings);
 
-    // Save to localStorage for fallback
-    saveThresholdSettingsToLocalStorage(normalizedSettings);
+      // Save to localStorage for fallback
+      saveThresholdSettingsToLocalStorage(normalizedSettings);
 
-    return normalizedSettings;
-  } catch (error) {
-    console.error("Error fetching threshold settings from API:", error);
-    if (error && typeof error === "object" && "message" in error) {
-      console.error("Error details:", {
-        message: (error as { message?: string }).message,
-        response: (error as { response?: { data?: unknown; status?: number } })
-          .response?.data,
-        status: (error as { response?: { status?: number } }).response?.status,
-      });
+      return normalizedSettings;
+    } catch (error) {
+      console.error("Error fetching threshold settings from API:", error);
+      if (error && typeof error === "object" && "message" in error) {
+        console.error("Error details:", {
+          message: (error as { message?: string }).message,
+          response: (error as { response?: { data?: unknown; status?: number } })
+            .response?.data,
+          status: (error as { response?: { status?: number } }).response?.status,
+        });
+      }
+      // Fallback to localStorage if API fails - don't throw error
+      const localStorageSettings = getThresholdSettingsFromLocalStorage();
+      console.log(
+        "Using localStorage settings as fallback:",
+        localStorageSettings
+      );
+      return localStorageSettings;
+    } finally {
+      // Clear after small delay to catch simultaneous bursts
+      setTimeout(() => {
+        thresholdsPromise = null;
+      }, 500);
     }
-    // Fallback to localStorage if API fails - don't throw error
-    const localStorageSettings = getThresholdSettingsFromLocalStorage();
-    console.log(
-      "Using localStorage settings as fallback:",
-      localStorageSettings
-    );
-    return localStorageSettings;
-  }
+  })();
+
+  return thresholdsPromise;
 }
 
 // Update temperature thresholds
@@ -396,10 +410,10 @@ export function getThresholdSettingsFromLocalStorage(): ThresholdSettings {
         ...parsed,
         machine_overrides: Array.isArray(parsed.machine_overrides)
           ? parsed.machine_overrides.filter(
-              (
-                override: MachineThresholdOverride | null | undefined
-              ): override is MachineThresholdOverride => override != null
-            )
+            (
+              override: MachineThresholdOverride | null | undefined
+            ): override is MachineThresholdOverride => override != null
+          )
           : [],
       };
     }
