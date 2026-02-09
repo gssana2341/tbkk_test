@@ -30,7 +30,6 @@ export const VibrationAnalysisSection: React.FC<
   allChartData,
 }) => {
     const hasData = vibrationData.hasData;
-    const [freqUnit, setFreqUnit] = useState(selectedUnit);
     const hFreqChartRef = useRef<any>(null);
     const vFreqChartRef = useRef<any>(null);
     const aFreqChartRef = useRef<any>(null);
@@ -63,7 +62,7 @@ export const VibrationAnalysisSection: React.FC<
     };
 
     return (
-      <Card className="bg-[#0B1121] border-[1.35px] border-[#374151]">
+      <Card className="bg-transparent border-none shadow-none">
         <CardContent className="p-6">
           <div className="flex flex-col gap-6">
             {/* Axis and Unit Selection within Time Domain Section */}
@@ -113,7 +112,6 @@ export const VibrationAnalysisSection: React.FC<
 
                 {/* Unit Selection */}
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Unit:</span>
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
@@ -150,25 +148,25 @@ export const VibrationAnalysisSection: React.FC<
               <div className="flex flex-col lg:flex-row gap-4">
                 {/* Left Column: RMS Overall + Top 5 Peaks (30%) */}
                 <div className="w-full lg:w-[30%] bg-[#0B1121] border-[1.35px] border-[#374151] rounded-lg p-6">
-                  <div className="flex items-center justify-center gap-4 mb-8">
-                    <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
-                      {selectedUnit.split(" ")[0]} RMS Overall :
+                  <div className="flex flex-col items-center justify-center mb-8 gap-y-1">
+                    <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white whitespace-nowrap">
+                      {selectedUnit.split(" ")[0]} RMS Overall
                     </h4>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-x-2">
                       <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
                         {hasData ? vibrationData.rmsValue : "-"}
                       </span>
-                      <span className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
+                      <span className="text-base md:text-lg lg:text-xl font-bold text-gray-400">
                         {hasData ? selectedUnit.match(/\(([^)]+)\)/)?.[1] : ""}
                       </span>
                     </div>
                   </div>
 
-                  <h5 className="text-xl font-bold text-white mb-6">Top 5 Peaks</h5>
+                  <h5 className="text-xl font-bold text-white mb-6 text-center">Top 5 Peaks</h5>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 pb-3 border-b-2 border-[#374151]">
-                      <div className="text-base font-bold text-white pl-8">
-                        RMS ({selectedUnit.match(/\(([^)]+)\)/)?.[1]}) :
+                      <div className="text-base font-bold text-white pl-2">
+                        RMS ({selectedUnit.match(/\(([^)]+)\)/)?.[1]})
                       </div>
                       <div className="text-base font-bold text-white text-right">
                         Frequency
@@ -177,7 +175,7 @@ export const VibrationAnalysisSection: React.FC<
                     {hasData && vibrationData.topPeaks ? (
                       vibrationData.topPeaks.map((row: any, i: number) => (
                         <div key={i} className="grid grid-cols-2 gap-4">
-                          <div className="text-lg font-medium text-white pl-8">
+                          <div className="text-lg font-medium text-white pl-2">
                             {row.rms}{" "}
                             <span className="text-white text-base">
                               {selectedUnit.match(/\(([^)]+)\)/)?.[1]}
@@ -314,58 +312,56 @@ export const VibrationAnalysisSection: React.FC<
               </div>
 
               {/* Frequency Domain Section */}
-              <div className="mt-8 border-t border-[#374151] pt-8">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+              <div className="!mt-2">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-3">
                   <h3 className="text-lg md:text-xl lg:text-2xl font-extrabold text-white">
                     Frequency Domain
                   </h3>
-
-                  {/* Frequency Domain Unit Selection */}
                   <div className="flex items-center gap-4 bg-[#1f2937]/30 p-3 rounded-lg border border-[#374151]">
-                    <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Unit:</span>
                     <label className="flex items-center gap-2 cursor-pointer group">
                       <input
                         type="checkbox"
-                        checked={freqUnit === "Acceleration (G)"}
-                        onChange={() => setFreqUnit("Acceleration (G)")}
+                        checked={selectedUnit === "Acceleration (G)"}
+                        onChange={() => setSelectedUnit("Acceleration (G)")}
                         className="w-4 h-4 accent-yellow-500"
                       />
-                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", freqUnit === "Acceleration (G)" ? "text-yellow-500" : "text-white")}>G</span>
+                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", selectedUnit === "Acceleration (G)" ? "text-yellow-500" : "text-white")}>G</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer group">
                       <input
                         type="checkbox"
-                        checked={freqUnit === "Acceleration (mm/s²)"}
-                        onChange={() => setFreqUnit("Acceleration (mm/s²)")}
+                        checked={selectedUnit === "Acceleration (mm/s²)"}
+                        onChange={() => setSelectedUnit("Acceleration (mm/s²)")}
                         className="w-4 h-4 accent-yellow-500"
                       />
-                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", freqUnit === "Acceleration (mm/s²)" ? "text-yellow-500" : "text-white")}>mm/s²</span>
+                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", selectedUnit === "Acceleration (mm/s²)" ? "text-yellow-500" : "text-white")}>mm/s²</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer group">
                       <input
                         type="checkbox"
-                        checked={freqUnit === "Velocity (mm/s)"}
-                        onChange={() => setFreqUnit("Velocity (mm/s)")}
+                        checked={selectedUnit === "Velocity (mm/s)"}
+                        onChange={() => setSelectedUnit("Velocity (mm/s)")}
                         className="w-4 h-4 accent-yellow-500"
                       />
-                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", freqUnit === "Velocity (mm/s)" ? "text-yellow-500" : "text-white")}>mm/s</span>
+                      <span className={cn("text-lg font-bold group-hover:text-yellow-400 transition-colors", selectedUnit === "Velocity (mm/s)" ? "text-yellow-500" : "text-white")}>mm/s</span>
                     </label>
                   </div>
+
                 </div>
 
-                <div className="space-y-8">
+                <div className="space-y-4">
                   {/* Loop through H, V, A axes */}
                   {[
                     { key: 'h', label: 'Horizontal (H)', ref: hFreqChartRef, enabled: configData.hAxisEnabled },
                     { key: 'v', label: 'Vertical (V)', ref: vFreqChartRef, enabled: configData.vAxisEnabled },
                     { key: 'a', label: 'Axial (A)', ref: aFreqChartRef, enabled: configData.aAxisEnabled }
                   ].filter(axis => axis.enabled).map((axis) => {
-                    const axisData = allChartData[axis.key]?.[freqUnit];
+                    const axisData = allChartData[axis.key]?.[selectedUnit];
                     const axisHasData = axisData?.hasData;
 
                     return (
                       <div key={axis.key}>
-                        <h4 className="text-base font-bold mb-3 text-white flex items-center gap-2">
+                        <h4 className="text-base font-bold mb-1 text-white flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
                           {axis.label}
                         </h4>
@@ -429,7 +425,7 @@ export const VibrationAnalysisSection: React.FC<
                                 },
                                 yAxis: {
                                   type: "value",
-                                  name: freqUnit.match(/\(([^)]+)\)/)?.[1] || freqUnit,
+                                  name: selectedUnit.match(/\(([^)]+)\)/)?.[1] || selectedUnit,
                                   nameLocation: "end",
                                   nameTextStyle: {
                                     color: "#ffffff",

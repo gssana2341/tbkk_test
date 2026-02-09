@@ -415,20 +415,6 @@ export default function SensorDetailPage() {
               align="end"
               className="bg-[#0B1121] border-[1.35px] border-[#374151]"
             >
-              {(user?.role?.toLowerCase() === "admin" ||
-                user?.role?.toLowerCase() === "editor") && (
-                  <DropdownMenuItem
-                    className="text-white"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      router.push("/register");
-                    }}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Configure Sensor
-                  </DropdownMenuItem>
-                )}
               <DropdownMenuItem
                 className="text-white cursor-pointer"
                 onClick={handleExportCSV}
