@@ -163,7 +163,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
           {/* Column 2: Machine Information */}
           <div className="flex-1 rounded-xl p-3 2xl:p-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 items-center mb-4 gap-2">
-              <h2 className="text-xl 2xl:text-3xl font-semibold text-white">
+              <h2 className="text-xl 2xl:text-2xl font-semibold text-white">
                 Machine Information
               </h2>
               {(user?.role?.toLowerCase() === "admin" ||
@@ -180,9 +180,9 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                 )}
             </div>
 
-            <div className="grid grid-cols-[140px_1fr] 2xl:grid-cols-[180px_1fr] gap-x-4 gap-y-1 text-base 2xl:text-xl">
+            <div className="grid grid-cols-[140px_1fr] 2xl:grid-cols-[160px_1fr] gap-x-2 gap-y-1 text-base 2xl:text-lg">
               <span className="text-gray-400">Area Operation</span>
-              <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+              <span className="text-lg 2xl:text-xl text-white">
                 {sensorLastData?.area ||
                   sensor?.area ||
                   sensor?.location ||
@@ -190,7 +190,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               </span>
 
               <span className="text-gray-400">Machine Name</span>
-              <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+              <span className="text-lg 2xl:text-xl text-white">
                 {sensorLastData?.machine ||
                   sensor?.machine ||
                   sensor?.machineName ||
@@ -200,7 +200,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               <span className="text-gray-400">Machine Number</span>
               <span
                 className={cn(
-                  "text-lg 2xl:text-2xl whitespace-nowrap",
+                  "text-lg 2xl:text-xl",
                   configData.machineNumber ? "text-white" : "text-gray-500"
                 )}
               >
@@ -210,7 +210,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               <span className="text-gray-400">Installation Point</span>
               <span
                 className={cn(
-                  "text-lg 2xl:text-2xl whitespace-nowrap",
+                  "text-lg 2xl:text-xl",
                   configData.installationPoint
                     ? "text-white"
                     : "text-gray-500"
@@ -222,7 +222,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               <span className="text-gray-400">Machine Class</span>
               <span
                 className={cn(
-                  "text-lg 2xl:text-2xl whitespace-nowrap",
+                  "text-lg 2xl:text-xl",
                   configData.machineClass ? "text-white" : "text-gray-500"
                 )}
               >
@@ -230,7 +230,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               </span>
 
               <span className="text-gray-400">Machine Installation Date</span>
-              <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+              <span className="text-lg 2xl:text-xl text-white">
                 {(() => {
                   const dateVal =
                     sensor?.motor_start_time || sensor?.installationDate;
@@ -248,7 +248,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               </span>
 
               <span className="text-gray-400">Machine Age</span>
-              <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+              <span className="text-lg 2xl:text-xl text-white">
                 {(() => {
                   const dateVal =
                     sensor?.motor_start_time || sensor?.installationDate;
@@ -282,7 +282,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
           {/* Column 3: Sensor Status */}
           <div className="flex-1 rounded-xl p-3 2xl:p-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 items-center mb-4 gap-2">
-              <h2 className="text-xl 2xl:text-3xl font-semibold text-white">
+              <h2 className="text-xl 2xl:text-2xl font-semibold text-white">
                 Sensor Status
               </h2>
               <div className="flex items-center">
@@ -358,7 +358,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                   return (
                     <span
                       className={cn(
-                        "px-3 py-1 2xl:px-5 2xl:py-2 text-sm md:text-base 2xl:text-2xl rounded-full",
+                        "px-3 py-1 2xl:px-4 2xl:py-1.5 text-sm md:text-base 2xl:text-xl rounded-full",
                         getStatusStyles(statusLevel)
                       )}
                     >
@@ -368,9 +368,9 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                 })()}
               </div>
             </div>
-            <div className="grid grid-cols-[135px_1fr] 2xl:grid-cols-[170px_1fr] gap-x-2 gap-y-1 text-base 2xl:text-xl">
+            <div className="grid grid-cols-[135px_1fr] 2xl:grid-cols-[150px_1fr] gap-x-2 gap-y-1 text-base 2xl:text-lg">
               <span className="text-gray-400">Signal Strength</span>
-              <span className="flex items-center gap-2 text-white whitespace-nowrap">
+              <span className="flex items-center gap-2 text-white">
                 {(() => {
                   const level = getSignalStrength(currentData.rssi || 0);
                   const iconProps = { className: "h-5 w-5" };
@@ -437,12 +437,12 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               </span>
 
               <span className="text-gray-400">Battery</span>
-              <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+              <span className="text-lg 2xl:text-xl text-white">
                 {safeBattery.toFixed(0)}%
               </span>
 
               <span className="text-gray-400">Sensor Installation Date</span>
-              <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+              <span className="text-lg 2xl:text-xl text-white">
                 {sensor?.installationDate
                   ? formatDate(
                     new Date(sensor.installationDate).toISOString()
@@ -451,14 +451,14 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               </span>
 
               <span className="text-gray-400">Last Updated</span>
-              <span className="text-lg 2xl:text-2xl text-white whitespace-nowrap">
+              <span className="text-lg 2xl:text-xl text-white">
                 {formatThaiDate(String(currentData.datetime))}
               </span>
 
               <span className="text-gray-400">Note</span>
               <span
                 className={cn(
-                  "max-w-[200px] 2xl:max-w-xs truncate text-lg 2xl:text-2xl",
+                  "max-w-[200px] 2xl:max-w-xs truncate text-lg 2xl:text-xl",
                   configData.notes ? "text-white" : "text-gray-500"
                 )}
                 title={configData.notes || "No notes"}
@@ -472,8 +472,8 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
 
           {/* Column 4: Select Date */}
           <div className="flex-[2] py-3 2xl:py-4 pl-0">
-            <div className="flex justify-between items-end mb-4 pr-2">
-              <h2 className="text-xl 2xl:text-3xl font-semibold text-white pl-0">
+            <div className="flex justify-between items-end mb-4 pr-1">
+              <h2 className="text-xl 2xl:text-2xl font-semibold text-white pl-0">
                 Select Date
               </h2>
               <span className="text-sm 2xl:text-lg font-semibold text-white">
@@ -501,7 +501,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                     <li key={`${datetime}-${index}`}>
                       <button
                         className={cn(
-                          "w-full flex items-center justify-between text-left py-1 rounded hover:bg-[#374151]/50 text-white pl-0",
+                          "w-full flex items-center justify-between gap-3 text-left py-1 rounded hover:bg-[#374151]/50 text-white pl-0",
                           selectedDatetime === datetime ? "bg-blue-600" : ""
                         )}
                         onClick={async () => {
@@ -522,8 +522,8 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                           }
                         }}
                       >
-                        <span>{formatDateTimeDayFirst(datetime)}</span>
-                        <span className="text-white mr-2">
+                        <span className="shrink-0">{formatDateTimeDayFirst(datetime)}</span>
+                        <span className="text-white mr-1 text-right truncate">
                           {rmsLookup[datetime] || ""}
                         </span>
                       </button>

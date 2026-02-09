@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import AuthWrapper from "@/components/auth/AuthWrapper";
 
-// const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "VIBRATION-SZ",
@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`antialiased font-sans`}>
+      <body className={`${inter.variable} antialiased font-sans`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
