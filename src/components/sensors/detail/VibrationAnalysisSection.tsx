@@ -296,6 +296,9 @@ export const VibrationAnalysisSection: React.FC<
                               symbol: "none",
                               lineStyle: { width: 2, color: "#2563eb" },
                               areaStyle: { color: "rgba(37,99,235,0.08)" },
+                              large: true,
+                              sampling: "lttb",
+                              progressive: 3000,
                             },
                           ],
                           legend: { show: false },
@@ -459,6 +462,9 @@ export const VibrationAnalysisSection: React.FC<
                                     smooth: true,
                                     symbol: "none",
                                     lineStyle: { width: 1.5, color: "#eab308" },
+                                    large: true,
+                                    sampling: "lttb",
+                                    progressive: 2000,
                                     areaStyle: {
                                       color: {
                                         type: "linear",

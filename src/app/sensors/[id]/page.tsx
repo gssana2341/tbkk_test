@@ -65,6 +65,9 @@ export default function SensorDetailPage() {
   const [mounted, setMounted] = useState(false);
 
   // Use custom hook for sensor details and data management
+  const [selectedAxis, setSelectedAxis] = useState("H-axis");
+  const [selectedUnit, setSelectedUnit] = useState("Acceleration (G)");
+
   const {
     sensor,
     sensorLastData,
@@ -85,10 +88,12 @@ export default function SensorDetailPage() {
     setSensorLastData,
     setError,
     fetchSensorData,
-  } = useSensorDetails({ sensorId: params.id });
+  } = useSensorDetails({
+    sensorId: params.id,
+    selectedUnit,
+    selectedAxis,
+  });
 
-  const [selectedAxis, setSelectedAxis] = useState("H-axis");
-  const [selectedUnit, setSelectedUnit] = useState("Acceleration (G)");
   const [isPrinting, setIsPrinting] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();

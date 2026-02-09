@@ -15,13 +15,16 @@ import {
 import {
   accelerationGToMmPerSecSquared,
   calculateVelocityFromFrequency,
+  calculateFFT,
 } from "@/lib/utils/sensorCalculations";
 
 interface UseSensorDetailsProps {
   sensorId: string;
+  selectedUnit?: string;
+  selectedAxis?: string;
 }
 
-export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
+export function useSensorDetails({ sensorId, selectedUnit, selectedAxis }: UseSensorDetailsProps) {
   const [sensor, setSensor] = useState<Sensor | null>(null);
   const [sensorLastData, setSensorLastData] = useState<SensorLastData | null>(
     null
@@ -371,74 +374,33 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
     setLoading(true);
     console.log("fetchSensorData starting for ID:", sensorId);
     try {
-      const lastData = await fetchSensorLastData(sensorId);
+      // Parallelize non-dependent API calls
+      const [lastData, config, details, histData] = await Promise.all([
+        fetchSensorLastData(sensorId),
+        fetchSensorConfig(sensorId),
+        fetchSensorDetails(sensorId),
+        (async () => {
+          const historyUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${sensorId}/history?limit=1000000`;
+          const token = localStorage.getItem("auth_token");
+          const response = await fetch(historyUrl, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          });
+          return response.ok ? response.json() : null;
+        })(),
+      ]);
+
       if (lastData) {
         setSensorLastData(lastData);
-        let config = await fetchSensorConfig(sensorId);
-
-        if (!config || !config.machine_no) {
-          try {
-            const tokenFallback = localStorage.getItem("auth_token");
-            const withDataResponse = await fetch(
-              `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/with-last-data`,
-              {
-                cache: "no-store",
-                headers: {
-                  "Cache-Control": "no-cache",
-                  ...(tokenFallback
-                    ? { Authorization: `Bearer ${tokenFallback}` }
-                    : {}),
-                },
-              }
-            );
-            if (withDataResponse.ok) {
-              const allSensors =
-                (await withDataResponse.json()) as WithLastDataSensor[];
-              const sensorData = allSensors.find((s) => s.id === sensorId);
-              if (sensorData) {
-                config = {
-                  machine_no: sensorData.machine_no,
-                  installed_point: sensorData.installed_point,
-                  machine_class: sensorData.machine_class,
-                  note: sensorData.note,
-                  sensor_name: sensorData.sensor_name,
-                  threshold_min: sensorData.threshold_min,
-                  threshold_medium: sensorData.threshold_medium,
-                  threshold_max: sensorData.threshold_max,
-                  alarm_ths: sensorData.alarm_ths,
-                  fmax: sensorData.fmax,
-                  lor: sensorData.lor,
-                  g_scale: sensorData.g_scale,
-                  time_interval: sensorData.time_interval,
-                  image_url: sensorData.image_url,
-                  temperature_threshold_min:
-                    sensorData.temperature_threshold_min,
-                  temperature_threshold_max:
-                    sensorData.temperature_threshold_max,
-                  mac_address: sensorData.mac_address,
-                };
-              }
-            }
-          } catch (err) {
-            console.error("Failed to fetch from /sensors/with-last-data:", err);
-          }
-        }
       }
 
-      await fetchSensorDetails(sensorId);
-      await fetchSensorHistory(sensorId);
-
-      const historyUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/sensors/${sensorId}/history?limit=1000000`;
-      const token = localStorage.getItem("auth_token");
-      const histResponse = await fetch(historyUrl, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (histResponse.ok) {
-        const histData = await histResponse.json();
+      if (histData) {
         console.log("History timestamps fetched:", histData);
         const items = Array.isArray(histData)
           ? histData
           : histData.history || histData.data || [];
+
+        // Update history state and datetimes in one go
+        setHistory(items);
         const dts = items.map((item: any) => item.datetime).filter(Boolean);
         setDatetimes(Array.from(new Set(dts)));
       }
@@ -452,7 +414,6 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
     fetchSensorLastData,
     fetchSensorConfig,
     fetchSensorDetails,
-    fetchSensorHistory,
   ]);
 
   useEffect(() => {
@@ -670,7 +631,21 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
     const result: any = { hasData: true, h: {}, v: {}, a: {} };
 
     Object.entries(axes).forEach(([axisKey, axisData]) => {
-      units.forEach((unit) => {
+      // Step 1: Calculate Base FFT (Acceleration G) ONCE per axis if raw data exists
+      let baseAccGFFT: { magnitude: number[]; frequency: number[] } | undefined;
+      const isRawTimeData =
+        axisData.acc_g.length > 0 &&
+        axisData.acc_g.length > chartConfig.lor * 0.5;
+
+      if (isRawTimeData) {
+        baseAccGFFT = calculateFFT(axisData.acc_g, chartConfig.fmax);
+      }
+
+      // Lazy Optimization: Calculate only the selected unit first
+      // If selectedUnit is provided, we prioritize it.
+      const unitsToCalculate = selectedUnit ? [selectedUnit] : units;
+
+      unitsToCalculate.forEach((unit) => {
         let unitMag: number[] = [];
         let rmsOverride: number | undefined;
 
@@ -690,15 +665,33 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
             ? axisData.fPoints
             : axisData.freq;
 
-        // CRITICAL CHANGE:
-        // Determine if unitMag is already a spectrum (Frequency Domain) or Time Domain Signal.
-        // If it's short (like 10 points), it's definitely a pre-calculated spectrum (Frequency Domain).
-        // If it's long (like 6400 points), it's a raw signal (Time Domain) and needs full FFT.
         const isSpectrumData =
           unitMag.length > 0 && unitMag.length <= chartConfig.lor * 0.5;
 
         let accInput = isSpectrumData ? [] : unitMag;
         let freqInput = isSpectrumData ? unitMag : [];
+
+        // Step 2: Derive unit-specific FFT magnitude from baseAccGFFT if available
+        let unitFFT = baseAccGFFT;
+        if (baseAccGFFT && baseAccGFFT.magnitude.length > 0) {
+          if (unit === "Acceleration (mm/s²)") {
+            unitFFT = {
+              ...baseAccGFFT,
+              magnitude: baseAccGFFT.magnitude.map((m) => m * 9806.65),
+            };
+          } else if (unit === "Velocity (mm/s)") {
+            unitFFT = {
+              ...baseAccGFFT,
+              magnitude: baseAccGFFT.magnitude.map((m, i) => {
+                const freq = baseAccGFFT!.frequency[i];
+                if (freq === 0) return 0;
+                // G (Peak/RMS Magnitude) -> mm/s² -> mm/s
+                const accMm = m * 9806.65;
+                return accMm / (2 * Math.PI * freq);
+              }),
+            };
+          }
+        }
 
         result[axisKey][unit] = prepareChartData(
           accInput,
@@ -707,7 +700,8 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
           timeInterval,
           chartConfig,
           freqSrc,
-          rmsOverride
+          rmsOverride,
+          unitFFT
         );
       });
     });
@@ -723,12 +717,8 @@ export function useSensorDetails({ sensorId }: UseSensorDetailsProps) {
     });
     result.hasData = anyAxisHasData;
 
-    // Populate top level properties for the selected one (legacy support for some sub-components)
-    // Note: page.tsx currently does: vibrationData = allChartData[selectedAxisKey][selectedUnit]
-    // So we don't strictly need these on the root result, but let's keep it safe.
-
     return result;
-  }, [sensorLastData, configData]);
+  }, [sensorLastData, configData, selectedUnit]);
 
   const xStats = useMemo(() => {
     if (loading || !sensorLastData?.data)

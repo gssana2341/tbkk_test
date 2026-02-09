@@ -47,7 +47,8 @@ export function prepareChartData(
   timeInterval: number,
   configData: ChartConfigData,
   fPoints?: number[],
-  rmsOverride?: number
+  rmsOverride?: number,
+  preCalcFFT?: { magnitude: number[]; frequency: number[] }
 ): {
   hasData: boolean;
   timeData: ChartTimeData;
@@ -175,9 +176,9 @@ export function prepareChartData(
       ? rmsOverride
       : processedData.length > 0
         ? Math.sqrt(
-            processedData.reduce((sum, val) => sum + val * val, 0) /
-              processedData.length
-          )
+          processedData.reduce((sum, val) => sum + val * val, 0) /
+          processedData.length
+        )
         : 0;
   const peak = Math.max(...processedData.map(Math.abs));
 
@@ -209,7 +210,10 @@ export function prepareChartData(
   let calculatedMagnitude: number[] = [];
   let calculatedLabels: string[] = [];
 
-  if (effectiveAccData && effectiveAccData.length > 0) {
+  if (preCalcFFT && preCalcFFT.magnitude.length > 0) {
+    calculatedMagnitude = preCalcFFT.magnitude;
+    calculatedLabels = preCalcFFT.frequency.map((f: number) => f.toFixed(2));
+  } else if (effectiveAccData && effectiveAccData.length > 0) {
     const fftResult = calculateFFT(effectiveAccData, configData.fmax);
     calculatedMagnitude = fftResult.magnitude;
     calculatedLabels = fftResult.frequency.map((f: number) => f.toFixed(2));
