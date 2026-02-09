@@ -42,6 +42,7 @@ export default function SensorsPage() {
   const [loading, setLoading] = useState(true);
   const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitiallyLoaded = useRef(false);
+  const isFirstLoad = useRef(true);
   const router = useRouter();
   const [sensorStatusData, setSensorStatusData] = useState<{
     total: number;
@@ -109,13 +110,21 @@ export default function SensorsPage() {
     });
   }, []);
 
-  const fetchSensors = useCallback(async () => {
+  const fetchSensors = useCallback(async (silent = false) => {
     try {
-      setLoading(true);
-      const { sensors: fetchedSensors } = await getSensors({ limit: 10000 });
-      // Use only real sensors from API
+      if (!silent) setLoading(true);
+      const { sensors: fetchedSensors } = await getSensors({
+        limit: 1000,
+        isShort: true
+      });
+
       setSensors(fetchedSensors);
       updateSensorStatusData(fetchedSensors);
+
+      // Cache for next initial load
+      if (fetchedSensors.length > 0) {
+        localStorage.setItem("cached_sensors", JSON.stringify(fetchedSensors));
+      }
     } catch (error) {
       console.error("Error fetching sensors:", error);
     } finally {
@@ -125,7 +134,7 @@ export default function SensorsPage() {
 
   const updateSensorData = useCallback(async () => {
     try {
-      await fetchSensors();
+      await fetchSensors(true); // Always silent for background updates
       if (window.refreshSensorData) {
         await window.refreshSensorData();
       }
@@ -138,18 +147,29 @@ export default function SensorsPage() {
   }, []);
 
   useEffect(() => {
+    // 1. Initial Load Cache Check (Instant UI)
     if (!hasInitiallyLoaded.current) {
-      fetchSensors();
-      hasInitiallyLoaded.current = true;
+      const cached = localStorage.getItem("cached_sensors");
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setSensors(parsed);
+            updateSensorStatusData(parsed);
+            setLoading(false);
+          }
+        } catch (e) {
+          console.error("Failed to parse cached sensors", e);
+        }
+      }
     }
-  }, [fetchSensors]);
 
-  // Refresh data immediately when folder selection changes
-  useEffect(() => {
-    if (hasInitiallyLoaded.current) {
-      fetchSensors();
-    }
-  }, [selectedIds, fetchSensors]);
+    // 2. Fetch Data (Initial or Folder Change)
+    // We use a silent update (no loading spinner) if we already have data
+    const isFirstTime = !hasInitiallyLoaded.current;
+    fetchSensors(!isFirstTime);
+    hasInitiallyLoaded.current = true;
+  }, [selectedIds, fetchSensors, updateSensorStatusData]);
 
   useEffect(() => {
     if (autoRefreshIntervalRef.current) {
@@ -339,16 +359,16 @@ export default function SensorsPage() {
       {/* Only show Filters and Grid if any item is selected or status filter is active */}
       {((selectedIds && selectedIds.length > 0) ||
         selectedStatuses.length > 0) && (
-        <>
-          {/* Filters */}
-          <SensorFilters />
+          <>
+            {/* Filters */}
+            <SensorFilters />
 
-          {/* Sensor Views */}
-          <Suspense fallback={<LoadingSkeleton />}>
-            {renderCurrentView()}
-          </Suspense>
-        </>
-      )}
+            {/* Sensor Views */}
+            <Suspense fallback={<LoadingSkeleton />}>
+              {renderCurrentView()}
+            </Suspense>
+          </>
+        )}
     </div>
   );
 }
