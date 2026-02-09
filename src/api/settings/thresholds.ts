@@ -17,7 +17,6 @@ const getAxiosInstance = () => {
     baseURL: API_BASE_URL,
     headers: {
       "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
   });
