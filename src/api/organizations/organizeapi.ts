@@ -24,16 +24,32 @@ export async function createOrganization(
   return response.data;
 }
 
+// Global inflight promise for deduplication
+let organizationsPromise: Promise<OrganizationResponse[]> | null = null;
+
 // Fetch all organizations
 export async function getOrganizations(): Promise<OrganizationResponse[]> {
-  const baseUrl = "/api";
-  const token = getToken();
-  const response = await axios.get(`${baseUrl}/organizations`, {
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-  return response.data;
+  if (organizationsPromise) return organizationsPromise;
+
+  organizationsPromise = (async () => {
+    try {
+      const baseUrl = "/api";
+      const token = getToken();
+      const response = await axios.get(`${baseUrl}/organizations`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching organizations:", error);
+      throw error;
+    } finally {
+      setTimeout(() => { organizationsPromise = null; }, 500);
+    }
+  })();
+
+  return organizationsPromise;
 }
 
 // Get organization by org_code

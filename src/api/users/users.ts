@@ -26,17 +26,29 @@ const getAxiosInstance = () => {
   });
 };
 
+// Global inflight promise for deduplication
+let profilePromise: Promise<UserProfileResponse> | null = null;
+
 // Get user profile
 export async function getUserProfile(): Promise<UserProfileResponse> {
-  try {
-    const axiosInstance = getAxiosInstance();
-    const response =
-      await axiosInstance.get<UserProfileResponse>("/users/profile");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
-    throw error;
-  }
+  if (profilePromise) return profilePromise;
+
+  profilePromise = (async () => {
+    try {
+      const axiosInstance = getAxiosInstance();
+      const response =
+        await axiosInstance.get<UserProfileResponse>("/users/profile");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      throw error;
+    } finally {
+      // Clear after small delay to catch simultaneous bursts
+      setTimeout(() => { profilePromise = null; }, 500);
+    }
+  })();
+
+  return profilePromise;
 }
 
 // Update user profile
@@ -159,34 +171,48 @@ export async function uploadAvatar(
   }
 }
 
+// Global inflight promise for deduplication
+let allUsersPromise: Promise<import("@/lib/types").UserAdminResponse[]> | null =
+  null;
+
 // Get all users (Admin only)
 export async function getAllUsers(): Promise<
   Array<import("@/lib/types").UserAdminResponse>
 > {
-  try {
-    const axiosInstance = getAxiosInstance();
-    const response =
-      await axiosInstance.get<Array<Record<string, unknown>>>("/users");
+  if (allUsersPromise) return allUsersPromise;
 
-    if (response.data.length > 0) {
-      console.log("Sample user data (First User):", {
-        id: response.data[0].id,
-        status: response.data[0].status,
-        role: response.data[0].role,
+  allUsersPromise = (async () => {
+    try {
+      const axiosInstance = getAxiosInstance();
+      const response =
+        await axiosInstance.get<Array<Record<string, unknown>>>("/users");
+
+      if (response.data.length > 0) {
+        console.log("Sample user data (First User):", {
+          id: response.data[0].id,
+          status: response.data[0].status,
+          role: response.data[0].role,
+        });
+      }
+
+      return response.data.map((user) => {
+        return {
+          ...user,
+          status: (user.status as string) || "PENDING",
+          last_login: user.last_login,
+        } as import("@/lib/types").UserAdminResponse;
       });
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      throw error;
+    } finally {
+      setTimeout(() => {
+        allUsersPromise = null;
+      }, 500);
     }
+  })();
 
-    return response.data.map((user) => {
-      return {
-        ...user,
-        status: (user.status as string) || "PENDING",
-        last_login: user.last_login,
-      } as import("@/lib/types").UserAdminResponse;
-    });
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    throw error;
-  }
+  return allUsersPromise;
 }
 
 // Update user role (Admin only)

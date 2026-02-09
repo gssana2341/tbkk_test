@@ -38,8 +38,8 @@ const DEFAULT_SENSOR_VALUES: SingleSensorValues = {
   gScale: "",
   temperatureThresholdMin: "",
   timeInterval: "",
-  lor: "",
-  frequencyMax: "",
+  lor: "6400",
+  frequencyMax: "10000",
   temperatureThresholdMax: "",
   highPass: "",
   motorType: "",
@@ -157,8 +157,8 @@ export function useRegisterSensorForm() {
           temperatureThresholdMin:
             data.temperature_threshold_min?.toString() || "",
           timeInterval: data.time_interval?.toString() || "60",
-          lor: data.lor?.toString() || "5600",
-          frequencyMax: data.fmax?.toString() || "9000",
+          lor: data.lor?.toString() || "6400",
+          frequencyMax: data.fmax?.toString() || "10000",
           temperatureThresholdMax:
             data.temperature_threshold_max?.toString() || "",
           highPass: data.high_pass?.toString() || "8",

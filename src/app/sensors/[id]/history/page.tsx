@@ -46,6 +46,9 @@ const THRESHOLDS = {
   RED_START: 4.5,
 };
 
+// Global inflight promise for deduplication
+const historyInflight = new Map<string, Promise<any>>();
+
 export default function SensorHistoryPage() {
   const router = useRouter();
   const params = useParams() as { id: string };
@@ -108,97 +111,118 @@ export default function SensorHistoryPage() {
 
         console.log("Fetching History from:", url);
 
-        const response = await fetch(url, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("API Error Body:", errorText);
-          throw new Error(`API Error: ${response.status} - ${errorText}`);
+        // Deduplicate simultaneous requests
+        if (historyInflight.has(url)) {
+          const data = await historyInflight.get(url);
+          processHistoryData(data);
+          return;
         }
 
-        const data = await response.json();
-        console.log("History API Full Response:", data);
+        const fetchPromise = (async () => {
+          const response = await fetch(url, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          });
 
-        // Fetch sensor name if available
-        const sensorDataRoot = data.data || data;
-        if (sensorDataRoot.name || sensorDataRoot.sensor_name) {
-          setSensorName(sensorDataRoot.sensor_name || sensorDataRoot.name);
-        }
-
-        let historyData = [];
-
-        // 1. Check if the response itself is an array
-        if (Array.isArray(data)) {
-          historyData = data;
-        }
-        // 2. Check for 'history' property (based on Step 0 example)
-        else if (data && Array.isArray(data.history)) {
-          historyData = data.history;
-        }
-        // 3. Check for 'data' wrap
-        else if (data && data.data) {
-          if (Array.isArray(data.data)) {
-            historyData = data.data;
-          } else if (Array.isArray(data.data.history)) {
-            historyData = data.data.history;
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("API Error Body:", errorText);
+            throw new Error(`API Error: ${response.status} - ${errorText}`);
           }
+
+          return await response.json();
+        })();
+
+        historyInflight.set(url, fetchPromise);
+        try {
+          const data = await fetchPromise;
+          processHistoryData(data);
+        } finally {
+          // Clear after small delay to catch simultaneous bursts
+          setTimeout(() => { historyInflight.delete(url); }, 500);
         }
-
-        const mappedHistory: HistoryItem[] = historyData.map((item: any) => ({
-          datetime: item.datetime,
-          g_rms_h: item.g_rms_h || 0,
-          g_rms_v: item.g_rms_v || 0,
-          g_rms_a: item.g_rms_a || 0,
-          a_rms_h: item.a_rms_h || 0,
-          a_rms_v: item.a_rms_v || 0,
-          a_rms_a: item.a_rms_a || 0,
-          velo_rms_h: item.velo_rms_h || 0,
-          velo_rms_v: item.velo_rms_v || 0,
-          velo_rms_a: item.velo_rms_a || 0,
-          rssi: item.rssi || 0,
-          battery: item.battery || 0,
-          temperature: item.temperature || 0,
-          status: item.status || "",
-        }));
-
-        // Client-side filtering as safety net to ensure only selected date range is shown
-        // This handles cases where API might return slightly wider range or fallback
-        const filteredHistory = mappedHistory.filter((item) => {
-          // Parse item date
-          const rawString = item.datetime.endsWith("Z")
-            ? item.datetime.slice(0, -1)
-            : item.datetime;
-          const itemDate = new Date(rawString);
-
-          const year = itemDate.getFullYear();
-          const month = String(itemDate.getMonth() + 1).padStart(2, "0");
-          const day = String(itemDate.getDate()).padStart(2, "0");
-          const itemDateStr = `${year}-${month}-${day}`;
-
-          let isValid = true;
-          if (dateStart && itemDateStr < dateStart) isValid = false;
-          if (dateEnd && itemDateStr > dateEnd) isValid = false;
-
-          return isValid;
-        });
-
-        // Sort Data (Oldest to Latest usually preferred for charts, but existing code had logic)
-        // Ensure consistent time-based sort
-        setHistory(
-          filteredHistory.sort((a, b) => {
-            const timeA = new Date(a.datetime).getTime();
-            const timeB = new Date(b.datetime).getTime();
-            return timeA - timeB;
-          })
-        );
       } catch (err) {
         console.error("Fetch error:", err);
         setError("Failed to fetch sensor history");
       } finally {
         setLoading(false);
       }
+    }
+
+    function processHistoryData(data: any) {
+      console.log("History API Full Response:", data);
+
+      // Fetch sensor name if available
+      const sensorDataRoot = data.data || data;
+      if (sensorDataRoot.name || sensorDataRoot.sensor_name) {
+        setSensorName(sensorDataRoot.sensor_name || sensorDataRoot.name);
+      }
+
+      let historyData = [];
+
+      // 1. Check if the response itself is an array
+      if (Array.isArray(data)) {
+        historyData = data;
+      }
+      // 2. Check for 'history' property (based on Step 0 example)
+      else if (data && Array.isArray(data.history)) {
+        historyData = data.history;
+      }
+      // 3. Check for 'data' wrap
+      else if (data && data.data) {
+        if (Array.isArray(data.data)) {
+          historyData = data.data;
+        } else if (Array.isArray(data.data.history)) {
+          historyData = data.data.history;
+        }
+      }
+
+      const mappedHistory: HistoryItem[] = historyData.map((item: any) => ({
+        datetime: item.datetime,
+        g_rms_h: item.g_rms_h || 0,
+        g_rms_v: item.g_rms_v || 0,
+        g_rms_a: item.g_rms_a || 0,
+        a_rms_h: item.a_rms_h || 0,
+        a_rms_v: item.a_rms_v || 0,
+        a_rms_a: item.a_rms_a || 0,
+        velo_rms_h: item.velo_rms_h || 0,
+        velo_rms_v: item.velo_rms_v || 0,
+        velo_rms_a: item.velo_rms_a || 0,
+        rssi: item.rssi || 0,
+        battery: item.battery || 0,
+        temperature: item.temperature || 0,
+        status: item.status || "",
+      }));
+
+      // Client-side filtering as safety net to ensure only selected date range is shown
+      // This handles cases where API might return slightly wider range or fallback
+      const filteredHistory = mappedHistory.filter((item) => {
+        // Parse item date
+        const rawString = item.datetime.endsWith("Z")
+          ? item.datetime.slice(0, -1)
+          : item.datetime;
+        const itemDate = new Date(rawString);
+
+        const year = itemDate.getFullYear();
+        const month = String(itemDate.getMonth() + 1).padStart(2, "0");
+        const day = String(itemDate.getDate()).padStart(2, "0");
+        const itemDateStr = `${year}-${month}-${day}`;
+
+        let isValid = true;
+        if (dateStart && itemDateStr < dateStart) isValid = false;
+        if (dateEnd && itemDateStr > dateEnd) isValid = false;
+
+        return isValid;
+      });
+
+      // Sort Data (Oldest to Latest usually preferred for charts, but existing code had logic)
+      // Ensure consistent time-based sort
+      setHistory(
+        filteredHistory.sort((a, b) => {
+          const timeA = new Date(a.datetime).getTime();
+          const timeB = new Date(b.datetime).getTime();
+          return timeA - timeB;
+        })
+      );
     }
     fetchHistory();
   }, [params.id, dateStart, dateEnd]);
