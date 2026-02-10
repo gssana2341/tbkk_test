@@ -116,6 +116,10 @@ export interface SensorApiData {
     a_rms_h?: number;
     a_rms_v?: number;
     a_rms_a?: number;
+    // Config fields in last_data
+    fmax?: number;
+    lor?: number;
+    g_scale?: number;
   };
 }
 

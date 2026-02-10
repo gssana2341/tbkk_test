@@ -100,6 +100,10 @@ export interface SensorLastData {
     v_h_data?: number[];
     v_v_data?: number[];
     v_a_data?: number[];
+    // Config params from API data
+    fmax?: number;
+    lor?: number;
+    g_scale?: number;
   };
 }
 
@@ -162,6 +166,10 @@ export interface WithLastDataSensor {
     v_h_data?: number[];
     v_v_data?: number[];
     v_a_data?: number[];
+    // Config params from API data
+    fmax?: number;
+    lor?: number;
+    g_scale?: number;
   };
 }
 

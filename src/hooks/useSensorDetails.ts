@@ -637,9 +637,21 @@ export function useSensorDetails({
       "Velocity (mm/s)",
     ];
     const chartConfig: ChartConfigData = {
-      lor: configData.lor || sensorLastData.lor || 6400,
-      fmax: configData.fmax || sensorLastData.fmax || 10000,
-      g_scale: sensorLastData.g_scale || configData.g_scale || 16,
+      lor:
+        sensorLastData.data?.lor ||
+        configData.lor ||
+        sensorLastData.lor ||
+        6400,
+      fmax:
+        sensorLastData.data?.fmax ||
+        configData.fmax ||
+        sensorLastData.fmax ||
+        10000,
+      g_scale:
+        sensorLastData.data?.g_scale ||
+        sensorLastData.g_scale ||
+        configData.g_scale ||
+        16,
     };
 
     const result: any = { hasData: true, h: {}, v: {}, a: {} };

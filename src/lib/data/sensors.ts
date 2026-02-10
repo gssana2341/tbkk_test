@@ -515,10 +515,12 @@ export async function fetchRealSensors(
             a_rms_h: apiSensor.last_data.a_rms_h,
             a_rms_v: apiSensor.last_data.a_rms_v,
             a_rms_a: apiSensor.last_data.a_rms_a,
-            // Also keep arrays for calculation
-            h: hData,
             v: vData,
             a: aData,
+            // Map new config fields if present in last_data
+            fmax: apiSensor.last_data.fmax,
+            lor: apiSensor.last_data.lor,
+            g_scale: apiSensor.last_data.g_scale,
           }
         : undefined,
       // Store calculated H, V, A statistics
