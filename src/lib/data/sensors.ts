@@ -144,6 +144,7 @@ export async function fetchRealSensors(
 
   // Transform API data to match our Sensor interface
   const result = apiData.map((apiSensor: SensorApiData) => {
+    const now = Date.now();
     // If isShort is true, we skip expensive calculation and large arrays
     if (isShort) {
       let status: SensorStatus = "ok";
@@ -156,16 +157,28 @@ export async function fetchRealSensors(
       const tMed = apiSensor.threshold_medium || 4.5;
       const tMax = apiSensor.threshold_max || 9.0;
 
-      if (maxRms >= tMax && maxRms > 0) status = "critical";
-      else if (maxRms >= tMed && maxRms > 0) status = "concern";
-      else if (maxRms >= tMin && maxRms > 0) status = "warning";
-      else if (!apiSensor.last_data) status = "standby";
-
       const lastUpdated = apiSensor.last_data?.datetime
         ? new Date(apiSensor.last_data.datetime.replace("Z", "")).getTime()
         : apiSensor.updated_at
           ? new Date(apiSensor.updated_at.replace("Z", "")).getTime()
           : Date.now();
+
+      // Check for "Lost" status based on time timeout (same logic as full path)
+      const timeInterval = apiSensor.time_interval || 0; // minutes
+      const timeoutThresholdMs = (timeInterval + 5) * 60 * 1000;
+      const isLost = now - lastUpdated > timeoutThresholdMs;
+      const operationalStatus = apiSensor.last_data ? "running" : "standby";
+
+      if (isLost && operationalStatus !== "standby") {
+        status = "lost";
+        // Trigger notification for Lost status (async, don't await to not block rendering)
+        if (typeof window !== "undefined") {
+          sendLostNotification(apiSensor);
+        }
+      } else if (maxRms >= tMax && maxRms > 0) status = "critical";
+      else if (maxRms >= tMed && maxRms > 0) status = "concern";
+      else if (maxRms >= tMin && maxRms > 0) status = "warning";
+      else if (!apiSensor.last_data) status = "standby";
 
       return {
         id: apiSensor.id,
@@ -352,8 +365,6 @@ export async function fetchRealSensors(
         apiSensor.last_data.velo_rms_a = veloRmsA;
     }
 
-    const now = Date.now();
-
     // Create readings from data if available
     const readings: SensorReading[] = [];
     if (apiSensor.last_data) {
@@ -539,13 +550,22 @@ export async function fetchRealSensors(
     return sensor;
   });
 
+  // Deduplicate by sensor ID (API may return duplicates)
+  const uniqueMap = new Map<string, Sensor>();
+  for (const sensor of result) {
+    if (!uniqueMap.has(sensor.id)) {
+      uniqueMap.set(sensor.id, sensor);
+    }
+  }
+  const dedupedResult = Array.from(uniqueMap.values());
+
   // Global cache for full data (if we ever need it)
   if (!isShort) {
-    realSensorsCache = result;
+    realSensorsCache = dedupedResult;
     lastFetchTime = Date.now();
   }
 
-  return result;
+  return dedupedResult;
 }
 
 // Get all sensors with pagination and filtering
