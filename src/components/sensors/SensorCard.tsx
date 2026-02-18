@@ -57,38 +57,38 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   // Use undefined for missing data to distinguish from 0 (which is valid data)
   const veloRmsH =
     sensor?.last_data?.velo_rms_h !== undefined &&
-    sensor?.last_data?.velo_rms_h !== null
+      sensor?.last_data?.velo_rms_h !== null
       ? Number(sensor.last_data.velo_rms_h)
       : undefined;
 
   const veloRmsV =
     sensor?.last_data?.velo_rms_v !== undefined &&
-    sensor?.last_data?.velo_rms_v !== null
+      sensor?.last_data?.velo_rms_v !== null
       ? Number(sensor.last_data.velo_rms_v)
       : undefined;
 
   const veloRmsA =
     sensor?.last_data?.velo_rms_a !== undefined &&
-    sensor?.last_data?.velo_rms_a !== null
+      sensor?.last_data?.velo_rms_a !== null
       ? Number(sensor.last_data.velo_rms_a)
       : undefined;
 
   // Get acceleration G RMS values for each axis (for tooltip)
   const gRmsH =
     sensor?.last_data?.g_rms_h !== undefined &&
-    sensor?.last_data?.g_rms_h !== null
+      sensor?.last_data?.g_rms_h !== null
       ? Number(sensor.last_data.g_rms_h)
       : undefined;
 
   const gRmsV =
     sensor?.last_data?.g_rms_v !== undefined &&
-    sensor?.last_data?.g_rms_v !== null
+      sensor?.last_data?.g_rms_v !== null
       ? Number(sensor.last_data.g_rms_v)
       : undefined;
 
   const gRmsA =
     sensor?.last_data?.g_rms_a !== undefined &&
-    sensor?.last_data?.g_rms_a !== null
+      sensor?.last_data?.g_rms_a !== null
       ? Number(sensor.last_data.g_rms_a)
       : undefined;
 
@@ -166,14 +166,14 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
 
   const lastUpdateText = lastUpdate
     ? lastUpdate.toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      })
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
     : "-";
 
   // Determine card background color based on sensor status
@@ -497,7 +497,7 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
         >
           {/* MAC Address Display */}
           <div className="text-gray-300 text-xs mb-2 font-mono border-b border-gray-700 pb-1">
-            MAC: {sensor.macAddress || sensor.serialNumber || "-"}
+            MAC: {sensor.macAddress || sensor.mac_address || "-"}
           </div>
 
           {/* Axis data tooltip - single box with 3 axes */}

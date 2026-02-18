@@ -158,6 +158,7 @@ export interface Sensor {
   machine?: string | null;
   motor_start_time?: string | null;
   macAddress?: string; // Mapped from mac_address
+  mac_address?: string | null; // Raw field from API
   // Store raw API data
   last_data?: {
     datetime?: string;

@@ -183,6 +183,8 @@ export async function fetchRealSensors(
       return {
         id: apiSensor.id,
         serialNumber: apiSensor.name,
+        mac_address: apiSensor.mac_address || null,
+        macAddress: apiSensor.mac_address || undefined,
         machineName: apiSensor.machine_no || "Unknown",
         sensor_name: apiSensor.sensor_name || apiSensor.name,
         name: apiSensor.sensor_name || apiSensor.name,
@@ -204,22 +206,22 @@ export async function fetchRealSensors(
         // Scalar data for tooltips and list view
         last_data: apiSensor.last_data
           ? {
-              datetime: apiSensor.last_data.datetime,
-              velo_rms_h: veloRmsH,
-              velo_rms_v: veloRmsV,
-              velo_rms_a: veloRmsA,
-              temperature: apiSensor.last_data.temperature,
-              battery: apiSensor.last_data.battery,
-              rssi: apiSensor.last_data.rssi,
-              level_vibration: apiSensor.last_data.level_vibration,
-              level_temperature: apiSensor.last_data.level_temperature,
-              g_rms_h: apiSensor.last_data.g_rms_h,
-              g_rms_v: apiSensor.last_data.g_rms_v,
-              g_rms_a: apiSensor.last_data.g_rms_a,
-              a_rms_h: apiSensor.last_data.a_rms_h,
-              a_rms_v: apiSensor.last_data.a_rms_v,
-              a_rms_a: apiSensor.last_data.a_rms_a,
-            }
+            datetime: apiSensor.last_data.datetime,
+            velo_rms_h: veloRmsH,
+            velo_rms_v: veloRmsV,
+            velo_rms_a: veloRmsA,
+            temperature: apiSensor.last_data.temperature,
+            battery: apiSensor.last_data.battery,
+            rssi: apiSensor.last_data.rssi,
+            level_vibration: apiSensor.last_data.level_vibration,
+            level_temperature: apiSensor.last_data.level_temperature,
+            g_rms_h: apiSensor.last_data.g_rms_h,
+            g_rms_v: apiSensor.last_data.g_rms_v,
+            g_rms_a: apiSensor.last_data.g_rms_a,
+            a_rms_h: apiSensor.last_data.a_rms_h,
+            a_rms_v: apiSensor.last_data.a_rms_v,
+            a_rms_a: apiSensor.last_data.a_rms_a,
+          }
           : undefined,
         h_stats: {
           velocityTopPeak: veloRmsH.toFixed(2),
@@ -445,7 +447,7 @@ export async function fetchRealSensors(
           : 2.0;
       const tMed =
         apiSensor.threshold_medium !== undefined &&
-        apiSensor.threshold_medium > 0
+          apiSensor.threshold_medium > 0
           ? apiSensor.threshold_medium
           : 4.5;
       const tMax =
@@ -492,36 +494,36 @@ export async function fetchRealSensors(
       // Store raw API data for access by components
       last_data: apiSensor.last_data
         ? {
-            datetime: apiSensor.last_data.datetime,
-            acc_h: apiSensor.last_data.acc_h || [],
-            freq_h: apiSensor.last_data.freq_h || [],
-            acc_v: apiSensor.last_data.acc_v || [],
-            freq_v: apiSensor.last_data.freq_v || [],
-            acc_a: apiSensor.last_data.acc_a || [],
-            freq_a: apiSensor.last_data.freq_a || [],
-            velo_rms_h: apiSensor.last_data.velo_rms_h,
-            velo_rms_v: apiSensor.last_data.velo_rms_v,
-            velo_rms_a: apiSensor.last_data.velo_rms_a,
-            temperature: apiSensor.last_data.temperature,
-            battery: apiSensor.last_data.battery,
-            rssi: apiSensor.last_data.rssi,
-            level_vibration: apiSensor.last_data.level_vibration,
-            level_temperature: apiSensor.last_data.level_temperature,
-            // G RMS values for tooltip
-            g_rms_h: apiSensor.last_data.g_rms_h,
-            g_rms_v: apiSensor.last_data.g_rms_v,
-            g_rms_a: apiSensor.last_data.g_rms_a,
-            // A RMS values
-            a_rms_h: apiSensor.last_data.a_rms_h,
-            a_rms_v: apiSensor.last_data.a_rms_v,
-            a_rms_a: apiSensor.last_data.a_rms_a,
-            v: vData,
-            a: aData,
-            // Map new config fields if present in last_data
-            fmax: apiSensor.last_data.fmax,
-            lor: apiSensor.last_data.lor,
-            g_scale: apiSensor.last_data.g_scale,
-          }
+          datetime: apiSensor.last_data.datetime,
+          acc_h: apiSensor.last_data.acc_h || [],
+          freq_h: apiSensor.last_data.freq_h || [],
+          acc_v: apiSensor.last_data.acc_v || [],
+          freq_v: apiSensor.last_data.freq_v || [],
+          acc_a: apiSensor.last_data.acc_a || [],
+          freq_a: apiSensor.last_data.freq_a || [],
+          velo_rms_h: apiSensor.last_data.velo_rms_h,
+          velo_rms_v: apiSensor.last_data.velo_rms_v,
+          velo_rms_a: apiSensor.last_data.velo_rms_a,
+          temperature: apiSensor.last_data.temperature,
+          battery: apiSensor.last_data.battery,
+          rssi: apiSensor.last_data.rssi,
+          level_vibration: apiSensor.last_data.level_vibration,
+          level_temperature: apiSensor.last_data.level_temperature,
+          // G RMS values for tooltip
+          g_rms_h: apiSensor.last_data.g_rms_h,
+          g_rms_v: apiSensor.last_data.g_rms_v,
+          g_rms_a: apiSensor.last_data.g_rms_a,
+          // A RMS values
+          a_rms_h: apiSensor.last_data.a_rms_h,
+          a_rms_v: apiSensor.last_data.a_rms_v,
+          a_rms_a: apiSensor.last_data.a_rms_a,
+          v: vData,
+          a: aData,
+          // Map new config fields if present in last_data
+          fmax: apiSensor.last_data.fmax,
+          lor: apiSensor.last_data.lor,
+          g_scale: apiSensor.last_data.g_scale,
+        }
         : undefined,
       // Store calculated H, V, A statistics
       h_stats: hStats,
@@ -547,6 +549,7 @@ export async function fetchRealSensors(
       temperature_threshold_min: apiSensor.temperature_threshold_min,
       temperature_threshold_max: apiSensor.temperature_threshold_max,
       macAddress: apiSensor.mac_address || undefined,
+      mac_address: apiSensor.mac_address || null,
     };
 
     return sensor;
