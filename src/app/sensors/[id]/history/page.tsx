@@ -614,14 +614,14 @@ export default function SensorHistoryPage() {
 
     const maxRmsValue = Math.max(
       ...series
-        .filter((s) => s.yAxisIndex === 3)
+        .filter((s) => s.yAxisIndex === 3 && s.type === "line")
         .flatMap((s) => s.data.map((d: any) => parseFloat(d) || 0)),
       0
     );
     const yAxisMaxRms =
       maxRmsValue > 0
         ? parseFloat((maxRmsValue * 1.1).toFixed(2))
-        : THRESHOLDS.RED_START + 1;
+        : 5;
 
     // Background Threshold Areas for RMS only
     const markArea = {
@@ -641,7 +641,7 @@ export default function SensorHistoryPage() {
         ],
         [
           { yAxis: THRESHOLDS.RED_START, itemStyle: { color: "#FF4D4D" } },
-          { yAxis: yAxisMaxRms },
+          { yAxis: Math.max(yAxisMaxRms, THRESHOLDS.RED_START) },
         ],
       ],
     };
@@ -856,11 +856,10 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
-                    selectedAxis === axis
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                    }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
