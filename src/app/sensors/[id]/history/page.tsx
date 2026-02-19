@@ -506,6 +506,46 @@ export default function SensorHistoryPage() {
       });
     }
 
+    // --- Invisible Hit-Area Scatter (ขยาย click zone ให้กว้างขึ้น) ---
+    // Series เหล่านี้โปร่งใสสมบูรณ์ แต่มี symbolSize=20 ทำให้คลิกง่ายขึ้น
+    const hitAreaBase = {
+      type: "scatter" as const,
+      symbolSize: 20,
+      itemStyle: { opacity: 0 },
+      emphasis: { itemStyle: { opacity: 0 } },
+      tooltip: { show: false },
+      silent: false,
+      z: 5,
+    };
+    series.push({
+      ...hitAreaBase,
+      name: "_hit_wifi",
+      xAxisIndex: 0,
+      yAxisIndex: 0,
+      data: history.map((h, i) => [i, getSignalStrength(h.rssi || 0)]),
+    });
+    series.push({
+      ...hitAreaBase,
+      name: "_hit_battery",
+      xAxisIndex: 1,
+      yAxisIndex: 1,
+      data: history.map((h, i) => [i, h.battery ?? 0]),
+    });
+    series.push({
+      ...hitAreaBase,
+      name: "_hit_temp",
+      xAxisIndex: 2,
+      yAxisIndex: 2,
+      data: history.map((h, i) => [i, h.temperature ?? 0]),
+    });
+    series.push({
+      ...hitAreaBase,
+      name: "_hit_rms",
+      xAxisIndex: 3,
+      yAxisIndex: 3,
+      data: history.map((h, i) => [i, getVal(h, selectedAxis === "all" ? "h" : (selectedAxis as any))]),
+    });
+
     // --- Highlighting Scatter Series (Red Dots) ---
     if (selectedDataIndex !== null) {
       const hItem = history[selectedDataIndex];
@@ -813,11 +853,10 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
-                    selectedAxis === axis
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                    }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
@@ -944,7 +983,6 @@ export default function SensorHistoryPage() {
                     option={chartOption}
                     style={{ height: "950px", width: "100%" }}
                     theme="dark"
-                    notMerge={true}
                     onChartReady={(instance) => {
                       chartRef.current = instance;
                       setIsChartReady(true);
