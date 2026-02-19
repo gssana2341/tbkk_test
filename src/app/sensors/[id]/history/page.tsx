@@ -543,7 +543,10 @@ export default function SensorHistoryPage() {
       name: "_hit_rms",
       xAxisIndex: 3,
       yAxisIndex: 3,
-      data: history.map((h, i) => [i, getVal(h, selectedAxis === "all" ? "h" : (selectedAxis as any))]),
+      data: history.map((h, i) => [
+        i,
+        getVal(h, selectedAxis === "all" ? "h" : (selectedAxis as any)),
+      ]),
     });
 
     // --- Highlighting Scatter Series (Red Dots) ---
@@ -853,10 +856,11 @@ export default function SensorHistoryPage() {
                 <button
                   key={axis}
                   onClick={() => setSelectedAxis(axis)}
-                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${selectedAxis === axis
-                    ? "bg-blue-600 border-blue-500 text-white"
-                    : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
-                    }`}
+                  className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
+                    selectedAxis === axis
+                      ? "bg-blue-600 border-blue-500 text-white"
+                      : "bg-[#0B1121] border-[1.35px] border-[#374151] text-gray-300 hover:bg-[#374151]/50"
+                  }`}
                 >
                   {axis === "all" ? "All" : `${axis.toUpperCase()}-axis`}
                 </button>
