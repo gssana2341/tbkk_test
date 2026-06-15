@@ -28,6 +28,7 @@ import {
 import DeviceToolbar from "@/components/sensors/DeviceToolbar";
 import type { Sensor } from "@/lib/types";
 import { useFolderTreeFilter } from "@/components/auth/AuthWrapper";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function SensorsPage() {
   const { selectedIds, selectedSensors } = useFolderTreeFilter();
@@ -40,6 +41,7 @@ export default function SensorsPage() {
     []
   );
   const [roleFilter, setRoleFilter] = useState<"all" | "master" | "satellite">("all");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [loading, setLoading] = useState(true);
   const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -211,9 +213,9 @@ export default function SensorsPage() {
       result = [...sensors];
     }
 
-    // Filter by search query
-    if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase();
+    // Filter by search query using the debounced value
+    if (debouncedSearchQuery) {
+      const lowerQuery = debouncedSearchQuery.toLowerCase();
       result = result.filter(
         (s) =>
           (s.serialNumber &&
@@ -274,7 +276,7 @@ export default function SensorsPage() {
     }
 
     return result;
-  }, [sensors, selectedStatuses, searchQuery, selectedIds, selectedSensors, roleFilter]);
+  }, [sensors, selectedStatuses, debouncedSearchQuery, selectedIds, selectedSensors, roleFilter]);
 
   // Group sensors for different views
   const sensorGroups = useMemo(() => {

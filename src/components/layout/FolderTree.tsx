@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { ChevronRight, ChevronDown, Loader2, X } from "lucide-react";
 import Box from "@mui/material/Box";
 import Popover from "@mui/material/Popover";
+import { Virtuoso } from "react-virtuoso";
 
 import type { Sensor } from "@/lib/types";
 import { fetchRealSensors } from "@/lib/data/sensors";
@@ -225,7 +226,7 @@ const FolderTree: React.FC<{
     return { flatNodes: nodes, nodeMap: map };
   }, [treeData]);
 
-  // Set default expansion to "All Folders" once data is loaded
+  // Initialize selection once on load
   const hasInitializedSelection = React.useRef(false);
 
   useEffect(() => {
@@ -237,40 +238,53 @@ const FolderTree: React.FC<{
     }
   }, [flatNodes]);
 
-  const prevPathnameRef = React.useRef<string | null>(null);
-
   useEffect(() => {
-    if (flatNodes.length > 0) {
-      if (pathname === "/" && prevPathnameRef.current !== "/") {
-        const mode = localStorage.getItem("dashboard_area_mode") || "first_only";
-        if (mode === "first_only") {
-          const firstArea = flatNodes.find((n) => n.parentId === "organization");
-          if (firstArea) {
-            const newSet = new Set([firstArea.id]);
+    if (flatNodes.length > 0 && !hasInitializedSelection.current) {
+      hasInitializedSelection.current = true;
+      const savedIdsStr = localStorage.getItem("folder_tree_selected_ids");
+      if (savedIdsStr) {
+        try {
+          const savedIds = JSON.parse(savedIdsStr);
+          if (Array.isArray(savedIds) && savedIds.length > 0) {
+            const newSet = new Set<string>(savedIds);
             setSelectedIds(newSet);
             setTempSelectedIds(newSet);
+            return;
           }
-        } else {
-          const newSet = new Set(["organization"]);
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      // Default fallback
+      const mode = localStorage.getItem("dashboard_area_mode") || "first_only";
+      if (mode === "first_only") {
+        const firstArea = flatNodes.find((n) => n.parentId === "organization");
+        if (firstArea) {
+          const newSet = new Set([firstArea.id]);
           setSelectedIds(newSet);
           setTempSelectedIds(newSet);
         }
-        prevPathnameRef.current = "/";
-      } else if (pathname !== "/") {
-        prevPathnameRef.current = pathname;
+      } else {
+        const newSet = new Set(["organization"]);
+        setSelectedIds(newSet);
+        setTempSelectedIds(newSet);
       }
     }
-  }, [pathname, flatNodes]);
+  }, [flatNodes]);
 
   // Derived visible nodes based on expansion
   const visibleNodes = useMemo(() => {
     if (collapsed) return [];
     return flatNodes.filter((node) => {
+      // Hide the root "organization" node
+      if (node.id === "organization") return false;
+
       if (!node.parentId) return true;
       // All ancestors must be expanded
       return node.path
         .slice(0, -1)
-        .every((ancestorId) => expandedIds.has(ancestorId));
+        .every((ancestorId) => ancestorId === "organization" || expandedIds.has(ancestorId));
     });
   }, [flatNodes, expandedIds, collapsed]);
 
@@ -280,33 +294,21 @@ const FolderTree: React.FC<{
       const node = nodeMap.get(id);
       if (!node) return;
 
-      const newSelected = new Set(tempSelectedIds);
+      const newSelected = new Set<string>();
       const targetIds = [id, ...node.allDescendantIds];
 
       if (checked) {
-        newSelected.delete("organization");
         targetIds.forEach((targetId) => newSelected.add(targetId));
-        // Optionally check parents if all siblings are selected
-        let curr = node.parentId;
-        while (curr) {
-          const p = nodeMap.get(curr);
-          if (p && p.childIds.every((cid) => newSelected.has(cid))) {
-            newSelected.add(p.id);
-            curr = p.parentId;
-          } else break;
-        }
       } else {
-        targetIds.forEach((targetId) => newSelected.delete(targetId));
-        // Uncheck all parents
-        let curr = node.parentId;
-        while (curr) {
-          newSelected.delete(curr);
-          curr = nodeMap.get(curr)?.parentId || null;
-        }
+        // Fallback to organization if unchecked
+        newSelected.add("organization");
       }
+      
       setTempSelectedIds(newSelected);
+      setSelectedIds(newSelected);
+      localStorage.setItem("folder_tree_selected_ids", JSON.stringify(Array.from(newSelected)));
     },
-    [tempSelectedIds, nodeMap]
+    [nodeMap]
   );
 
   // Trigger filter change
@@ -348,6 +350,7 @@ const FolderTree: React.FC<{
       const newSet = new Set([id]);
       setTempSelectedIds(newSet);
       setSelectedIds(newSet);
+      localStorage.setItem("folder_tree_selected_ids", JSON.stringify(Array.from(newSet)));
       if (pathname !== "/") router.push("/");
       if (sensorId) setCollapsed(true);
     },
@@ -377,8 +380,10 @@ const FolderTree: React.FC<{
       const isSelected = selectedIds.has("organization");
       if (isSelected) {
         // Toggle off
-        setSelectedIds(new Set());
-        setTempSelectedIds(new Set());
+        const emptySet = new Set<string>();
+        setSelectedIds(emptySet);
+        setTempSelectedIds(emptySet);
+        localStorage.setItem("folder_tree_selected_ids", JSON.stringify([]));
       } else {
         // Toggle on
         handleItemClick("organization");
@@ -475,14 +480,7 @@ const FolderTree: React.FC<{
           Organization Tree
         </span>
         <div className="flex items-center gap-2">
-          {hasSelections && (
-            <button
-              onClick={handleApply}
-              className="py-1.5 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all active:scale-[0.98] shadow-md"
-            >
-              Apply
-            </button>
-          )}
+          {/* Apply button removed as selection auto-applies */}
           {onClose && (
             <button
               onClick={onClose}
@@ -495,85 +493,78 @@ const FolderTree: React.FC<{
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
-        <div className="py-2">
-          {flatNodes
-            .filter((node) => {
-              // Hide the root "organization" node
-              if (node.id === "organization") return false;
+      <div className="flex-1 overflow-hidden">
+        <Virtuoso
+          style={{ height: '100%', width: '100%' }}
+          data={visibleNodes}
+          className="no-scrollbar py-2"
+          itemContent={(index, node) => {
+            const isExpanded = expandedIds.has(node.id);
+            const isTempSelected = tempSelectedIds.has(node.id);
+            const visualDepth = Math.max(0, node.depth - 1);
 
-              if (!node.parentId) return true;
-              return node.path
-                .slice(0, -1)
-                .every((ancestorId) => ancestorId === "organization" || expandedIds.has(ancestorId));
-            })
-            .map((node) => {
-              const isExpanded = expandedIds.has(node.id);
-              const isTempSelected = tempSelectedIds.has(node.id);
-              const visualDepth = Math.max(0, node.depth - 1);
-
-              return (
-                <div
-                  key={node.id}
-                  className={`flex items-center group py-1 px-4 cursor-pointer hover:bg-white/5 transition-colors relative ${isTempSelected ? "bg-[#161E28]" : ""}`}
-                  onClick={() => handleRowClick(node.id, !isTempSelected)}
-                >
-                  {/* Hierarchy Lines */}
-                  {Array.from({ length: visualDepth }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-[1px] bg-gray-700 h-full top-0"
-                      style={{ left: `${i * 16 + 24}px` }}
-                    />
-                  ))}
-
+            return (
+              <div
+                key={node.id}
+                className={`flex items-center group py-1 px-4 cursor-pointer hover:bg-white/5 transition-colors relative ${isTempSelected ? "bg-[#161E28]" : ""}`}
+                onClick={() => handleRowClick(node.id, !isTempSelected)}
+              >
+                {/* Hierarchy Lines */}
+                {Array.from({ length: visualDepth }).map((_, i) => (
                   <div
-                    className="flex items-center w-full"
-                    style={{ paddingLeft: `${visualDepth * 16}px` }}
-                  >
-                    <div className="flex items-center gap-2 mr-2 shrink-0">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 rounded border-gray-600 bg-transparent text-blue-600 focus:ring-blue-500 cursor-pointer"
-                        checked={isTempSelected}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(e) =>
-                          handleToggleSelect(node.id, e.target.checked)
-                        }
-                      />
-                    </div>
+                    key={i}
+                    className="absolute w-[1px] bg-gray-700 h-full top-0"
+                    style={{ left: `${i * 16 + 24}px` }}
+                  />
+                ))}
 
-                    {node.type === "folder" ? (
-                      <button
-                        className="p-1 hover:bg-white/10 rounded transition-colors shrink-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const next = new Set(expandedIds);
-                          if (isExpanded) next.delete(node.id);
-                          else next.add(node.id);
-                          setExpandedIds(next);
-                        }}
-                      >
-                        {isExpanded ? (
-                          <ChevronDown size={14} className="text-white" />
-                        ) : (
-                          <ChevronRight size={14} className="text-white" />
-                        )}
-                      </button>
-                    ) : (
-                      <div className="w-6 mr-0 shrink-0" />
-                    )}
+                <div
+                  className="flex items-center w-full"
+                  style={{ paddingLeft: `${visualDepth * 16}px` }}
+                >
+                  <div className="flex items-center gap-2 mr-2 shrink-0">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 rounded border-gray-600 bg-transparent text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      checked={isTempSelected}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) =>
+                        handleToggleSelect(node.id, e.target.checked)
+                      }
+                    />
+                  </div>
 
-                    <div className="flex items-center gap-2 overflow-hidden min-w-0">
-                      <span className="text-white text-sm truncate select-none">
-                        {node.label}
-                      </span>
-                    </div>
+                  {node.type === "folder" ? (
+                    <button
+                      className="p-1 hover:bg-white/10 rounded transition-colors shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const next = new Set(expandedIds);
+                        if (isExpanded) next.delete(node.id);
+                        else next.add(node.id);
+                        setExpandedIds(next);
+                      }}
+                    >
+                      {isExpanded ? (
+                        <ChevronDown size={14} className="text-white" />
+                      ) : (
+                        <ChevronRight size={14} className="text-white" />
+                      )}
+                    </button>
+                  ) : (
+                    <div className="w-6 mr-0 shrink-0" />
+                  )}
+
+                  <div className="flex items-center gap-2 overflow-hidden min-w-0">
+                    <span className="text-white text-sm truncate select-none">
+                      {node.label}
+                    </span>
                   </div>
                 </div>
-              );
-            })}
-        </div>
+              </div>
+            );
+          }}
+        />
       </div>
 
 
