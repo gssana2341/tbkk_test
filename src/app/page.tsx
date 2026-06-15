@@ -223,7 +223,10 @@ export default function SensorsPage() {
           (s.name && s.name.toLowerCase().includes(lowerQuery)) ||
           (s.machineName && s.machineName.toLowerCase().includes(lowerQuery)) ||
           (s.sensor_name && s.sensor_name.toLowerCase().includes(lowerQuery)) ||
-          (s.location && s.location.toLowerCase().includes(lowerQuery))
+          (s.location && s.location.toLowerCase().includes(lowerQuery)) ||
+          (s.mac_address && s.mac_address.toLowerCase().includes(lowerQuery)) ||
+          (s.macAddress && s.macAddress.toLowerCase().includes(lowerQuery)) ||
+          (s.area && s.area.toLowerCase().includes(lowerQuery))
       );
     }
 
