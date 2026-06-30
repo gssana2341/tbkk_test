@@ -310,6 +310,9 @@ export default function SensorHistoryPage() {
     const isSatellite = sensorType
       ? sensorType.toLowerCase() === "satellite"
       : sensorName.toLowerCase().includes("satellite");
+    const deviceTypeForDecay = sensorType
+      ? sensorType.toLowerCase()
+      : (sensorName.toLowerCase().includes("satellite") ? "satellite" : "master");
     const signalName = isSatellite
       ? "Bluetooth Signal Strength"
       : "Wifi Signal Strength";
@@ -360,7 +363,7 @@ export default function SensorHistoryPage() {
       data: history.map((h) =>
         h.status === "lost"
           ? null
-          : getDecayedBattery(h.battery ?? 0, h.datetime, isSatellite, user?.org_code)
+          : getDecayedBattery(h.battery ?? 0, h.datetime, deviceTypeForDecay, user?.org_code)
       ),
       color: "#4C6FFF",
       symbol: "circle",

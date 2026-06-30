@@ -127,11 +127,12 @@ export default function SensorDetailPage() {
 
   const safeTemp = Number(currentData.temperature) || 0;
   const rawBattery = Number(currentData.battery) || 0;
-  const isSatellite = (sensorLastData?.sensor_type || sensor?.sensor_type || "").toLowerCase() === "satellite";
+  const deviceType = (sensorLastData?.sensor_type || sensor?.sensor_type || "").toLowerCase();
+  const isSatellite = deviceType === "satellite";
   const safeBattery = getDecayedBattery(
     rawBattery,
     currentData.datetime,
-    isSatellite,
+    deviceType,
     user?.org_code
   );
 

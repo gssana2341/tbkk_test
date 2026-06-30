@@ -73,7 +73,7 @@ export default function SensorDotNode({
   const displayBattery = getDecayedBattery(
     rawBattery,
     sensor.last_data?.datetime,
-    isSatellite,
+    role,
     user?.org_code
   );
 

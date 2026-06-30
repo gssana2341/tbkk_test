@@ -110,10 +110,11 @@ export default function SensorCard({ sensor, onClick }: SensorCardProps) {
   const temperature = sensor?.last_data?.temperature ?? 0;
   const rawBattery = sensor?.batteryLevel ?? sensor?.last_data?.battery ?? 0;
   const isSatellite = (sensor?.sensor_type || "").toLowerCase() === "satellite";
+  const deviceType = (sensor?.sensor_type || "").toLowerCase();
   const battery = getDecayedBattery(
     rawBattery,
     sensor?.last_data?.datetime,
-    isSatellite,
+    deviceType,
     user?.org_code
   );
   const connectivity = sensor?.connectivity || "offline";
