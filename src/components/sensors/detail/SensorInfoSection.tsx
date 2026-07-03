@@ -6,6 +6,7 @@ import {
   WifiOff,
   WifiHigh,
   WifiLow,
+  WifiZero,
   Calendar,
   AlertOctagon,
 } from "lucide-react";
