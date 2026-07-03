@@ -16,11 +16,22 @@ export const accelerationToVelocity = (
   accelerationData: number[],
   timeInterval: number
 ): number[] => {
+  if (!accelerationData.length) return [];
+  
+  // 1. Remove DC offset from acceleration (Detrend)
+  const meanAcc = accelerationData.reduce((a, b) => a + b, 0) / accelerationData.length;
+  const detrendedAcc = accelerationData.map(a => a - meanAcc);
+
+  // 2. Integrate to velocity using rectangular rule
   let velocity = 0;
-  return accelerationData.map((acceleration) => {
-    velocity += acceleration * timeInterval;
+  const rawVelocity = detrendedAcc.map(acc => {
+    velocity += acc * timeInterval;
     return velocity;
   });
+
+  // 3. Remove DC offset from velocity to fix drift
+  const meanVel = rawVelocity.reduce((a, b) => a + b, 0) / rawVelocity.length;
+  return rawVelocity.map(v => v - meanVel);
 };
 
 export const calculateFFT = (

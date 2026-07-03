@@ -6,7 +6,6 @@ import {
   WifiOff,
   WifiHigh,
   WifiLow,
-  WifiZero,
   Calendar,
   AlertOctagon,
 } from "lucide-react";
@@ -120,6 +119,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
 }) => {
   const [visibleCount, setVisibleCount] = React.useState(20);
   const [selectedCalendarDate, setSelectedCalendarDate] = React.useState<string>("");
+  const [showOnlyAlarm, setShowOnlyAlarm] = React.useState<boolean>(false);
   const isSuperAdmin = user?.role?.toLowerCase() === "superadmin";
 
   const [dominantFault, setDominantFault] = React.useState<any>(null);
@@ -162,10 +162,25 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
     }
   }, [sensor?.id, selectedDatetime, sensorLastData, isSuperAdmin]);
 
-  // Safely filter datetimes based on calendar selection
+  const alarmDatetimes = React.useMemo(() => {
+    return new Set(
+      history
+        .filter((item) => item.data_type === "ALARM" || item.data_type === "alarm" || item.level_vibration === "critical" || item.level_vibration === "concern")
+        .map((item) => item.datetime)
+    );
+  }, [history]);
+
+  // Safely filter datetimes based on calendar selection and ALARM toggle
   const filteredDatetimes = React.useMemo(() => {
-    if (!selectedCalendarDate) return sortedDatetimes;
-    return sortedDatetimes.filter((dt) => {
+    let result = sortedDatetimes;
+    
+    if (showOnlyAlarm) {
+      result = result.filter((dt) => alarmDatetimes.has(dt));
+    }
+
+    if (!selectedCalendarDate) return result;
+
+    return result.filter((dt) => {
       let dtObj;
       if (dt.includes(",")) {
         dtObj = parseCustomDate(dt);
@@ -182,7 +197,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
 
       return dtStr === selectedCalendarDate;
     });
-  }, [sortedDatetimes, selectedCalendarDate]);
+  }, [sortedDatetimes, selectedCalendarDate, showOnlyAlarm, alarmDatetimes]);
 
   const visibleDatetimes = filteredDatetimes.slice(0, visibleCount);
 
@@ -250,19 +265,21 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
               <h2 className="text-xl 2xl:text-2xl font-semibold text-white">
                 Machine Information
               </h2>
-              {(user?.role?.toLowerCase() === "admin" ||
-                user?.role?.toLowerCase() === "superadmin" ||
-                user?.role?.toLowerCase() === "editor") && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-base 2xl:px-3 2xl:py-1"
-                    onClick={() => router.push(`/register?id=${params.id}`)}
-                  >
-                    <Settings className="mr-2 h-4 w-4 2xl:h-5 2xl:w-5" />
-                    Edit
-                  </Button>
-                )}
+              <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+                {(user?.role?.toLowerCase() === "admin" ||
+                  user?.role?.toLowerCase() === "superadmin" ||
+                  user?.role?.toLowerCase() === "editor") && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-transparent border-[1.35px] border-[#374151] hover:bg-[#374151]/50 text-white w-fit 2xl:text-base 2xl:px-3 2xl:py-1"
+                      onClick={() => router.push(`/register?id=${params.id}`)}
+                    >
+                      <Settings className="mr-1.5 h-4 w-4 2xl:h-5 2xl:w-5" />
+                      Edit
+                    </Button>
+                  )}
+              </div>
             </div>
 
             <div className="grid grid-cols-[110px_1fr] md:grid-cols-[140px_1fr] 2xl:grid-cols-[160px_1fr] gap-x-2 gap-y-2 text-xs sm:text-sm md:text-base 2xl:text-lg">
@@ -633,13 +650,30 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
           <div className="hidden xl:block w-[1px] bg-[#374151] my-4 opacity-50"></div>
 
           {/* Column 4: Select Date */}
-          <div className="flex-[2] py-3 2xl:py-4 pl-0">
-            <div className="flex justify-between items-end mb-4 pr-1">
+          <div className="flex-[2] py-3 2xl:py-4 pl-0 flex flex-col h-full overflow-hidden">
+            <div className="flex justify-between items-end mb-4 pr-1 shrink-0 overflow-x-auto custom-scrollbar pb-2">
               <div className="flex flex-wrap items-center gap-3">
                 <h2 className="text-xl 2xl:text-2xl font-semibold text-white pl-0">
                   Select Date
                 </h2>
                 <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "px-2 py-1 h-auto text-xs flex items-center gap-1.5",
+                      showOnlyAlarm 
+                        ? "bg-red-900/40 border-red-500/50 text-red-400 hover:bg-red-900/60" 
+                        : "bg-transparent border-[#374151] text-gray-400 hover:text-white"
+                    )}
+                    onClick={() => {
+                      setShowOnlyAlarm(!showOnlyAlarm);
+                      setVisibleCount(20);
+                    }}
+                  >
+                    <AlertOctagon className="h-3.5 w-3.5" />
+                    {showOnlyAlarm ? "ALARM Only" : "Show ALARM"}
+                  </Button>
                   <div
                     className="relative bg-[#0B1121] border-[1.35px] border-[#374151] rounded px-3 py-1 flex items-center gap-2 min-w-[130px] cursor-pointer hover:border-blue-500"
                     onClick={(e) => {
@@ -682,17 +716,17 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                   )}
                 </div>
               </div>
-              <div className="flex gap-6 2xl:gap-8">
-                <span className="text-sm 2xl:text-lg font-semibold text-white min-w-[70px] text-right">
+              <div className="flex gap-2 md:gap-6 2xl:gap-8 shrink-0">
+                <span className="text-xs md:text-sm 2xl:text-lg font-semibold text-white min-w-[50px] md:min-w-[70px] text-right">
                   RSSI
                 </span>
-                <span className="text-sm 2xl:text-lg font-semibold text-white min-w-[80px] text-right">
+                <span className="text-xs md:text-sm 2xl:text-lg font-semibold text-white min-w-[70px] md:min-w-[80px] text-right">
                   RMS Overall
                 </span>
               </div>
             </div>
             <div
-              className="bg-[#0B1121] rounded-md overflow-y-auto custom-scrollbar max-h-[220px] md:max-h-[280px]"
+              className="bg-[#0B1121] rounded-md overflow-y-auto custom-scrollbar max-h-[350px]"
               onScroll={(e) => {
                 const { scrollTop, scrollHeight, clientHeight } =
                   e.currentTarget;
@@ -711,7 +745,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                     <li key={`${datetime}-${index}`}>
                       <button
                         className={cn(
-                          "w-full flex items-center justify-between gap-3 text-left py-1 rounded hover:bg-[#374151]/50 text-white pl-0",
+                          "w-full flex items-center justify-between gap-2 md:gap-3 text-left py-1.5 rounded hover:bg-[#374151]/50 text-white pl-0 overflow-hidden",
                           selectedDatetime === datetime ? "bg-blue-600" : ""
                         )}
                         onClick={async () => {
@@ -732,14 +766,17 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                           }
                         }}
                       >
-                        <span className="shrink-0">
-                          {formatDateTimeDayFirst(datetime)}
+                        <span className="shrink-0 flex items-center gap-1.5 md:gap-2 text-xs md:text-base truncate">
+                          {alarmDatetimes.has(datetime) && (
+                            <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-red-500 shrink-0 shadow-[0_0_8px_rgba(239,68,68,0.6)]" title="ALARM status"></span>
+                          )}
+                          <span className="truncate">{formatDateTimeDayFirst(datetime)}</span>
                         </span>
-                        <div className="flex items-center gap-6 2xl:gap-8 mr-1">
-                          <span className="text-gray-400 text-sm 2xl:text-lg min-w-[70px] text-right">
+                        <div className="flex items-center gap-2 md:gap-6 2xl:gap-8 mr-1 shrink-0">
+                          <span className="text-gray-400 text-xs md:text-sm 2xl:text-lg min-w-[50px] md:min-w-[70px] text-right">
                             {rssiLookup[datetime] || "-"}
                           </span>
-                          <span className="text-white text-right truncate min-w-[80px]">
+                          <span className="text-white text-right truncate min-w-[70px] md:min-w-[80px] text-xs md:text-base">
                             {rmsLookup[datetime] || ""}
                           </span>
                         </div>

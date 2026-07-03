@@ -24,8 +24,17 @@ export const diagnosticsApi = {
       const dataArray = Array.isArray(rawData) ? rawData : (rawData.data || []);
       if (dataArray.length === 0) return null;
 
-      // Find the one matching the datetime, or just use the first one if datetime is not found
-      let apiResult = dataArray.find((d: any) => d.datetime === datetime) || dataArray[0];
+      // Find the one matching the datetime (allow 2 seconds tolerance for DB precision differences)
+      const targetTime = new Date(datetime).getTime();
+      let apiResult = dataArray.find((d: any) => {
+        const dTime = new Date(d.datetime).getTime();
+        return Math.abs(dTime - targetTime) < 2000;
+      });
+
+      if (!apiResult) {
+        console.log(`[DEBUG] No diagnostic data found for timestamp ${datetime}. The system was likely in NORMAL state.`);
+        return null;
+      }
 
       // Map API Response to our Frontend UI Format
       const severityMap: Record<string, "NORMAL" | "CONCERN" | "WARNING" | "CRITICAL"> = {

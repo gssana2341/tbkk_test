@@ -52,15 +52,22 @@ export function accelerationToVelocity(
   accelerations: number[],
   timeInterval: number
 ): number[] {
-  const velocities: number[] = [0]; // ค่าเริ่มต้นความเร็วเป็น 0
+  if (!accelerations.length) return [];
 
-  for (let i = 0; i < accelerations.length - 1; i++) {
-    const velocity =
-      0.5 * timeInterval * (accelerations[i] + accelerations[i + 1]);
-    velocities.push(velocity);
+  // 1. Detrend Acceleration (Remove DC offset)
+  const meanAcc = accelerations.reduce((a, b) => a + b, 0) / accelerations.length;
+  const detrendedAcc = accelerations.map((a) => a - meanAcc);
+
+  // 2. Trapezoidal Integration
+  const rawVelocities: number[] = [0];
+  for (let i = 0; i < detrendedAcc.length - 1; i++) {
+    const dv = 0.5 * timeInterval * (detrendedAcc[i] + detrendedAcc[i + 1]);
+    rawVelocities.push(rawVelocities[i] + dv);
   }
 
-  return velocities;
+  // 3. Detrend Velocity (Remove drift)
+  const meanVel = rawVelocities.reduce((a, b) => a + b, 0) / rawVelocities.length;
+  return rawVelocities.map((v) => v - meanVel);
 }
 
 /**
@@ -782,11 +789,14 @@ export function findTopPeaks(
   // ===== PEAK DETECTION =====
   //not over freqMax
   if (freqMagnitude.length > 0) {
+    const maxMag = Math.max(...freqMagnitude);
+    const threshold = Math.max(maxMag * 0.05, 0.001); // 5% of max peak or absolute minimum
     const topIndices: number[] = [];
     for (let i = 1; i < freqMagnitude.length - 1; i++) {
       if (
         freqMagnitude[i] > freqMagnitude[i - 1] &&
-        freqMagnitude[i] > freqMagnitude[i + 1]
+        freqMagnitude[i] > freqMagnitude[i + 1] &&
+        freqMagnitude[i] >= threshold
       ) {
         topIndices.push(i);
       }
@@ -869,6 +879,8 @@ export function findTopPeaksEnhanced(
 
   // ===== PEAK DETECTION =====
   if (freqMagnitude.length > 0) {
+    const maxMag = Math.max(...freqMagnitude);
+    const dynamicThreshold = minPeakHeight !== undefined ? minPeakHeight : Math.max(maxMag * 0.05, 0.001);
     const topIndices: number[] = [];
     for (let i = 1; i < freqMagnitude.length - 1; i++) {
       // Check if current point is higher than neighbors
@@ -876,8 +888,8 @@ export function findTopPeaksEnhanced(
         freqMagnitude[i] > freqMagnitude[i - 1] &&
         freqMagnitude[i] > freqMagnitude[i + 1]
       ) {
-        // Apply minimum height filter if specified
-        if (minPeakHeight === undefined || freqMagnitude[i] >= minPeakHeight) {
+        // Apply minimum height filter
+        if (freqMagnitude[i] >= dynamicThreshold) {
           topIndices.push(i);
         }
       }

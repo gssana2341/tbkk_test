@@ -9,11 +9,20 @@ import FolderTree from "@/components/layout/FolderTree";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomNav from "@/components/layout/BottomNav";
 import MobileDrawer from "@/components/layout/MobileDrawer";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ShieldAlert } from "lucide-react";
 import {
   FolderTreeProvider,
   useFolderTree,
 } from "@/components/layout/FolderTreeContext";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface AuthWrapperProps {
   children: React.ReactNode;
@@ -33,19 +42,58 @@ export function useFolderTreeFilter() {
   return useContext(FolderTreeFilterContext);
 }
 
+type RoutePermission = {
+  path: string;
+  pageName: string;
+  allowedRoles: string[];
+  requiredRoleLabel: string;
+};
+
+const ROUTE_PERMISSIONS: RoutePermission[] = [
+  {
+    path: "/reports",
+    pageName: "Reports",
+    allowedRoles: ["superadmin"],
+    requiredRoleLabel: "Superadmin",
+  },
+  {
+    path: "/admin",
+    pageName: "User administration",
+    allowedRoles: ["admin", "superadmin"],
+    requiredRoleLabel: "Admin or Superadmin",
+  },
+  {
+    path: "/register",
+    pageName: "Sensor registration",
+    allowedRoles: ["admin", "editor", "superadmin"],
+    requiredRoleLabel: "Editor, Admin, or Superadmin",
+  },
+];
+
+function findRoutePermission(href: string) {
+  const destinationPath = href.split(/[?#]/)[0];
+  return ROUTE_PERMISSIONS.find(
+    (permission) =>
+      destinationPath === permission.path ||
+      destinationPath.startsWith(`${permission.path}/`)
+  );
+}
+
 function AuthWrapperContent({ children }: AuthWrapperProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [showCancelPopup, setShowCancelPopup] = React.useState(false);
   const [targetPath, setTargetPath] = React.useState<string | null>(null);
   const [prevPath, setPrevPath] = React.useState<string>("/");
+  const [deniedAccess, setDeniedAccess] =
+    React.useState<RoutePermission | null>(null);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // State for selected ids and sensors (for filter)
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const [selectedSensors, setSelectedSensors] = React.useState<Sensor[]>([]);
   const [mobileDrawerOpen, setMobileDrawerOpen] = React.useState(false);
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
   const { collapsed, setCollapsed } = useFolderTree();
 
   React.useEffect(() => {
@@ -69,6 +117,23 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
         return;
       }
 
+      const permission = findRoutePermission(href);
+      const userRole = user?.role?.toLowerCase() ?? "";
+
+      if (permission && !permission.allowedRoles.includes(userRole)) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+
+        setShowCancelPopup(false);
+        setTargetPath(null);
+        setDeniedAccess(permission);
+        return;
+      }
+
       const currentPath = window.location.pathname;
       if (href === currentPath || href.startsWith("#") || href.includes("#")) {
         return;
@@ -76,7 +141,7 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
 
       setPrevPath(currentPath);
       setTargetPath(href);
-      
+
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
@@ -88,10 +153,12 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
 
     document.addEventListener("click", handleGlobalClick, { capture: true });
     return () => {
-      document.removeEventListener("click", handleGlobalClick, { capture: true });
+      document.removeEventListener("click", handleGlobalClick, {
+        capture: true,
+      });
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, []);
+  }, [user?.role]);
 
   React.useEffect(() => {
     if (timerRef.current) {
@@ -154,8 +221,9 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
     <FolderTreeFilterContext.Provider value={{ selectedIds, selectedSensors }}>
       <ProtectedRoute>
         <div
-          className={`flex bg-[#0B1121] ${isRegisterPage ? "min-h-screen" : "h-screen overflow-hidden"
-            }`}
+          className={`flex bg-[#0B1121] ${
+            isRegisterPage ? "min-h-screen" : "h-screen overflow-hidden"
+          }`}
         >
           {/* Left Sidebar - Desktop only */}
           <div className="hidden md:block shrink-0">
@@ -164,16 +232,18 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
 
           {/* Right side with Header on top */}
           <div
-            className={`flex-1 flex flex-col ${isRegisterPage ? "" : "overflow-hidden"
-              }`}
+            className={`flex-1 flex flex-col ${
+              isRegisterPage ? "" : "overflow-hidden"
+            }`}
           >
             {/* Header at the top */}
             <Header />
 
             {/* Content area below header */}
             <div
-              className={`flex flex-1 relative ${isRegisterPage ? "" : "overflow-hidden"
-                }`}
+              className={`flex flex-1 relative ${
+                isRegisterPage ? "" : "overflow-hidden"
+              }`}
             >
               {/* Left Panel - Organization Tree */}
               <div
@@ -181,7 +251,9 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
                   collapsed
                     ? "w-0 border-r-0"
                     : `border-r-[1.35px] border-[#374151] w-64 ${
-                        isRegisterPage ? "sticky top-0 h-screen overflow-y-auto" : "overflow-hidden"
+                        isRegisterPage
+                          ? "sticky top-0 h-screen overflow-y-auto"
+                          : "overflow-hidden"
                       } shadow-2xl md:shadow-none`
                 }`}
               >
@@ -206,14 +278,19 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
                   className="flex absolute top-1/2 -translate-y-1/2 z-50 items-center justify-center w-[26px] h-[68px] bg-[#1e293b] hover:bg-[#334155] border border-y-[#475569] border-r-[#475569] border-l-0 text-gray-300 rounded-r-md cursor-pointer transition-all duration-300 shadow-[2px_0_8px_rgba(0,0,0,0.3)] hover:text-white"
                   style={{ left: collapsed ? "0px" : "16rem" }}
                 >
-                  {collapsed ? <ChevronRight size={18} /> : <ChevronRight size={18} className="rotate-180" />}
+                  {collapsed ? (
+                    <ChevronRight size={18} />
+                  ) : (
+                    <ChevronRight size={18} className="rotate-180" />
+                  )}
                 </button>
               )}
 
               {/* Right Panel - Main Content Area */}
               <div
-                className={`flex-1 bg-[#0B1121] p-4 ${isRegisterPage ? "" : "overflow-auto"
-                  } pb-20 md:pb-4`}
+                className={`flex-1 bg-[#0B1121] p-4 ${
+                  isRegisterPage ? "" : "overflow-auto"
+                } pb-20 md:pb-4`}
               >
                 {children}
               </div>
@@ -223,6 +300,43 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
 
         {/* Bottom Navigation - Mobile only */}
         <BottomNav />
+
+        <AlertDialog
+          open={deniedAccess !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeniedAccess(null);
+          }}
+        >
+          <AlertDialogContent
+            data-testid="permission-denied-dialog"
+            className="w-[calc(100vw-2rem)] max-w-md rounded-2xl border border-[#374151] bg-[#0B1121] text-white"
+          >
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2 text-white">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-400">
+                  <ShieldAlert className="h-5 w-5" aria-hidden="true" />
+                </span>
+                Access restricted
+              </AlertDialogTitle>
+              <AlertDialogDescription className="pt-2 leading-6 text-slate-400">
+                Your current role
+                {user?.role ? ` (${user.role})` : ""} cannot access{" "}
+                <span className="font-semibold text-slate-200">
+                  {deniedAccess?.pageName}
+                </span>
+                . Required role: {deniedAccess?.requiredRoleLabel}.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction
+                onClick={() => setDeniedAccess(null)}
+                className="bg-blue-600 text-white hover:bg-blue-500"
+              >
+                Understood
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Global Slow-Navigation Loading & Cancel Popup */}
         {showCancelPopup && (
@@ -242,7 +356,11 @@ function AuthWrapperContent({ children }: AuthWrapperProps) {
                   Loading requested page...
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Data from <span className="text-blue-400 font-semibold uppercase">{targetPath?.replace("/", "") || "the next section"}</span> is taking a bit longer to load.
+                  Data from{" "}
+                  <span className="text-blue-400 font-semibold uppercase">
+                    {targetPath?.replace("/", "") || "the next section"}
+                  </span>{" "}
+                  is taking a bit longer to load.
                 </p>
               </div>
 

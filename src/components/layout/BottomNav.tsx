@@ -87,6 +87,9 @@ export default function BottomNav() {
       const role = user?.role?.toLowerCase();
       return role === "admin" || role === "superadmin";
     }
+    if (item.name === "Reports") {
+      return user?.role?.toLowerCase() === "superadmin";
+    }
     return true;
   });
 

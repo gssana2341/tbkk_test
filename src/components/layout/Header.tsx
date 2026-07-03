@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { Bell, LogOut, Settings, ChevronDown, Filter } from "lucide-react";
+import { Bell, LogOut, Settings, ChevronDown, Filter, BookOpen } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
 import { Badge } from "@/components/ui/badge";
@@ -44,8 +44,7 @@ function getPageTitle(pathname: string): string {
   if (pathname.startsWith("/sensors/")) return "Sensor Detail";
   if (pathname.startsWith("/sensors")) return "Sensors";
   if (pathname === "/settings") return "Settings";
-  if (pathname === "/analytics") return "Analytics";
-  if (pathname === "/alerts") return "Alerts";
+  if (pathname === "/docs") return "Documentation";
   if (pathname === "/admin") return "Admin";
   if (pathname === "/history") return "Notification History";
   return "Dashboard";
@@ -543,6 +542,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
                   {user ? user.name : "Guest"}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem
+                  asChild
+                  className="text-gray-200 hover:bg-gray-700 cursor-pointer"
+                >
+                  <Link href="/docs">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Documentation
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   asChild
                   className="text-gray-200 hover:bg-gray-700"
