@@ -497,13 +497,13 @@ export default function DocumentationPage() {
       </section>
 
       <div className="mt-6 grid items-start gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="rounded-2xl border border-[#374151] bg-[#0B1121] p-3 lg:sticky lg:top-4">
+        <aside className="min-w-0 rounded-2xl border border-[#374151] bg-[#0B1121] p-3 lg:sticky lg:top-4">
           <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
             On this page
           </p>
           <nav
             aria-label="Documentation sections"
-            className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible"
+            className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           >
             {visibleSections.map((section) => {
               return (

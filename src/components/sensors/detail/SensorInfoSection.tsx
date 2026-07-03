@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -124,6 +125,7 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
 
   const [dominantFault, setDominantFault] = React.useState<any>(null);
   const [showPopup, setShowPopup] = React.useState(false);
+  const [showImagePopup, setShowImagePopup] = React.useState(false);
   const [diagnosticRules, setDiagnosticRules] = React.useState<any[]>([]);
 
   React.useEffect(() => {
@@ -242,7 +244,17 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
         <div className="flex flex-col xl:flex-row gap-6 items-stretch">
           {/* Column 1: Image */}
           <div className="flex-1 flex justify-center">
-            <div className="w-full max-w-[200px] md:w-48 h-full min-h-[160px] md:min-h-[280px] bg-[#0B1121] border-[1.35px] border-[#374151] rounded-md flex items-center justify-center overflow-hidden relative">
+            <div 
+              className="w-full max-w-[200px] md:w-48 h-full min-h-[160px] md:min-h-[280px] bg-[#0B1121] border-[1.35px] border-[#374151] rounded-md flex items-center justify-center overflow-hidden relative cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => (sensorImage || configData.image_url) && setShowImagePopup(true)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  (sensorImage || configData.image_url) && setShowImagePopup(true);
+                }
+              }}
+            >
               {sensorImage || configData.image_url ? (
                 <Image
                   src={sensorImage || configData.image_url || ""}
@@ -255,6 +267,37 @@ export const SensorInfoSection: React.FC<SensorInfoSectionProps> = ({
                 <span className="text-gray-400 text-xs">No Image</span>
               )}
             </div>
+
+            <Dialog open={showImagePopup} onOpenChange={setShowImagePopup}>
+              <DialogContent className="bg-[#0B1121] border border-[#374151] text-white max-w-4xl w-[95vw] sm:w-[90vw] p-2 sm:p-6 rounded-2xl shadow-2xl overflow-hidden">
+                <DialogHeader className="sr-only">
+                  <DialogTitle>Sensor Image</DialogTitle>
+                </DialogHeader>
+                <div className="relative w-full h-[60vh] sm:h-[80vh] flex items-center justify-center bg-black/20 rounded-xl overflow-hidden">
+                  {(sensorImage || configData.image_url) && (
+                    <TransformWrapper
+                      initialScale={1}
+                      minScale={0.5}
+                      maxScale={4}
+                      centerOnInit={true}
+                    >
+                      <TransformComponent wrapperClass="!w-full !h-full" contentClass="!w-full !h-full flex items-center justify-center">
+                        <div className="relative w-full h-[60vh] sm:h-[80vh]">
+                          <Image
+                            src={sensorImage || configData.image_url || ""}
+                            alt="Sensor Full"
+                            fill
+                            className="object-contain"
+                            unoptimized={!!sensorImage}
+                            draggable={false}
+                          />
+                        </div>
+                      </TransformComponent>
+                    </TransformWrapper>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="hidden xl:block w-[1px] bg-[#374151] my-4 opacity-50"></div>
