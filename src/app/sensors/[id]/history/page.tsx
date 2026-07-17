@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getSignalStrengthLabel, getSignalStrength, cn, getDecayedBattery } from "@/lib/utils";
+import { getSignalStrengthLabel, getSignalStrength, cn } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
@@ -363,7 +363,7 @@ export default function SensorHistoryPage() {
       data: history.map((h) =>
         h.status === "lost"
           ? null
-          : getDecayedBattery(h.battery ?? 0, h.datetime, deviceTypeForDecay, user?.org_code)
+          : (h.battery ?? 0)
       ),
       color: "#4C6FFF",
       symbol: "circle",
