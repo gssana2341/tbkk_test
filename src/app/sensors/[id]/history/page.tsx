@@ -267,11 +267,21 @@ export default function SensorHistoryPage() {
       }
     };
 
-    const zr = chartInstance.getZr();
-    zr.on("click", handleZrClick);
+    let zr: any = null;
+    try {
+      zr = typeof chartInstance.getZr === 'function' ? chartInstance.getZr() : chartInstance.getEchartsInstance?.()?.getZr?.();
+    } catch (e) {
+      console.warn("Could not get zr instance", e);
+    }
+
+    if (zr) {
+      zr.on("click", handleZrClick);
+    }
 
     return () => {
-      zr.off("click", handleZrClick);
+      if (zr) {
+        zr.off("click", handleZrClick);
+      }
     };
   }, [history, isChartReady]);
 
